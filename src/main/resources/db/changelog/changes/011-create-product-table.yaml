@@ -1,0 +1,112 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-product-table
+      author: muhammad-danish-khan
+      changes:
+        - createSequence:
+              sequenceName: product_id_seq
+              startValue: 1
+              incrementBy: 1
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: product_id
+                  type: bigint
+                  defaultValueSequenceNext: product_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sku
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: family_id
+                  type: bigint
+              - column:
+                  name: subfamily_id
+                  type: bigint
+              - column:
+                  name: height
+                  type: decimal(10, 2)
+              - column:
+                  name: length
+                  type: decimal(10, 2)
+              - column:
+                  name: width
+                  type: decimal(10, 2)
+              - column:
+                  name: price
+                  type: decimal(10, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount
+                  type: decimal(5, 2)
+              - column:
+                  name: supplier_id
+                  type: bigint
+              - column:
+                  name: status
+                  type: varchar(10)
+                  defaultValue: 'Active'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: images
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: bigint
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: bigint
+        - addForeignKeyConstraint:
+            baseColumnNames: family_id
+            baseTableName: product
+            constraintName: fk_product_family
+            referencedColumnNames: family_id
+            referencedTableName: furniture_family
+        - addForeignKeyConstraint:
+            baseColumnNames: subfamily_id
+            baseTableName: product
+            constraintName: fk_product_subfamily
+            referencedColumnNames: subfamily_id
+            referencedTableName: furniture_subfamily
+        - addForeignKeyConstraint:
+            baseColumnNames: supplier_id
+            baseTableName: product
+            constraintName: fk_product_supplier
+            referencedColumnNames: supplier_id
+            referencedTableName: supplier
+        - addForeignKeyConstraint:
+            baseColumnNames: created_by
+            baseTableName: product
+            constraintName: fk_product_created_by
+            referencedColumnNames: user_id
+            referencedTableName: "users"
+        - addForeignKeyConstraint:
+            baseColumnNames: updated_by
+            baseTableName: product
+            constraintName: fk_product_updated_by
+            referencedColumnNames: user_id
+            referencedTableName: "users"

@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: qw-homes
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/qw-homes
+    username: postgres
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    clear-checksums: true
+
+  # File upload configuration
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+jwt:
+  secret: c2VjcmV0LWtleS1mb3Itand0LXRva2Vu
+  expiration: 86400 # 24 hours in seconds
+
+logging:
+  level:
+    org.springframework: ERROR
+    com.qw.qwhomes: DEBUG
+
+# Custom application properties
+application:
+  upload:
+    product-images: ${PRODUCT_IMAGES_UPLOAD_PATH:/tmp/qwhomes/product-images}
+
+proposal:
+  export:
+    path: /path/to/export/directory
