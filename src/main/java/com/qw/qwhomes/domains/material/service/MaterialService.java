@@ -1,6 +1,6 @@
 package com.qw.qwhomes.domains.material.service;
 
-import com.qw.qwhomes.domains.material.dto.MaterialCreateDTO;
+import com.qw.qwhomes.domains.material.dto.MaterialDTO;
 import com.qw.qwhomes.domains.material.dto.MaterialResponseDTO;
 import com.qw.qwhomes.domains.material.dto.MaterialUpdateDTO;
 import org.springframework.data.domain.Page;
@@ -8,13 +8,13 @@ import org.springframework.data.domain.Pageable;
 
 public interface MaterialService {
 
-    MaterialResponseDTO createMaterial(MaterialCreateDTO createDTO);
+    MaterialDTO createMaterial(MaterialDTO createDTO);
 
-    MaterialResponseDTO getMaterialById(Long id);
+    MaterialDTO getMaterialById(Long id);
 
-    Page<MaterialResponseDTO> getAllMaterials(Pageable pageable);
+    Page<MaterialDTO> getAllMaterials(Pageable pageable);
 
-    MaterialResponseDTO updateMaterial(Long id, MaterialUpdateDTO updateDTO);
+    MaterialDTO updateMaterial(Long id, MaterialDTO updateDTO);
 
     void deleteMaterial(Long id);
 }

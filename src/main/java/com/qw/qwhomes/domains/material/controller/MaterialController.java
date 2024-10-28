@@ -1,8 +1,6 @@
 package com.qw.qwhomes.domains.material.controller;
 
-import com.qw.qwhomes.domains.material.dto.MaterialCreateDTO;
-import com.qw.qwhomes.domains.material.dto.MaterialResponseDTO;
-import com.qw.qwhomes.domains.material.dto.MaterialUpdateDTO;
+import com.qw.qwhomes.domains.material.dto.MaterialDTO;
 import com.qw.qwhomes.domains.material.service.MaterialService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,7 +11,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/materials")
@@ -26,30 +31,30 @@ public class MaterialController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create a new material")
-    public ResponseEntity<MaterialResponseDTO> createMaterial(@Valid @RequestBody MaterialCreateDTO createDTO) {
-        MaterialResponseDTO responseDTO = materialService.createMaterial(createDTO);
+    public ResponseEntity<MaterialDTO> createMaterial(@Valid @RequestBody MaterialDTO createDTO) {
+        MaterialDTO responseDTO = materialService.createMaterial(createDTO);
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get a material by ID")
-    public ResponseEntity<MaterialResponseDTO> getMaterialById(@PathVariable Long id) {
-        MaterialResponseDTO responseDTO = materialService.getMaterialById(id);
+    public ResponseEntity<MaterialDTO> getMaterialById(@PathVariable Long id) {
+        MaterialDTO responseDTO = materialService.getMaterialById(id);
         return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping
     @Operation(summary = "Get all materials with pagination")
-    public ResponseEntity<Page<MaterialResponseDTO>> getAllMaterials(Pageable pageable) {
-        Page<MaterialResponseDTO> materials = materialService.getAllMaterials(pageable);
+    public ResponseEntity<Page<MaterialDTO>> getAllMaterials(Pageable pageable) {
+        Page<MaterialDTO> materials = materialService.getAllMaterials(pageable);
         return ResponseEntity.ok(materials);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update a material")
-    public ResponseEntity<MaterialResponseDTO> updateMaterial(@PathVariable Long id, @Valid @RequestBody MaterialUpdateDTO updateDTO) {
-        MaterialResponseDTO responseDTO = materialService.updateMaterial(id, updateDTO);
+    public ResponseEntity<MaterialDTO> updateMaterial(@PathVariable Long id, @Valid @RequestBody MaterialDTO updateDTO) {
+        MaterialDTO responseDTO = materialService.updateMaterial(id, updateDTO);
         return ResponseEntity.ok(responseDTO);
     }
 

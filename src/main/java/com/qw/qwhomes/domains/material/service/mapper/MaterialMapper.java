@@ -1,18 +1,20 @@
 package com.qw.qwhomes.domains.material.service.mapper;
 
 import com.qw.qwhomes.domains.material.data.entity.Material;
-import com.qw.qwhomes.domains.material.dto.MaterialCreateDTO;
-import com.qw.qwhomes.domains.material.dto.MaterialResponseDTO;
-import com.qw.qwhomes.domains.material.dto.MaterialUpdateDTO;
-import org.mapstruct.*;
+import com.qw.qwhomes.domains.material.dto.MaterialDTO;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface MaterialMapper {
 
-    Material toEntity(MaterialCreateDTO dto);
+    Material toEntity(MaterialDTO dto);
 
-    MaterialResponseDTO toResponseDTO(Material entity);
+    MaterialDTO toResponseDTO(Material entity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateEntityFromDTO(MaterialUpdateDTO dto, @MappingTarget Material entity);
+    void updateEntityFromDTO(MaterialDTO dto, @MappingTarget Material entity);
 }

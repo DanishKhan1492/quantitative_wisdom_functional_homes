@@ -1,14 +1,12 @@
 package com.qw.qwhomes.domains.material.service.impl;
 
+import com.qw.qwhomes.common.exceptions.ResourceNotFoundException;
 import com.qw.qwhomes.config.QWContext;
 import com.qw.qwhomes.domains.material.data.entity.Material;
 import com.qw.qwhomes.domains.material.data.repository.MaterialRepository;
-import com.qw.qwhomes.domains.material.dto.MaterialCreateDTO;
-import com.qw.qwhomes.domains.material.dto.MaterialResponseDTO;
-import com.qw.qwhomes.domains.material.dto.MaterialUpdateDTO;
+import com.qw.qwhomes.domains.material.dto.MaterialDTO;
 import com.qw.qwhomes.domains.material.service.MaterialService;
 import com.qw.qwhomes.domains.material.service.mapper.MaterialMapper;
-import com.qw.qwhomes.common.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +22,7 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     @Transactional
-    public MaterialResponseDTO createMaterial(MaterialCreateDTO createDTO) {
+    public MaterialDTO createMaterial(MaterialDTO createDTO) {
         Material material = materialMapper.toEntity(createDTO);
         material.setCreatedBy(QWContext.get().getUserId());
         Material savedMaterial = materialRepository.save(material);
@@ -33,7 +31,7 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     @Transactional(readOnly = true)
-    public MaterialResponseDTO getMaterialById(Long id) {
+    public MaterialDTO getMaterialById(Long id) {
         Material material = materialRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + id));
         return materialMapper.toResponseDTO(material);
@@ -41,14 +39,14 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<MaterialResponseDTO> getAllMaterials(Pageable pageable) {
+    public Page<MaterialDTO> getAllMaterials(Pageable pageable) {
         return materialRepository.findAll(pageable)
                 .map(materialMapper::toResponseDTO);
     }
 
     @Override
     @Transactional
-    public MaterialResponseDTO updateMaterial(Long id, MaterialUpdateDTO updateDTO) {
+    public MaterialDTO updateMaterial(Long id, MaterialDTO updateDTO) {
         Material material = materialRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + id));
         materialMapper.updateEntityFromDTO(updateDTO, material);

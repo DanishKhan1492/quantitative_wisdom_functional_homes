@@ -1,9 +1,9 @@
 package com.qw.qwhomes.domains.supplier.service.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-import jakarta.validation.constraints.*;
-
-import java.time.LocalDateTime;
 
 @Data
 public class SupplierRequestDTO {

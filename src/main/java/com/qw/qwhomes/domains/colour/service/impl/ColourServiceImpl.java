@@ -5,8 +5,7 @@ import com.qw.qwhomes.config.QWContext;
 import com.qw.qwhomes.domains.colour.data.entity.Colour;
 import com.qw.qwhomes.domains.colour.data.repository.ColourRepository;
 import com.qw.qwhomes.domains.colour.service.ColourService;
-import com.qw.qwhomes.domains.colour.service.dto.ColourRequestDTO;
-import com.qw.qwhomes.domains.colour.service.dto.ColourResponseDTO;
+import com.qw.qwhomes.domains.colour.service.dto.ColourDTO;
 import com.qw.qwhomes.domains.colour.service.mapper.ColourMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -29,15 +28,15 @@ public class ColourServiceImpl implements ColourService {
 
     @Override
     @Transactional
-    public ColourResponseDTO createColour(ColourRequestDTO colourRequestDTO) {
-        Colour colour = colourMapper.toEntity(colourRequestDTO);
+    public ColourDTO createColour(ColourDTO colourDTO) {
+        Colour colour = colourMapper.toEntity(colourDTO);
         colour.setCreatedBy(QWContext.get().getUserId());
         return colourMapper.toDto(colourRepository.save(colour));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ColourResponseDTO getColourById(Long id) {
+    public ColourDTO getColourById(Long id) {
         return colourRepository.findById(id)
                 .map(colourMapper::toDto)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -47,7 +46,7 @@ public class ColourServiceImpl implements ColourService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ColourResponseDTO> getAllColours(Pageable pageable, String search) {
+    public Page<ColourDTO> getAllColours(Pageable pageable, String search) {
         Specification<Colour> spec = (root, query, cb) -> {
             if (search == null || search.isEmpty()) {
                 return null;
@@ -62,12 +61,12 @@ public class ColourServiceImpl implements ColourService {
 
     @Override
     @Transactional
-    public ColourResponseDTO updateColour(Long id, ColourRequestDTO colourRequestDTO) {
+    public ColourDTO updateColour(Long id, ColourDTO colourDTO) {
         Colour colour = colourRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         messageSource.getMessage("colour.notFound", new Object[]{id}, Locale.getDefault())
                 ));
-        colourMapper.updateEntityFromDto(colourRequestDTO, colour);
+        colourMapper.updateEntityFromDto(colourDTO, colour);
         colour.setUpdatedBy(QWContext.get().getUserId());
         return colourMapper.toDto(colourRepository.save(colour));
     }
