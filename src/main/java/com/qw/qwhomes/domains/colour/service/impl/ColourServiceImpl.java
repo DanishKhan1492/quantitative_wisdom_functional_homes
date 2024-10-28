@@ -9,14 +9,13 @@ import com.qw.qwhomes.domains.colour.service.dto.ColourRequestDTO;
 import com.qw.qwhomes.domains.colour.service.dto.ColourResponseDTO;
 import com.qw.qwhomes.domains.colour.service.mapper.ColourMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Locale;
 
@@ -38,7 +37,6 @@ public class ColourServiceImpl implements ColourService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "colours", key = "#id")
     public ColourResponseDTO getColourById(Long id) {
         return colourRepository.findById(id)
                 .map(colourMapper::toDto)
@@ -64,7 +62,6 @@ public class ColourServiceImpl implements ColourService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "colours", key = "#id")
     public ColourResponseDTO updateColour(Long id, ColourRequestDTO colourRequestDTO) {
         Colour colour = colourRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(

@@ -26,6 +26,7 @@ public class SupplierResponseDTO {
     private Integer deliveryTimeWeeks;
     private Integer taxNumber;
     private Integer supplierDiscount;
+    private boolean status;
     private LocalDateTime createdAt;
     private Long createdBy;
     private LocalDateTime updatedAt;
