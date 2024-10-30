@@ -42,7 +42,7 @@ public class Colour extends BaseEntity {
     @Column(name = "colour_id")
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     private String name;
 
     @Column(length = 20)

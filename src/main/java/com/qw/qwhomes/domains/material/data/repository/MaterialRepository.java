@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MaterialRepository extends JpaRepository<Material, Long>, JpaSpecificationExecutor<Material> {
+    boolean existsByNameIgnoreCase(String name);
 }

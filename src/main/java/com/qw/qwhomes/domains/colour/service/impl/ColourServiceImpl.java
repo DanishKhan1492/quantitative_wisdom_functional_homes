@@ -1,5 +1,6 @@
 package com.qw.qwhomes.domains.colour.service.impl;
 
+import com.qw.qwhomes.common.exceptions.ResourceDuplicateException;
 import com.qw.qwhomes.common.exceptions.ResourceNotFoundException;
 import com.qw.qwhomes.config.QWContext;
 import com.qw.qwhomes.domains.colour.data.entity.Colour;
@@ -8,7 +9,6 @@ import com.qw.qwhomes.domains.colour.service.ColourService;
 import com.qw.qwhomes.domains.colour.service.dto.ColourDTO;
 import com.qw.qwhomes.domains.colour.service.mapper.ColourMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +29,12 @@ public class ColourServiceImpl implements ColourService {
     @Override
     @Transactional
     public ColourDTO createColour(ColourDTO colourDTO) {
+
+        var isColourAlreadyPresent = colourRepository.existsByNameIgnoreCase(colourDTO.getName());
+        if (isColourAlreadyPresent) {
+            throw new ResourceDuplicateException(messageSource.getMessage("colour.duplicate", new Object[]{colourDTO.getName()}, Locale.getDefault()));
+        }
+
         Colour colour = colourMapper.toEntity(colourDTO);
         colour.setCreatedBy(QWContext.get().getUserId());
         return colourMapper.toDto(colourRepository.save(colour));
@@ -66,6 +72,10 @@ public class ColourServiceImpl implements ColourService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         messageSource.getMessage("colour.notFound", new Object[]{id}, Locale.getDefault())
                 ));
+        var isColourAlreadyPresent = colourRepository.existsByNameIgnoreCase(colourDTO.getName());
+        if (isColourAlreadyPresent) {
+            throw new ResourceDuplicateException(messageSource.getMessage("colour.duplicate", new Object[]{colourDTO.getName()}, Locale.getDefault()));
+        }
         colourMapper.updateEntityFromDto(colourDTO, colour);
         colour.setUpdatedBy(QWContext.get().getUserId());
         return colourMapper.toDto(colourRepository.save(colour));
@@ -73,7 +83,6 @@ public class ColourServiceImpl implements ColourService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "colours", key = "#id")
     public void deleteColour(Long id) {
         if (!colourRepository.existsById(id)) {
             throw new ResourceNotFoundException(

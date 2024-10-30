@@ -12,8 +12,5 @@ import java.util.Optional;
 public interface FurnitureFamilyRepository extends JpaRepository<FurnitureFamily, Long> {
     Optional<FurnitureFamily> findByName(String name);
     List<FurnitureFamily> findByCategoryId(Long categoryId);
-
-    // Methods for FurnitureSubFamily
-    List<FurnitureSubFamily> findSubFamiliesByFamilyId(Long familyId);
-    Optional<FurnitureSubFamily> findSubFamilyByNameAndFamilyId(String name, Long familyId);
+    boolean existsFurnitureFamilyByNameIgnoreCase(String name);
 }

@@ -1,6 +1,6 @@
 package com.qw.qwhomes.domains.supplier.service.impl;
 
-import com.qw.qwhomes.common.exceptions.DuplicateSupplierException;
+import com.qw.qwhomes.common.exceptions.ResourceDuplicateException;
 import com.qw.qwhomes.common.exceptions.ResourceNotFoundException;
 import com.qw.qwhomes.config.QWContext;
 import com.qw.qwhomes.domains.supplier.data.entity.Supplier;
@@ -42,7 +42,7 @@ public class SupplierServiceImpl implements SupplierService {
             supplierRequestDTO.getName(), supplierRequestDTO.getBusinessRegistrationNumber());
         
         if (existingSupplier.isPresent()) {
-            throw new DuplicateSupplierException(
+            throw new ResourceDuplicateException(
                 messageSource.getMessage("supplier.duplicate", 
                     new Object[]{supplierRequestDTO.getName(), supplierRequestDTO.getBusinessRegistrationNumber()}, 
                     LocaleContextHolder.getLocale())

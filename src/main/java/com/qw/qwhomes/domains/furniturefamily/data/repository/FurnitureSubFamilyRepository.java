@@ -7,9 +7,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FurnitureSubFamilyRepository extends JpaRepository<FurnitureSubFamily, Long> {
     @Query("select fsf from FurnitureSubFamily fsf where fsf.family.familyId = :familyId")
     List<FurnitureSubFamily> findByFamilyId(@Param("familyId") Long familyId);
+    boolean existsFurnitureSubFamilyByNameIgnoreCase(String name);
 }

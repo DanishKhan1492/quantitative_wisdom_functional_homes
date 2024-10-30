@@ -1,9 +1,11 @@
 package com.qw.qwhomes.domains.furniturefamily.controller;
 
+import com.qw.qwhomes.common.dto.PageableResponse;
+import com.qw.qwhomes.domains.furniturefamily.dto.FurnitureFamilyDTO;
+import com.qw.qwhomes.domains.furniturefamily.dto.FurnitureSubFamilyResponseDTO;
 import com.qw.qwhomes.domains.furniturefamily.service.FurnitureFamilyService;
-import com.qw.qwhomes.domains.furniturefamily.dto.FurnitureFamilyCreateDTO;
-import com.qw.qwhomes.domains.furniturefamily.dto.FurnitureFamilyResponseDTO;
 import com.qw.qwhomes.domains.furniturefamily.dto.FurnitureSubFamilyDTO;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +22,13 @@ public class FurnitureFamilyController {
     }
 
     @PostMapping
-    public ResponseEntity<FurnitureFamilyResponseDTO> createFurnitureFamily(@RequestBody FurnitureFamilyCreateDTO furnitureFamilyCreateDTO) {
-        return ResponseEntity.ok(furnitureFamilyService.createFurnitureFamily(furnitureFamilyCreateDTO));
+    public ResponseEntity<FurnitureFamilyDTO> createFurnitureFamily(@RequestBody FurnitureFamilyDTO furnitureFamilyDTO) {
+        return ResponseEntity.ok(furnitureFamilyService.createFurnitureFamily(furnitureFamilyDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FurnitureFamilyResponseDTO> updateFurnitureFamily(@PathVariable Long id, @RequestBody FurnitureFamilyCreateDTO furnitureFamilyCreateDTO) {
-        return ResponseEntity.ok(furnitureFamilyService.updateFurnitureFamily(id, furnitureFamilyCreateDTO));
+    public ResponseEntity<FurnitureFamilyDTO> updateFurnitureFamily(@PathVariable Long id, @RequestBody FurnitureFamilyDTO furnitureFamilyDTO) {
+        return ResponseEntity.ok(furnitureFamilyService.updateFurnitureFamily(id, furnitureFamilyDTO));
     }
 
     @DeleteMapping("/{id}")
@@ -36,41 +38,46 @@ public class FurnitureFamilyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FurnitureFamilyResponseDTO> getFurnitureFamily(@PathVariable Long id) {
+    public ResponseEntity<FurnitureFamilyDTO> getFurnitureFamily(@PathVariable Long id) {
         return ResponseEntity.ok(furnitureFamilyService.getFurnitureFamilyById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<FurnitureFamilyResponseDTO>> getAllFurnitureFamilies() {
-        return ResponseEntity.ok(furnitureFamilyService.getAllFurnitureFamilies());
+    public ResponseEntity<List<FurnitureFamilyDTO>> getAllFurnitureFamilies(Pageable pageable) {
+        return ResponseEntity.ok(furnitureFamilyService.getAllFurnitureFamilies(pageable));
     }
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<FurnitureFamilyResponseDTO>> getFurnitureFamiliesByCategory(@PathVariable Long categoryId) {
+    public ResponseEntity<List<FurnitureFamilyDTO>> getFurnitureFamiliesByCategory(@PathVariable Long categoryId) {
         return ResponseEntity.ok(furnitureFamilyService.getFurnitureFamiliesByCategory(categoryId));
     }
 
     // FurnitureSubFamily endpoints
 
     @PostMapping("/{familyId}/sub-families")
-    public ResponseEntity<FurnitureSubFamilyDTO> createFurnitureSubFamily(@PathVariable Long familyId, @RequestBody FurnitureSubFamilyDTO furnitureSubFamilyDTO) {
-        return ResponseEntity.ok(furnitureFamilyService.createFurnitureSubFamily(familyId, furnitureSubFamilyDTO));
+    public ResponseEntity<FurnitureSubFamilyResponseDTO> createFurnitureSubFamily(@PathVariable Long familyId, @RequestBody List<FurnitureSubFamilyDTO> furnitureSubFamiliesDTO) {
+        return ResponseEntity.ok(furnitureFamilyService.createFurnitureSubFamily(familyId, furnitureSubFamiliesDTO));
     }
 
-    @PutMapping("/{familyId}/sub-families/{subFamilyId}")
-    public ResponseEntity<FurnitureSubFamilyDTO> updateFurnitureSubFamily(@PathVariable Long familyId, @PathVariable Long subFamilyId, @RequestBody FurnitureSubFamilyDTO furnitureSubFamilyDTO) {
-        return ResponseEntity.ok(furnitureFamilyService.updateFurnitureSubFamily(familyId, subFamilyId, furnitureSubFamilyDTO));
+    @PutMapping("/sub-families/{subFamilyId}")
+    public ResponseEntity<FurnitureSubFamilyDTO> updateFurnitureSubFamily(@PathVariable Long subFamilyId, @RequestBody FurnitureSubFamilyDTO furnitureSubFamilyDTO) {
+        return ResponseEntity.ok(furnitureFamilyService.updateFurnitureSubFamily(subFamilyId, furnitureSubFamilyDTO));
     }
 
-    @DeleteMapping("/{familyId}/sub-families/{subFamilyId}")
-    public ResponseEntity<Void> deleteFurnitureSubFamily(@PathVariable Long familyId, @PathVariable Long subFamilyId) {
-        furnitureFamilyService.deleteFurnitureSubFamily(familyId, subFamilyId);
+    @DeleteMapping("/sub-families/{subFamilyId}")
+    public ResponseEntity<Void> deleteFurnitureSubFamily(@PathVariable Long subFamilyId) {
+        furnitureFamilyService.deleteFurnitureSubFamily(subFamilyId);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{familyId}/sub-families/{subFamilyId}")
-    public ResponseEntity<FurnitureSubFamilyDTO> getFurnitureSubFamily(@PathVariable Long familyId, @PathVariable Long subFamilyId) {
-        return ResponseEntity.ok(furnitureFamilyService.getFurnitureSubFamily(familyId, subFamilyId));
+    @GetMapping("/sub-families")
+    public ResponseEntity<PageableResponse<FurnitureSubFamilyDTO>> getAllSubFamilies(Pageable pageable) {
+        return ResponseEntity.ok(furnitureFamilyService.getAllSubFamilies(pageable));
+    }
+
+    @GetMapping("/sub-families/{subFamilyId}")
+    public ResponseEntity<FurnitureSubFamilyDTO> getFurnitureSubFamily(@PathVariable Long subFamilyId) {
+        return ResponseEntity.ok(furnitureFamilyService.getFurnitureSubFamily(subFamilyId));
     }
 
     @GetMapping("/{familyId}/sub-families")
