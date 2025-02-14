@@ -63,7 +63,7 @@ public class ProductServiceImpl implements ProductService {
 
         if (CollectionUtils.isNotEmpty(images)) {
             List<String> imagePaths = ioService.saveImages(images, "products");
-            product.setImages(String.join("::", imagePaths));
+            product.setImages(String.join(",", imagePaths));
         }
         product.setCreatedBy(QWContext.get().getUserId());
         Product savedProduct = productRepository.save(product);
@@ -78,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
         var productDto = productMapper.toResponseDTO(product);
         List<byte[]> images = new ArrayList<>();
         if (product.getImages() != null) {
-            for (String imagePath : product.getImages().split("::")) {
+            for (String imagePath : product.getImages().split(",")) {
                 try {
                     byte[] imageData = ioService.loadFileAsByteArray(imagePath);
                     images.add(imageData);

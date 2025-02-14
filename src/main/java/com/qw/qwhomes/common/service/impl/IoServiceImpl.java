@@ -58,7 +58,7 @@ public class IoServiceImpl implements IoService {
             }
 
             for (MultipartFile file : files) {
-                String fileName = UUID.randomUUID() + "_" + StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+                String fileName = UUID.randomUUID() + "_" + StringUtils.cleanPath(Objects.requireNonNull(Objects.requireNonNull(file.getOriginalFilename()).replaceAll(" ", "")));
                 Path filePath = imageUploadPath.resolve(fileName);
 
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);

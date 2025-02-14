@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/qw-homes
     username: postgres
-    password: admin
+    password: 1234
   jpa:
     hibernate:
       ddl-auto: validate
@@ -35,7 +35,7 @@ logging:
 # Custom application properties
 application:
   upload:
-    upload-path: ${UPLOAD_PATH:F:\QWHomes\qw-uploaded-images}
+    upload-path: ${UPLOAD_PATH:/home/testing/}
 
 proposal:
   export:

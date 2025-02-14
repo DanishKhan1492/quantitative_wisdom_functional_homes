@@ -21,5 +21,8 @@ public interface ProductMapper {
     ProductDTO toResponseDTO(Product product);
 
     @Mapping(target = "productId", ignore = true)
+    @Mapping(target = "colours", ignore = true)
+    @Mapping(target = "materials", ignore = true)
+    @Mapping(target = "images", ignore = true)
     void updateEntityFromDTO(ProductDTO dto, @MappingTarget Product product);
 }
