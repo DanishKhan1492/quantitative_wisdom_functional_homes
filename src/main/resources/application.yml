@@ -3,12 +3,12 @@ server:
 
 spring:
   application:
-    name: qw-homes
+    name: ${APP_NAME:qw-homes}
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/qw-homes
-    username: postgres
-    password: 1234
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/qw-homes}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS:1234}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -20,8 +20,8 @@ spring:
   # File upload configuration
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: ${MAX_FILE_SIZE:10MB}
+      max-request-size: ${MAX_REQUEST_SIZE:10MB}
 
 jwt:
   secret: c2VjcmV0LWtleS1mb3Itand0LXRva2Vu
@@ -39,7 +39,7 @@ application:
 
 proposal:
   export:
-    path: /path/to/export/directory
+    path: ${EXPORT_PATH:/home/testing/}
 
 springdoc:
   swagger-ui:
