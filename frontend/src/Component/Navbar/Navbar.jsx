@@ -7,17 +7,16 @@ import jwt_decode from "jwt-decode";
 const ls = new SecureLS({ encodingType: "aes" });
 
 const Navbar = () => {
-   const [data,setData] = useState({})
+   const [data,setData] = useState([])
 
    useEffect(()=>{
     const token =ls.get("authToken")
     const decoded = jwt_decode(token);
-    console.log(decoded,"------------------------------------decode-----------------")
+   
     setData(decoded)
    },[])
 
-  const userName = "Anna";
-  const userRole = "Admin";
+
 
   return (
     <div className="bg-slate-900 shadow-sm p-4 flex justify-end items-center">
@@ -34,8 +33,9 @@ const Navbar = () => {
           <span className="text-lg text-white font-semibold mr-5">
             {data.firstName + " " + data.lastName}
           </span>
-          <span className="text-md font-bold text-white bg-primary px-2 py-0.5 rounded-full">
-            {data.roles}
+          <span className="text-md font-bold text-white bg-primary w-fit text-center ml-4 items-center px-2 py-0.5 rounded-full">
+            
+            {data.roles && data.roles[0] === "ROLE_ADMIN" ? "Admin" : "User"}
           </span>
         </div>
       </div>

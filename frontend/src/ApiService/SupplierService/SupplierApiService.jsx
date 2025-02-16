@@ -52,8 +52,8 @@ export const getAllSuppliers = async (
     // Use "page" (0-indexed for backend) instead of pageNumber
     const params = {
       page: pageNumber - 1,
-      size
-     
+      size,
+      sort: "createdAt,desc",
     };
 
     if (searchName) {

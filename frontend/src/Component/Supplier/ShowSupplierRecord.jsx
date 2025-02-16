@@ -12,6 +12,8 @@ import {
   Unlock,
   Plus,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -56,7 +58,7 @@ const ShowSupplierRecord = () => {
   }, [filterTerm, suppliers]);
 
    const fetchSuppliers = async () => {
-     setIsLoading(true); // Set loading to true when starting to fetch
+     setIsLoading(true); 
      try {
        const res = await getAllSuppliers(pageNumber, size, searchTerm);
        setSuppliers(res.data || []);
@@ -69,7 +71,7 @@ const ShowSupplierRecord = () => {
        console.error("Error fetching suppliers:", error);
        toast.error("Failed to fetch suppliers.");
      } finally {
-       setIsLoading(false); // Set loading to false after fetch completes (success or error)
+       setIsLoading(false);
      }
    };
 
@@ -102,13 +104,7 @@ const ShowSupplierRecord = () => {
     if (editingSupplier) {
       try {
         await updateSupplier(editingSupplier.id, supplierData);
-        setSuppliers(
-          suppliers.map((supplier) =>
-            supplier.id === editingSupplier.id
-              ? { ...supplierData, id: supplier.id }
-              : supplier
-          )
-        );
+        fetchSuppliers();
         toast.success("Supplier updated successfully");
         setEditingSupplier(null);
         setIsModalOpen(false);
@@ -388,29 +384,56 @@ const ShowSupplierRecord = () => {
       </div>
 
       {/* Pagination Controls */}
-      <div className="mt-6 flex justify-between items-center text-slate-400">
-        <span className="text-sm text-white">
-          Showing {startItem} to {endItem} of {totalElements} entries
-        </span>
+
+    
+      <div className="mt-6 flex flex-col sm:flex-row justify-between items-center text-slate-400">
+        <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 sm:mb-0">
+          {/* Styled "Showing records" display */}
+          <span className="text-sm bg-gradient-to-r bg-slate-800 border-2 border-blue-500  text-blue-300  px-4 py-2 rounded-full shadow-md">
+            Showing {startItem} to {endItem} of {totalElements} entries
+          </span>
+
+          {/* Styled Page Size Selector */}
+          <div className="relative">
+            <select
+              value={size}
+              onChange={(e) => {
+                setSize(Number(e.target.value));
+                setPageNumber(1);
+              }}
+              className="appearance-none pl-4 pr-10 py-2 bg-slate-800 border-2 border-blue-500 rounded-full text-blue-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"
+            >
+              {[5, 10, 15, 20, 50,100].map((option) => (
+                <option key={option} value={option} className="bg-slate-800">
+                  Show {option} records
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"
+              size={18}
+            />
+          </div>
+        </div>
+
+        {/* Pagination Buttons */}
         <div className="flex space-x-2">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <button
             onClick={() => setPageNumber(Math.max(1, pageNumber - 1))}
             disabled={pageNumber === 1}
-            className="px-4 py-2 bg-primary text-white rounded-xl hover:bg-slate-600 transition-colors"
+            className="appearance-none px-4 py-2 bg-slate-800 text-white rounded-xl  border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all hover:bg-slate-600 transition-colors flex items-center"
           >
+            <ChevronLeft size={18} className="mr-1" />
             Previous
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          </button>
+          <button
             onClick={() => setPageNumber(pageNumber + 1)}
             disabled={pageNumber >= totalPages}
-            className="px-4 py-2 bg-primary text-white rounded-xl hover:bg-slate-600 transition-colors"
+            className="appearance-none px-4 py-2 bg-slate-800  border-2 border-blue-500 text-white rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all transition-colors flex items-center"
           >
             Next
-          </motion.button>
+            <ChevronRight size={18} className="ml-1" />
+          </button>
         </div>
       </div>
 

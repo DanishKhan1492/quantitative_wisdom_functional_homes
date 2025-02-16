@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
-import { Search, Filter, Edit, Trash2, Plus } from "lucide-react";
+import {
+  Search,
+  Filter,
+  Edit,
+  Trash2,
+  Plus,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import AddColourModal from "./AddColourModal";
 import DeleteColourModal from "./DeleteColourModal";
@@ -14,6 +23,7 @@ import {
   createColour,
 } from "../../ApiService/ColorService/ColorApiService";
 import LoadingScreen from "../Loading/Lodder";
+
 const ColoursList = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -25,23 +35,21 @@ const ColoursList = () => {
   const [displayedColours, setDisplayedColours] = useState([]);
   const [pageNumber, setPageNumber] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [size] = useState(10);
+  const [size, setSize] = useState(10);
   const [totalElements, setTotalElements] = useState(0);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterTerm, setFilterTerm] = useState("");
-    const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
+  // Reset pageNumber to first page (0) on search term change
   useEffect(() => {
     setPageNumber(0);
   }, [searchTerm]);
 
-
   useEffect(() => {
     fetchColours();
-
   }, [pageNumber, size, searchTerm]);
-
 
   useEffect(() => {
     if (filterTerm) {
@@ -57,7 +65,7 @@ const ColoursList = () => {
   }, [filterTerm, colours]);
 
   const fetchColours = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await getAllColours(pageNumber, size, searchTerm, "");
       console.log("Fetched Colours:", res);
@@ -77,16 +85,13 @@ const ColoursList = () => {
     }
   };
 
-
   const handleCreateOrUpdateColour = async (colourData) => {
     if (editingColour) {
-
       try {
         const updatedColour = await updateColour(
           editingColour.colourId,
           colourData
         );
-        
         fetchColours();
         toast.success("Colour updated successfully");
         setEditingColour(null);
@@ -126,10 +131,10 @@ const ColoursList = () => {
 
   const handleConfirmDelete = async () => {
     if (colourToDelete) {
-      console.log("Confirm deleting colour with ID:", colourToDelete.id);
+      console.log("Confirm deleting colour with ID:", colourToDelete.colourId);
       try {
         await deleteColour(colourToDelete.colourId);
-       fetchColours();
+        fetchColours();
         setIsDeleteModalOpen(false);
         setColourToDelete(null);
         toast.success("Colour deleted successfully");
@@ -259,7 +264,7 @@ const ColoursList = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="5">
+                  <td colSpan="4">
                     <div className="h-[400px] w-full flex items-center justify-center">
                       <LoadingScreen />
                     </div>
@@ -268,7 +273,7 @@ const ColoursList = () => {
               ) : displayedColours && displayedColours.length > 0 ? (
                 displayedColours.map((colour) => (
                   <tr
-                    key={colour.id}
+                    key={colour.colourId}
                     className="border-b border-slate-700 hover:bg-slate-700/50 transition-colors"
                   >
                     <td className="p-4">
@@ -330,31 +335,56 @@ const ColoursList = () => {
       </div>
 
       {/* Pagination */}
-      <div className="mt-6 flex justify-between items-center text-slate-400">
-        <div>
-          Showing {pageNumber * size + 1} to{" "}
-          {pageNumber * size + displayedColours.length} of {totalElements}{" "}
-          entries
+      <div className="mt-6 flex flex-col sm:flex-row justify-between items-center text-slate-400">
+        <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 sm:mb-0">
+          {/* Styled "Showing records" display */}
+          <span className="text-sm bg-gradient-to-r bg-slate-800 border-2 border-blue-500 text-blue-300 px-4 py-2 rounded-full shadow-md">
+            Showing {pageNumber * size + 1} to{" "}
+            {pageNumber * size + displayedColours.length} of {totalElements}{" "}
+            entries
+          </span>
+
+          {/* Styled Page Size Selector */}
+          <div className="relative">
+            <select
+              value={size}
+              onChange={(e) => {
+                setSize(Number(e.target.value));
+                setPageNumber(0); // reset to first page on page size change
+              }}
+              className="appearance-none pl-4 pr-10 py-2 bg-slate-800 border-2 border-blue-500 rounded-full text-blue-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"
+            >
+              {[5, 10, 15, 20, 50,100].map((option) => (
+                <option key={option} value={option} className="bg-slate-800">
+                  Show {option} records
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"
+              size={18}
+            />
+          </div>
         </div>
-        <div className="flex gap-2">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 bg-slate-700 rounded-xl hover:bg-slate-600 transition-colors"
+
+        {/* Pagination Buttons */}
+        <div className="flex space-x-2">
+          <button
             onClick={handlePreviousPage}
             disabled={pageNumber === 0}
+            className="appearance-none px-4 py-2 bg-slate-800 text-white rounded-xl border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all hover:bg-slate-600 flex items-center"
           >
+            <ChevronLeft size={18} className="mr-1" />
             Previous
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 bg-slate-700 rounded-xl hover:bg-slate-600 transition-colors"
+          </button>
+          <button
             onClick={handleNextPage}
-            disabled={pageNumber + 1 >= totalPages}
+            disabled={pageNumber === totalPages - 1}
+            className="appearance-none px-4 py-2 bg-slate-800 border-2 border-blue-500 text-white rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all flex items-center"
           >
             Next
-          </motion.button>
+            <ChevronRight size={18} className="ml-1" />
+          </button>
         </div>
       </div>
 

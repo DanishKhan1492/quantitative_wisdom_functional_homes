@@ -90,7 +90,7 @@ function AppContent() {
           path="/"
           element={
             isAuthenticated ? (
-              <Navigate to="/supplier" replace />
+              <Navigate to="/dashboard" replace />
             ) : (
               <Login onLogin={handleLogin} />
             )
@@ -128,7 +128,10 @@ function AppContent() {
                     path="/product-catalogue"
                     element={<ProductCatalogueList />}
                   />
-                  <Route path="/product-details" element={<ProductDetails />} />
+                  <Route
+                    path="/product-details/:id"
+                    element={<ProductDetails />}
+                  />
                   <Route path="/colours" element={<ColoursList />} />
                   <Route path="/material" element={<MaterialsList />} />
                   <Route path="/proposal" element={<ProposalList />} />
@@ -139,7 +142,7 @@ function AppContent() {
                   {/* Redirect any unknown routes to /supplier */}
                   <Route
                     path="*"
-                    element={<Navigate to="/supplier" replace />}
+                    element={<Navigate to="/dashboard" replace />}
                   />
                 </Routes>
               </AuthenticatedLayout>
