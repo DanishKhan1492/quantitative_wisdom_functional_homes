@@ -35,7 +35,7 @@ public class ApartmentTypeRequirementServiceImpl implements ApartmentTypeRequire
     @Override
     @Transactional
     public ApartmentTypeRequirementDTO createApartmentTypeRequirement(ApartmentTypeRequirementDTO createApartmentTypeRequirementDto) {
-        ApartmentType apartmentType = apartmentTypeRepository.findById(createApartmentTypeRequirementDto.getApartmentTypeRequirementId())
+        ApartmentType apartmentType = apartmentTypeRepository.findById(createApartmentTypeRequirementDto.getApartmentTypeId())
                 .orElseThrow(() -> new BusinessException("Category not found"));
         FurnitureFamily furnitureFamily = furnitureFamilyRepository.findById(createApartmentTypeRequirementDto.getFamilyId())
                 .orElseThrow(() -> new BusinessException("FurnitureFamily not found"));

@@ -33,7 +33,7 @@ public class ApartmentTypeRequirement extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "apartment_type_requirement_id_seq")
     @SequenceGenerator(name = "apartment_type_requirement_id_seq", sequenceName = "apartment_type_requirement_id_seq", allocationSize = 1)
     @Column(name = "requirement_id")
-    private Long apartmentTypeId;
+    private Long apartmentTypeRequirementId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "apartment_type_id")

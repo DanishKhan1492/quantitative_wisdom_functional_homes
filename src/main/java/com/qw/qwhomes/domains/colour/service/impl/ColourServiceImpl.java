@@ -73,9 +73,11 @@ public class ColourServiceImpl implements ColourService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         messageSource.getMessage("colour.notFound", new Object[]{id}, Locale.getDefault())
                 ));
-        var isColourAlreadyPresent = colourRepository.existsByNameIgnoreCase(colourDTO.getName());
-        if (isColourAlreadyPresent) {
-            throw new ResourceDuplicateException(messageSource.getMessage("colour.duplicate", new Object[]{colourDTO.getName()}, Locale.getDefault()));
+        if (!colourDTO.getName().equals(colour.getName())) {
+            var isColourAlreadyPresent = colourRepository.existsByNameIgnoreCase(colourDTO.getName());
+            if (isColourAlreadyPresent) {
+                throw new ResourceDuplicateException(messageSource.getMessage("colour.duplicate", new Object[]{colourDTO.getName()}, Locale.getDefault()));
+            }
         }
         colourMapper.updateEntityFromDto(colourDTO, colour);
         colour.setUpdatedBy(QWContext.get().getUserId());

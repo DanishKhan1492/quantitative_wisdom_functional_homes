@@ -11,7 +11,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(componentModel = "spring")
 public interface ApartmentTypeRequirementMapper {
 
-    @Mapping(target = "apartmentTypeId", ignore = true)
+    @Mapping(target = "apartmentTypeRequirementId", ignore = true)
     @Mapping(target = "apartmentType", ignore = true)
     @Mapping(target = "family.familyId", source = "familyId")
     @Mapping(target = "subFamily.subFamilyId", source = "subFamilyId")
