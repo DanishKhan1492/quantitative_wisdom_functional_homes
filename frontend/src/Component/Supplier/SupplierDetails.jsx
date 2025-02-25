@@ -64,38 +64,38 @@ const SupplierDetails = () => {
   const InfoCard = ({ icon: Icon, title, value }) => (
     <motion.div 
       whileHover={{ scale: 1.02 }}
-      className="bg-slate-700/50 rounded-xl p-4 flex items-start gap-3"
+      className="bg-black rounded-xl p-4 flex items-start gap-3"
     >
-      <div className="bg-blue-500/20 p-2 rounded-lg">
-        <Icon className="text-blue-400" size={20} />
+      <div className="bg-white p-2 rounded-lg">
+        <Icon className="text-black" size={20} />
       </div>
       <div>
-        <h3 className="text-slate-400 text-sm">{title}</h3>
+        <h3 className="text-white text-sm">{title}</h3>
         <p className="text-white font-medium mt-1">{value}</p>
       </div>
     </motion.div>
   );
 
   return (
-    <div className="h-full bg-gradient-to-b from-slate-900 to-slate-800 p-6">
+    <div className="h-full bg-background p-6">
       <div className="w-full mx-auto">
         {/* Header */}
         <div className="mb-6 flex justify-between items-center">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center text-slate-300 hover:text-white transition-colors"
+            className="flex items-center text-black  transition-colors"
             onClick={() => navigate(-1)}
           >
             <ArrowLeft size={20} className="mr-2" />
             Back to Suppliers
           </motion.button>
-          
+
           <div className="flex gap-3">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center px-4 py-2 bg-slate-700 text-white rounded-xl hover:bg-slate-600 transition-colors"
+              className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-slate-600 transition-colors"
               onClick={handleEdit}
             >
               <Edit size={18} className="mr-2" />
@@ -117,27 +117,23 @@ const SupplierDetails = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Profile Section */}
           <div className="lg:col-span-1">
-            <div className="bg-slate-800 rounded-xl shadow-xl overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 flex flex-col items-center">
+            <div className="bg-white rounded-xl shadow-xl overflow-hidden">
+              <div className="bg-gradient-to-r from-slate-900 to-stone-900 p-6 flex flex-col items-center">
                 <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center mb-4">
-                  <span className="text-4xl font-bold text-blue-600">
+                  <span className="text-4xl font-bold text-black">
                     {supplier.name.charAt(0)}
                   </span>
                 </div>
                 <h1 className="text-2xl font-bold text-white text-center">
                   {supplier.name}
                 </h1>
-                <p className="text-blue-100 mt-2">
+                <p className="text-white mt-2">
                   {supplier.city}, {supplier.country}
                 </p>
               </div>
               <div className="p-6">
                 <div className="space-y-4">
-                  <InfoCard
-                    icon={Mail}
-                    title="Email"
-                    value={supplier.email}
-                  />
+                  <InfoCard icon={Mail} title="Email" value={supplier.email} />
                   <InfoCard
                     icon={Phone}
                     title="Phone"
@@ -152,11 +148,11 @@ const SupplierDetails = () => {
                     icon={Globe}
                     title="Website"
                     value={
-                      <a 
+                      <a
                         href={supplier.websiteUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-400 hover:text-blue-300"
+                        className="text-white hover:text-blue-300"
                       >
                         {supplier.websiteUrl}
                       </a>
@@ -170,8 +166,8 @@ const SupplierDetails = () => {
           {/* Details Sections */}
           <div className="lg:col-span-2 space-y-6">
             {/* Business Information */}
-            <div className="bg-slate-800 rounded-xl shadow-xl p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">
+            <div className="bg-white rounded-xl shadow-xl p-6">
+              <h2 className="text-xl font-semibold text-black mb-2">
                 Business Information
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -199,8 +195,8 @@ const SupplierDetails = () => {
             </div>
 
             {/* Contact Information */}
-            <div className="bg-slate-800 rounded-xl shadow-xl p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">
+            <div className="bg-white rounded-xl shadow-xl p-4">
+              <h2 className="text-xl font-semibold text-black mb-2">
                 Primary Contact
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -218,20 +214,22 @@ const SupplierDetails = () => {
             </div>
 
             {/* Status Card */}
-            <div className="bg-slate-800 rounded-xl shadow-xl p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">
+            <div className="bg-white rounded-xl shadow-xl p-6">
+              <h2 className="text-xl font-semibold text-black mb-4">
                 Status Information
               </h2>
               <div className="grid grid-cols-1 gap-4">
-                <div className="bg-slate-700/50 rounded-xl p-4">
+                <div className="bg-black rounded-xl p-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Account Status</span>
-                    <span className={`px-3 py-1 rounded-full text-sm ${
-                      supplier.status 
-                        ? 'bg-blue-500/20 text-blue-400'
-                        : 'bg-slate-600/20 text-slate-400'
-                    }`}>
-                      {supplier.status ? 'Active' : 'Inactive'}
+                    <span className="text-white">Account Status</span>
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm ${
+                        supplier.status
+                          ? "bg-black text-white"
+                          : "bg-white text-black"
+                      }`}
+                    >
+                      {supplier.status ? "Active" : "Inactive"}
                     </span>
                   </div>
                 </div>

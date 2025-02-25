@@ -51,7 +51,7 @@ export const getAllFurnitureFamilies = async (
     };
 
     const params = {
-      page:pageNumber,
+      page:pageNumber-1,
       size,
     };
 

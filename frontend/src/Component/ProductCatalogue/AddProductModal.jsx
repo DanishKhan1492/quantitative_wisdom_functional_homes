@@ -145,43 +145,6 @@ const handleColourChange = (e) => {
     }
   };
 
-  // const handleSubmit = async (e) => {
-  //     e.preventDefault();
-
-  //     const formData = new FormData();
-
-  //     // Append all product fields directly
-  //     formData.append("name", name);
-  //     formData.append("sku", sku);
-  //     formData.append("familyId", family);
-  //     formData.append("subFamilyId", subFamily);
-  //     formData.append("width", width);
-  //     formData.append("height", height);
-  //     formData.append("length", length);
-  //     formData.append("materialId", material);
-  //     formData.append("colourId", colour);
-  //     formData.append("price", price);
-  //     formData.append("discount", discount);
-  //     formData.append("supplierId", supplier);
-  //     formData.append("status", status);
-
-  //     // Append multiple images
-  //     if (images) {
-  //       if (Array.isArray(images)) {
-  //         images.forEach((img) => formData.append("images", img));
-  //       } else {
-  //         formData.append("images", images);
-  //       }
-  //     }
-
-  //     try {
-  //       await onSubmit(formData);
-  //       onClose();
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-
  
 
   const handleSubmit = async (e) => {
@@ -189,7 +152,7 @@ const handleColourChange = (e) => {
 
     const formData = new FormData();
 
-    // Convert boolean status to string (adjust values based on your enum)
+   
     const formattedStatus = status ? "Active" : "Inactive"; // Match backend enum format
 
     // Create the product object
@@ -238,10 +201,10 @@ const handleColourChange = (e) => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-slate-800 rounded-2xl w-full max-w-6xl mx-4 overflow-hidden shadow-2xl custom-scrollbar"
+        className="bg-slate-800 rounded-2xl w-full max-w-[1500px] mx-4 overflow-hidden shadow-2xl custom-scrollbar"
       >
         {/* Header */}
-        <div className="bg-slate-900 p-6">
+        <div className=" bg-black  p-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-white">
               {isEditing ? "Update Product" : "Create Product"}
@@ -250,7 +213,7 @@ const handleColourChange = (e) => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={onClose}
-              className="text-slate-400 hover:text-white p-2 rounded-full transition-colors"
+              className="text-white hover:text-white p-2 rounded-full transition-colors"
             >
               <X size={24} />
             </motion.button>
@@ -258,17 +221,17 @@ const handleColourChange = (e) => {
         </div>
 
         {/* Form Container */}
-        <div className="overflow-y-auto max-h-[80vh] p-6 bg-slate-800 custom-scrollbar">
+        <div className="overflow-y-auto max-h-[80vh] p-6 bg-white 0 custom-scrollbar">
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Information Section */}
             <div>
-              <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
+              <h3 className="text-xl font-semibold text-black mb-6 flex items-center">
                 Basic Information
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Product Name */}
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                  <label className="block text-md font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                     Product Name <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -280,17 +243,17 @@ const handleColourChange = (e) => {
                       onChange={(e) => setName(e.target.value)}
                       required
                       placeholder="Enter product name"
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400
-                                 transition-all duration-300 ease-in-out
-                                 focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                                 hover:border-blue-400"
+                      className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                     />
                   </div>
                 </div>
 
                 {/* SKU */}
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                  <label className="block text-md font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                     SKU <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -302,28 +265,35 @@ const handleColourChange = (e) => {
                       onChange={(e) => setSku(e.target.value)}
                       required
                       placeholder="Enter SKU"
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400
-                                 transition-all duration-300 ease-in-out
-                                 focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                                 hover:border-blue-400"
+                      className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                     />
                   </div>
                 </div>
 
                 {/* Product Family */}
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                  <label className="block text-md font-medium text-black mb-2">
                     Product Family <span className="text-red-500">*</span>
                   </label>
                   <select
                     value={family}
                     onChange={(e) => setFamily(e.target.value)}
                     required
-                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white"
+                    className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                   >
                     <option value="">Select a family</option>
                     {families.map((f) => (
-                      <option key={f.familyId} value={f.familyId}>
+                      <option
+                        key={f.familyId}
+                        value={f.familyId}
+                        className="text-white bg-black"
+                      >
                         {f.name}
                       </option>
                     ))}
@@ -333,18 +303,25 @@ const handleColourChange = (e) => {
                 {/* SubFamily Dropdown - Only shows when family is selected */}
                 {family && (
                   <div className="group w-full">
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                    <label className="block text-md font-medium text-black mb-2">
                       Sub Family <span className="text-red-500">*</span>
                     </label>
                     <select
                       value={subFamily}
                       onChange={(e) => setSubFamily(e.target.value)}
                       required
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white"
+                      className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                     >
                       <option value="">Select a subfamily</option>
                       {subFamilies.map((sf) => (
-                        <option key={sf.subFamilyId} value={sf.subFamilyId}>
+                        <option
+                          key={sf.subFamilyId}
+                          value={sf.subFamilyId}
+                          className="text-white bg-black"
+                        >
                           {sf.name}
                         </option>
                       ))}
@@ -356,13 +333,13 @@ const handleColourChange = (e) => {
 
             {/* Dimensions Section */}
             <div>
-              <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
+              <h3 className="text-xl font-semibold text-black mb-6 flex items-center">
                 Dimensions
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Width */}
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                  <label className="block text-md font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                     Width (cm) <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -374,17 +351,17 @@ const handleColourChange = (e) => {
                       type="number"
                       required
                       placeholder="Enter width"
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400
-                                 transition-all duration-300 ease-in-out
-                                 focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                                 hover:border-blue-400"
+                      className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                     />
                   </div>
                 </div>
 
                 {/* Height */}
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                  <label className="block text-md font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                     Height (cm) <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -396,17 +373,17 @@ const handleColourChange = (e) => {
                       type="number"
                       required
                       placeholder="Enter height"
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400
-                                 transition-all duration-300 ease-in-out
-                                 focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                                 hover:border-blue-400"
+                      className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                     />
                   </div>
                 </div>
 
                 {/* Length */}
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                  <label className="block text-md font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                     Length (cm) <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -418,10 +395,10 @@ const handleColourChange = (e) => {
                       type="number"
                       required
                       placeholder="Enter length"
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400
-                                 transition-all duration-300 ease-in-out
-                                 focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                                 hover:border-blue-400"
+                      className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                     />
                   </div>
                 </div>
@@ -430,13 +407,13 @@ const handleColourChange = (e) => {
 
             {/* Materials & Colors Section */}
             <div>
-              <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
+              <h3 className="text-xl font-semibold text-black mb-6 flex items-center">
                 Materials & Colors
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Primary Material */}
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                  <label className="block text-md font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                     Primary Material <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -446,27 +423,28 @@ const handleColourChange = (e) => {
                       value={materialIds[0] || ""}
                       onChange={handleMaterialChange}
                       required
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white
-             transition-all duration-300 ease-in-out
-             focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-             hover:border-blue-400"
+                      className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                     >
                       <option value="">Select a material</option>
-                      {materials && materials.map((option) => (
-                        <option
-                          key={option.materialId}
-                          value={option.materialId}
-                        >
-                          {option.name}
-                        </option>
-                      ))}
+                      {materials &&
+                        materials.map((option) => (
+                          <option
+                            key={option.materialId}
+                            value={option.materialId}
+                          >
+                            {option.name}
+                          </option>
+                        ))}
                     </select>
                   </div>
                 </div>
 
                 {/* Primary Color */}
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                  <label className="block text-md font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                     Primary Color <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -476,17 +454,18 @@ const handleColourChange = (e) => {
                       value={colourIds[0] || ""}
                       onChange={handleColourChange}
                       required
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white
-             transition-all duration-300 ease-in-out
-             focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-             hover:border-blue-400"
+                      className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                     >
                       <option value="">Select a Colour</option>
-                      {colours && colours.map((option) => (
-                        <option key={option.colourId} value={option.colourId}>
-                          {option.name}
-                        </option>
-                      ))}
+                      {colours &&
+                        colours.map((option) => (
+                          <option key={option.colourId} value={option.colourId}>
+                            {option.name}
+                          </option>
+                        ))}
                     </select>
                   </div>
                 </div>
@@ -495,13 +474,13 @@ const handleColourChange = (e) => {
 
             {/* Pricing Information Section */}
             <div>
-              <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
+              <h3 className="text-xl font-semibold text-black mb-6 flex items-center">
                 Pricing Information
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Price */}
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                  <label className="block text-md font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                     Price <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -513,17 +492,17 @@ const handleColourChange = (e) => {
                       type="number"
                       required
                       placeholder="Enter price"
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400
-                                 transition-all duration-300 ease-in-out
-                                 focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                                 hover:border-blue-400"
+                      className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                     />
                   </div>
                 </div>
 
                 {/* Discount */}
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                  <label className="block text-md font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                     Discount (%) <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -534,17 +513,17 @@ const handleColourChange = (e) => {
                       onChange={(e) => setDiscount(e.target.value)}
                       type="number"
                       placeholder="Enter discount"
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400
-                                 transition-all duration-300 ease-in-out
-                                 focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                                 hover:border-blue-400"
+                      className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                     />
                   </div>
                 </div>
 
                 {/* Supplier */}
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                  <label className="block text-md font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                     Supplier <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -554,10 +533,10 @@ const handleColourChange = (e) => {
                       value={supplier}
                       onChange={(e) => setSupplier(e.target.value)}
                       required
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white
-                                 transition-all duration-300 ease-in-out
-                                 focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                                 hover:border-blue-400"
+                      className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                     >
                       <option value="">Select a Supplier</option>
                       {suppliers.map((option) => (
@@ -572,16 +551,15 @@ const handleColourChange = (e) => {
             </div>
 
             {/* Image Upload Section */}
-            <div>
-              <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
-                Product Image
-              </h3>
-              <div className="flex items-center space-x-6">
-                <div className="flex flex-wrap gap-4">
+            <div className="flex items-start space-x-6">
+              {/* Left Column: Preview Images and Upload Button */}
+              <div className="flex flex-col space-y-4">
+                {/* Image Previews on Top */}
+                <div className="flex flex-wrap gap-4 justify-center">
                   {imagePreviews.map((preview, index) => (
                     <div
                       key={index}
-                      className="flex-shrink-0 w-32 h-32 bg-slate-700 rounded-xl overflow-hidden"
+                      className="flex-shrink-0 w-32 h-32 rounded-xl overflow-hidden border border-gray-300"
                     >
                       <img
                         src={preview}
@@ -591,10 +569,11 @@ const handleColourChange = (e) => {
                     </div>
                   ))}
                 </div>
-                <div>
+                {/* Upload Button at the Bottom */}
+                <div className="flex justify-center">
                   <input
                     type="file"
-                    multiple // Allow multiple files
+                    multiple
                     ref={fileInputRef}
                     onChange={handleImageChange}
                     accept="image/*"
@@ -605,32 +584,34 @@ const handleColourChange = (e) => {
                     whileTap={{ scale: 0.98 }}
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="px-6 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+                    className="px-6 py-2 bg-black text-white rounded-xl hover:bg-green-600 transition-colors"
                   >
                     Upload Image
                   </motion.button>
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-white mb-6 flex items-end">
-                    Status
-                  </h3>
-                  <div className="flex gap-6">
-                    <div className="flex items-center group">
-                      <input
-                        type="checkbox"
-                        id="status"
-                        name="status"
-                        checked={status}
-                        onChange={(e) => setStatus(e.target.checked)}
-                        className="h-4 w-4 text-blue-500 bg-slate-700 border-slate-500 rounded focus:ring-blue-500/20"
-                      />
-                      <label
-                        htmlFor="status"
-                        className="ml-2 block text-sm text-slate-300 group-hover:text-blue-400 transition-colors duration-200"
-                      >
-                        Active
-                      </label>
-                    </div>
+              </div>
+
+              {/* Right Column: Status */}
+              <div className="flex flex-col items-center space-x-48">
+                <h3 className="text-xl font-semibold text-white mb-6">
+                  Status
+                </h3>
+                <div className="flex gap-6">
+                  <div className="flex items-center group">
+                    <input
+                      type="checkbox"
+                      id="status"
+                      name="status"
+                      checked={status}
+                      onChange={(e) => setStatus(e.target.checked)}
+                      className="h-6 w-6 text-blue-500 bg-black border-slate-500 rounded focus:ring-blue-500/20"
+                    />
+                    <label
+                      htmlFor="status"
+                      className="ml-2 block text-lg text-black group-hover:text-blue-400 transition-colors duration-200"
+                    >
+                      Active
+                    </label>
                   </div>
                 </div>
               </div>
@@ -645,7 +626,7 @@ const handleColourChange = (e) => {
                 whileTap={{ scale: 0.98 }}
                 onClick={onClose}
                 type="button"
-                className="px-6 py-2 bg-slate-700 text-white rounded-xl hover:bg-slate-600 transition-colors"
+                className="px-6 py-2 bg-black/30 text-xl text-black rounded-xl transition-colors"
               >
                 Cancel
               </motion.button>
@@ -653,7 +634,7 @@ const handleColourChange = (e) => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                className="px-6 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+                className="px-6 py-2 bg-black text-xl text-white rounded-xl hover:bg-slate-600 transition-colors"
               >
                 {isEditing ? "Update Product" : "Add Product"}
               </motion.button>

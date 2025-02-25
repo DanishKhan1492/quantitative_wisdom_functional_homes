@@ -74,7 +74,7 @@ function AppContent() {
   const AuthenticatedLayout = ({ children }) => (
     <div className="flex bg-gray-100">
       <Sidebar onLogout={handleLogout} />
-      <div className="h-screen overflow-y-auto flex-1 bg-gradient-to-b from-slate-900 to-slate-800">
+      <div className="h-screen overflow-y-auto flex-1 bg-white">
         <Navbar />
         <main className="">{children}</main>
       </div>

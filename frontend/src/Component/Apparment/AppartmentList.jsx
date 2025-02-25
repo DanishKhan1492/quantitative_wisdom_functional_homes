@@ -43,27 +43,27 @@ const AppartmentList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchApartments();
-  }, [pageNumber, searchTerm,size]);
+ useEffect(() => {
+   fetchApartments();
+ }, [pageNumber, searchTerm, size]);
 
-  const fetchApartments = async () => {
-    setLoading(true);
-    try {
-      const data = await getAllApartmentTypes(pageNumber, size, searchTerm);
-    
-      setApartments(data.content || []);
-      setTotalElements(data.totalElements || 0);
-      setTotalPages(
-        data.totalPages || Math.ceil((data.totalElements || 0) / size)
-      );
-    } catch (err) {
-      setError(err.message);
-      toast.error("Failed to fetch apartment types.");
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchApartments = async () => {
+   setLoading(true);
+   try {
+     // Convert pageNumber to 0-based for API call
+     const data = await getAllApartmentTypes(pageNumber, size, searchTerm);
+     setApartments(data.content || []);
+     setTotalElements(data.totalElements || 0);
+     setTotalPages(
+       data.totalPages || Math.ceil((data.totalElements || 0) / size)
+     );
+   } catch (err) {
+     setError(err.message);
+     toast.error("Failed to fetch apartment types.");
+   } finally {
+     setLoading(false);
+   }
+ };
 
   const handleCreateApartment = async (newApartment) => {
     try {
@@ -135,12 +135,88 @@ const AppartmentList = () => {
     setPageNumber((prev) => (prev < totalPages ? prev + 1 : prev));
   };
 
+
+ const renderPageNumbers = () => {
+      const pageButtons = [];
+      const maxVisiblePages = 5;
+
+      const addPageButton = (page) => {
+        pageButtons.push(
+          <button
+            key={page}
+            onClick={() => setPageNumber(page)}
+            className={`w-8 h-8 flex border-2 border-black items-center justify-center rounded-full transition-colors ${
+              page === pageNumber
+                ? "bg-white text-black  font-bold"
+                : "bg-black border border-blue-500 text-white hover:bg-slate-700"
+            }`}
+          >
+            {page}
+          </button>
+        );
+      };
+
+      const addEllipsis = (key) => {
+        pageButtons.push(
+          <span key={`ellipsis-${key}`} className="px-2 text-black">
+            ....
+          </span>
+        );
+      };
+
+      if (totalPages <= maxVisiblePages) {
+        for (let page = 1; page <= totalPages; page++) {
+          addPageButton(page);
+        }
+      } else {
+        // Always show first page
+        addPageButton(1);
+
+        let startPage = Math.max(
+          2,
+          pageNumber - Math.floor((maxVisiblePages - 2) / 2)
+        );
+        let endPage = Math.min(
+          totalPages - 1,
+          pageNumber + Math.floor((maxVisiblePages - 2) / 2)
+        );
+
+        // Adjust if near the start
+        if (pageNumber <= Math.floor(maxVisiblePages / 2)) {
+          startPage = 2;
+          endPage = maxVisiblePages - 1;
+        }
+        // Adjust if near the end
+        else if (pageNumber > totalPages - Math.floor(maxVisiblePages / 2)) {
+          endPage = totalPages - 1;
+          startPage = totalPages - (maxVisiblePages - 2);
+        }
+
+        if (startPage > 2) {
+          addEllipsis("start");
+        }
+
+        for (let page = startPage; page <= endPage; page++) {
+          addPageButton(page);
+        }
+
+        if (endPage < totalPages - 1) {
+          addEllipsis("end");
+        }
+
+        // Always show last page
+        addPageButton(totalPages);
+      }
+
+      return pageButtons;
+    };
+
   return (
-    <div className="h-screen bg-gradient-to-b from-slate-900 to-slate-800 p-6">
+    <div className="h-screen bg-background p-6">
       {/* Header Section */}
       <div className="mb-6">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-          <h1 className="text-2xl font-bold text-white">Apartment Types</h1>
+          <h1 className="text-2xl font-bold text-black">Apartment Types</h1>
           <div className="flex flex-col md:flex-row gap-4 w-full lg:w-auto">
             {/* Search and Filter Inputs */}
             <div className="flex flex-1 gap-4">
@@ -153,7 +229,7 @@ const AppartmentList = () => {
                   placeholder="Search by name..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
                 />
                 <Search
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
@@ -169,7 +245,7 @@ const AppartmentList = () => {
                   placeholder="Filter by type..."
                   value={filterTerm}
                   onChange={(e) => setFilterTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
                 />
                 <Filter
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
@@ -181,7 +257,7 @@ const AppartmentList = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+              className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
               onClick={() => {
                 setIsEditMode(false);
                 setApartmentToEdit(null);
@@ -196,24 +272,24 @@ const AppartmentList = () => {
       </div>
 
       {/* Table Section */}
-      <div className="bg-slate-800 rounded-xl shadow-xl overflow-hidden">
+      <div className="bg-white rounded-xl shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-700">
-                <th className="p-3 text-left text-slate-300 font-semibold">
+              <tr className="border-b border-[#D6D3CF] bg-tbhead">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Name
                 </th>
-                <th className="p-3 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Category
                 </th>
-                <th className="p-3 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Bedrooms
                 </th>
-                <th className="p-3 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Floor Area
                 </th>
-                <th className="p-3 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Actions
                 </th>
               </tr>
@@ -228,56 +304,56 @@ const AppartmentList = () => {
                   </td>
                 </tr>
               ) : apartments && apartments.length > 0 ? (
-                apartments.map((apartment) => (
+                apartments.map((apartment, index) => (
                   <tr
                     key={apartment.apartmentId}
-                    className="border-b border-slate-700 hover:bg-slate-700/50 transition-colors"
+                    className="border-b border-slate-700 hover:bg-black/10 transition-colors"
                   >
-                    <td className="p-3">
-                      <div className="text-white font-medium truncate">
+                    <td className="p-4">
+                      <div className="text-black font-medium truncate">
                         {apartment.name}
                       </div>
                     </td>
-                    <td className="p-3">
-                      <div className="text-white truncate">
+                    <td className="p-4">
+                      <div className="text-black font-medium truncate">
                         {apartment.categoryName}
                       </div>
                     </td>
-                    <td className="p-3">
-                      <div className="text-white">
+                    <td className="p-4">
+                      <div className="text-black font-medium">
                         {apartment.numberOfBedrooms}
                       </div>
                     </td>
-                    <td className="p-3">
-                      <div className="text-white">
+                    <td className="p-4">
+                      <div className="text-black font-medium">
                         {apartment.floorAreaMin} - {apartment.floorAreaMax}
                       </div>
                     </td>
-                    <td className="p-3">
+                    <td className="p-4">
                       <div className="flex items-center gap-2">
                         <motion.button
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-blue-500"
+                          className="text-blue-800"
                           onClick={() => handleViewClick(apartment.apartmentId)}
                         >
-                          <Eye size={16} />
+                          <Eye size={28} />
                         </motion.button>
                         <motion.button
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-green-400"
+                          className="text-green-800"
                           onClick={() => handleEditClick(apartment.apartmentId)}
                         >
-                          <Edit size={16} />
+                          <Edit size={28} />
                         </motion.button>
                         <motion.button
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-red-400"
+                          className="text-red-800"
                           onClick={() => handleDeleteClick(apartment)}
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={28} />
                         </motion.button>
                       </div>
                     </td>
@@ -285,7 +361,7 @@ const AppartmentList = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="p-8 text-center text-slate-400">
+                  <td colSpan="5" className="p-8 text-center text-black">
                     No apartment types found.
                   </td>
                 </tr>
@@ -296,11 +372,11 @@ const AppartmentList = () => {
       </div>
 
       {/* Pagination Controls */}
-    
-      <div className="mt-6 flex flex-col sm:flex-row justify-between items-center text-slate-400">
+
+      <div className="mt-6 flex flex-col sm:flex-row justify-between items-center text-white">
         <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 sm:mb-0">
           {/* Styled "Showing records" display */}
-          <span className="text-sm bg-gradient-to-r bg-slate-800 border-2 border-blue-500  text-blue-300  px-4 py-2 rounded-full shadow-md">
+          <span className="text-sm  bg-black  text-white px-4 py-2 rounded-full shadow-md">
             Showing {startItem} to {endItem} of {totalElements} entries
           </span>
 
@@ -312,38 +388,39 @@ const AppartmentList = () => {
                 setSize(Number(e.target.value));
                 setPageNumber(1);
               }}
-              className="appearance-none pl-4 pr-10 py-2 bg-slate-800 border-2 border-blue-500 rounded-full text-blue-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"
+              className="appearance-none pl-4 pr-10 py-2 bg-black rounded-full text-white text-sm focus:outline-none focus:ring-2 focus:ring-black transition-all duration-300 hover:bg-white/30"
             >
-              {[5, 10, 15, 20, 50,100].map((option) => (
+              {[5, 10, 15, 20, 50, 100].map((option) => (
                 <option key={option} value={option} className="bg-slate-800">
                   Show {option} records
                 </option>
               ))}
             </select>
             <ChevronDown
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"
-              size={18}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white pointer-events-none"
+              size={20}
             />
           </div>
         </div>
 
         {/* Pagination Buttons */}
-        <div className="flex space-x-2">
+        <div className="flex items-center space-x-2">
           <button
             onClick={handlePreviousPage}
             disabled={pageNumber === 1}
-            className="appearance-none px-4 py-2 bg-slate-800 text-white rounded-xl  border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all hover:bg-slate-600  flex items-center"
+            className="px-4 py-2 bg-black text-white rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-black transition-all hover:bg-slate-600 flex items-center"
           >
-            <ChevronLeft size={18} className="mr-1" />
+            <ChevronLeft size={18} className="mr-1 text-white" />
             Previous
           </button>
+          <div className="flex gap-2">{renderPageNumbers()}</div>
           <button
             onClick={handleNextPage}
             disabled={pageNumber >= totalPages}
-            className="appearance-none px-4 py-2 bg-slate-800  border-2 border-blue-500 text-white rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all  flex items-center"
+            className="px-4 py-2 bg-black border-2 border-black text-white rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all flex items-center"
           >
             Next
-            <ChevronRight size={18} className="ml-1" />
+            <ChevronRight size={18} className="ml-1 text-white" />
           </button>
         </div>
       </div>

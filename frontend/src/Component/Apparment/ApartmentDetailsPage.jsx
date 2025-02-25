@@ -35,14 +35,14 @@ const ApartmentDetailsPage = () => {
     );
 
   return (
-    <div className="h-screen bg-gradient-to-b from-slate-900 to-slate-800 p-6">
+    <div className="h-screen bg-background p-6">
       <div className="w-full mx-auto">
         {/* Header Section */}
         <div className="mb-6 flex items-center justify-between">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center px-4 py-2 bg-slate-700 text-white rounded-xl hover:bg-slate-600 transition-colors"
+            className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-slate-600 transition-colors"
             onClick={() => navigate(-1)}
           >
             <ArrowLeft size={20} className="mr-2" />
@@ -51,15 +51,15 @@ const ApartmentDetailsPage = () => {
         </div>
 
         {/* Main Content Card */}
-        <div className="bg-slate-800 rounded-xl shadow-xl overflow-hidden">
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden">
           {/* Title Section */}
-          <div className="bg-slate-900 p-6">
-            <h1 className="text-3xl font-bold text-white mb-4">
+          <div className="bg-white p-6">
+            <h1 className="text-3xl font-bold text-black mb-4">
               {apartment.name}
             </h1>
-            <div className="inline-flex items-center bg-slate-600/50 px-3 py-1.5 rounded-full text-slate-300">
+            <div className="inline-flex items-center bg-black px-3 py-1.5 rounded-full text-white">
               <MapPin size={16} className="mr-2" />
-              <span className="text-sm">{apartment.location}</span>
+              <span className="text-lg">{apartment.location}</span>
             </div>
           </div>
 
@@ -90,7 +90,7 @@ const ApartmentDetailsPage = () => {
                 icon={<DollarSign size={24} />}
                 label="Price"
                 value={`$${apartment.price}`}
-                className="md:col-span-2 bg-gradient-to-r from-slate-700/50 to-slate-700/30"
+                className="md:col-span-2 bg-black text-white"
               />
             </div>
           </div>
@@ -103,14 +103,14 @@ const ApartmentDetailsPage = () => {
 const PropertyFeature = ({ icon, label, value, className = "" }) => (
   <motion.div
     whileHover={{ scale: 1.02 }}
-    className={`group p-6 rounded-xl bg-slate-700/50 hover:bg-slate-700 transition-all duration-300 ${className}`}
+    className={`group p-6 rounded-xl bg-black hover:bg-slate-700 transition-all duration-300 ${className}`}
   >
     <div className="flex items-center space-x-4">
-      <div className="p-3 bg-blue-500/10 rounded-xl group-hover:bg-blue-500/20 transition-colors duration-300">
-        <div className="text-blue-400">{icon}</div>
+      <div className="p-3 bg-white rounded-xl group-hover:bg-blue-500/20 transition-colors duration-300">
+        <div className="text-black">{icon}</div>
       </div>
       <div>
-        <p className="text-sm text-slate-400">{label}</p>
+        <p className="text-sm text-white">{label}</p>
         <p className="text-lg font-semibold text-white">{value}</p>
       </div>
     </div>

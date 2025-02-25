@@ -178,11 +178,88 @@ const ColoursList = () => {
     }
   };
 
+  // Function to render page number buttons
+  const renderPageNumbers = () => {
+    const pageButtons = [];
+    const maxVisiblePages = 5; // Number of visible page buttons excluding first/last/ellipses
+
+    // Helper function to add a page button
+    const addPageButton = (i) => {
+      pageButtons.push(
+        <button
+          key={i}
+          onClick={() => setPageNumber(i)}
+          className={`w-8 h-8 border-2 border-black flex items-center justify-center rounded-full transition-colors ${
+            i === pageNumber
+              ? "bg-white text-black  font-bold"
+              : "bg-black border border-blue-500 text-white hover:bg-slate-700"
+          }`}
+        >
+          {i + 1}
+        </button>
+      );
+    };
+
+    // Helper function to add ellipsis
+    const addEllipsis = (key) => {
+      pageButtons.push(
+        <span key={`ellipsis-${key}`} className="px-2 text-black">
+          ...
+        </span>
+      );
+    };
+
+    if (totalPages <= maxVisiblePages + 2) {
+      // +2 for first and last page
+      // If we have a small number of pages, show all of them
+      for (let i = 0; i < totalPages; i++) {
+        addPageButton(i);
+      }
+    } else {
+      // Always show first page
+      addPageButton(0);
+
+      // Determine start and end of visible range around current page
+      let startPage = Math.max(
+        1,
+        pageNumber - Math.floor((maxVisiblePages - 2) / 2)
+      );
+      let endPage = Math.min(totalPages - 2, startPage + maxVisiblePages - 3);
+
+      // Adjust if we're near the end
+      if (endPage - startPage < maxVisiblePages - 3) {
+        startPage = Math.max(1, endPage - (maxVisiblePages - 3));
+      }
+
+      // Show ellipsis if needed before the range
+      if (startPage > 1) {
+        addEllipsis("start");
+      }
+
+      // Show the range of visible pages
+      for (let i = startPage; i <= endPage; i++) {
+        addPageButton(i);
+      }
+
+      // Show ellipsis if needed after the range
+      if (endPage < totalPages - 2) {
+        addEllipsis("end");
+      }
+
+      // Always show last page if there are more than one page
+      if (totalPages > 1) {
+        addPageButton(totalPages - 1);
+      }
+    }
+
+    return pageButtons;
+  };
+
   return (
-    <div className="h-screen bg-gradient-to-b from-slate-900 to-slate-800 p-6">
+    <div className="h-screen bg-background p-6">
       <div className="mb-6">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-          <h1 className="text-2xl font-bold text-white">Colours List</h1>
+          <h1 className="text-2xl font-bold text-black">Colours List</h1>
 
           <div className="flex flex-col md:flex-row gap-4 w-full lg:w-auto">
             {/* Search and Filter Section */}
@@ -196,10 +273,10 @@ const ColoursList = () => {
                   placeholder="Search by name or code..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
                 />
                 <Search
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black"
                   size={20}
                 />
               </motion.div>
@@ -213,10 +290,11 @@ const ColoursList = () => {
                   placeholder="Filter by description..."
                   value={filterTerm}
                   onChange={(e) => setFilterTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
                 />
+
                 <Filter
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black"
                   size={20}
                 />
               </motion.div>
@@ -227,7 +305,7 @@ const ColoursList = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+                className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
                 onClick={() => {
                   setEditingColour(null);
                   setIsAddModalOpen(true);
@@ -242,21 +320,21 @@ const ColoursList = () => {
       </div>
 
       {/* Table Section */}
-      <div className="bg-slate-800 rounded-xl shadow-xl overflow-hidden">
+      <div className="bg-white rounded-xl shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-700">
-                <th className="p-4 text-left text-slate-300 font-semibold">
+              <tr className="border-b border-[#D6D3CF] bg-tbhead">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Name
                 </th>
-                <th className="p-4 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Code
                 </th>
-                <th className="p-4 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Description
                 </th>
-                <th className="p-4 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Actions
                 </th>
               </tr>
@@ -271,13 +349,13 @@ const ColoursList = () => {
                   </td>
                 </tr>
               ) : displayedColours && displayedColours.length > 0 ? (
-                displayedColours.map((colour) => (
+                displayedColours.map((colour, index) => (
                   <tr
                     key={colour.colourId}
-                    className="border-b border-slate-700 hover:bg-slate-700/50 transition-colors"
+                    className="border-b border-slate-700 hover:bg-black/10 transition-colors"
                   >
                     <td className="p-4">
-                      <div className="text-white font-medium">
+                      <div className="text-black font-medium">
                         {colour.name}
                       </div>
                     </td>
@@ -287,11 +365,13 @@ const ColoursList = () => {
                           className="inline-block w-4 h-4 rounded"
                           style={{ backgroundColor: colour.code }}
                         ></span>
-                        <span className="text-white">{colour.code}</span>
+                        <span className="text-black font-medium">
+                          {colour.code}
+                        </span>
                       </div>
                     </td>
                     <td className="p-4">
-                      <div className="text-white">
+                      <div className="text-black font-medium">
                         {colour.description && colour.description.length > 60
                           ? `${colour.description.slice(0, 60)}...`
                           : colour.description}
@@ -302,18 +382,18 @@ const ColoursList = () => {
                         <motion.button
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-green-400"
+                          className="text-green-800"
                           onClick={() => handleEditClick(colour.colourId)}
                         >
-                          <Edit size={18} />
+                          <Edit size={28} />
                         </motion.button>
                         <motion.button
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-red-400"
+                          className="text-red-800"
                           onClick={() => handleDeleteClick(colour)}
                         >
-                          <Trash2 size={18} />
+                          <Trash2 size={28} />
                         </motion.button>
                       </div>
                     </td>
@@ -338,10 +418,10 @@ const ColoursList = () => {
       <div className="mt-6 flex flex-col sm:flex-row justify-between items-center text-slate-400">
         <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 sm:mb-0">
           {/* Styled "Showing records" display */}
-          <span className="text-sm bg-gradient-to-r bg-slate-800 border-2 border-blue-500 text-blue-300 px-4 py-2 rounded-full shadow-md">
+          <span className="text-sm bg-black text-white px-4 py-2 rounded-full shadow-md">
             Showing {pageNumber * size + 1} to{" "}
-            {pageNumber * size + displayedColours.length} of {totalElements}{" "}
-            entries
+            {Math.min((pageNumber + 1) * size, totalElements)} of{" "}
+            {totalElements} entries
           </span>
 
           {/* Styled Page Size Selector */}
@@ -352,35 +432,39 @@ const ColoursList = () => {
                 setSize(Number(e.target.value));
                 setPageNumber(0); // reset to first page on page size change
               }}
-              className="appearance-none pl-4 pr-10 py-2 bg-slate-800 border-2 border-blue-500 rounded-full text-blue-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"
+              className="appearance-none pl-4 pr-10 py-2 bg-black rounded-full text-white text-sm focus:outline-none focus:ring-2 focus:ring-black transition-all duration-300 hover:bg-white/30"
             >
-              {[5, 10, 15, 20, 50,100].map((option) => (
+              {[5, 10, 15, 20, 50, 100].map((option) => (
                 <option key={option} value={option} className="bg-slate-800">
                   Show {option} records
                 </option>
               ))}
             </select>
             <ChevronDown
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white pointer-events-none"
               size={18}
             />
           </div>
         </div>
 
         {/* Pagination Buttons */}
-        <div className="flex space-x-2">
+        <div className="flex items-center space-x-2">
           <button
             onClick={handlePreviousPage}
             disabled={pageNumber === 0}
-            className="appearance-none px-4 py-2 bg-slate-800 text-white rounded-xl border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all hover:bg-slate-600 flex items-center"
+            className="px-4 py-2 bg-black text-white rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-black transition-all hover:bg-slate-600 flex items-center"
           >
             <ChevronLeft size={18} className="mr-1" />
             Previous
           </button>
+
+          {/* Page Numbers */}
+          <div className="flex gap-2">{renderPageNumbers()}</div>
+
           <button
             onClick={handleNextPage}
             disabled={pageNumber === totalPages - 1}
-            className="appearance-none px-4 py-2 bg-slate-800 border-2 border-blue-500 text-white rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all flex items-center"
+            className="px-4 py-2 bg-black text-white rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-black transition-all hover:bg-slate-600 flex items-center"
           >
             Next
             <ChevronRight size={18} className="ml-1" />

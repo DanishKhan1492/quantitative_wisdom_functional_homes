@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from "react";
 import {
   Search,
@@ -30,7 +32,6 @@ const FurnitureList = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-
   const [pageNumber, setPageNumber] = useState(0);
   const [size,setSize] = useState(10);
   const [totalElements, setTotalElements] = useState(0);
@@ -40,7 +41,7 @@ const FurnitureList = () => {
   const [furnitureList, setFurnitureList] = useState([]);
 
   useEffect(() => {
-    setPageNumber(0);
+    setPageNumber(1);
   }, [searchTerm]);
 
   const getAllFurniture = async () => {
@@ -51,8 +52,6 @@ const FurnitureList = () => {
         size,
         searchTerm
       );
-
-      console.log(response, "==== API Response ====");
 
       // Use the API response values directly:
       setFurnitureList(response.content);
@@ -112,7 +111,6 @@ const FurnitureList = () => {
           description: furnitureFamilyData.description,
         };
 
-     
         const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
         await delay(2000);
 
@@ -138,20 +136,95 @@ const FurnitureList = () => {
     }
   };
 
+  const renderPageNumbers = () => {
+    const pageButtons = [];
+    const maxVisiblePages = 5;
+
+    const addPageButton = (page) => {
+      pageButtons.push(
+        <button
+          key={page}
+          onClick={() => setPageNumber(page)}
+          className={`w-8 h-8 border-2 border-black flex items-center justify-center rounded-full transition-colors ${
+            page === pageNumber
+              ? "bg-white text-black  font-bold"
+              : "bg-black border border-blue-500 text-white hover:bg-slate-700"
+          }`}
+        >
+          {page}
+        </button>
+      );
+    };
+
+    const addEllipsis = (key) => {
+      pageButtons.push(
+        <span key={`ellipsis-${key}`} className="px-2 text-black">
+          ...
+        </span>
+      );
+    };
+
+    if (totalPages <= maxVisiblePages) {
+      for (let page = 1; page <= totalPages; page++) {
+        addPageButton(page);
+      }
+    } else {
+      // Always show first page
+      addPageButton(1);
+
+      let startPage = Math.max(
+        2,
+        pageNumber - Math.floor((maxVisiblePages - 2) / 2)
+      );
+      let endPage = Math.min(
+        totalPages - 1,
+        pageNumber + Math.floor((maxVisiblePages - 2) / 2)
+      );
+
+      // Adjust if near the start
+      if (pageNumber <= Math.floor(maxVisiblePages / 2)) {
+        startPage = 2;
+        endPage = maxVisiblePages - 1;
+      }
+      // Adjust if near the end
+      else if (pageNumber > totalPages - Math.floor(maxVisiblePages / 2)) {
+        endPage = totalPages - 1;
+        startPage = totalPages - (maxVisiblePages - 2);
+      }
+
+      if (startPage > 2) {
+        addEllipsis("start");
+      }
+
+      for (let page = startPage; page <= endPage; page++) {
+        addPageButton(page);
+      }
+
+      if (endPage < totalPages - 1) {
+        addEllipsis("end");
+      }
+
+      // Always show last page
+      addPageButton(totalPages);
+    }
+
+    return pageButtons;
+  };
+
   // Calculate start and end item numbers for display
   const startItem = pageNumber * size + 1;
   const endItem = Math.min((pageNumber + 1) * size, totalElements);
 
   return (
     <div
-      className="bg-gradient-to-b from-slate-900 to-slate-800 p-6"
+      className="bg-background p-6 h-screen" 
       style={{
         overflowY: "auto",
       }}
     >
       <div className="mb-6">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-          <h1 className="text-2xl font-bold text-white">Furniture List</h1>
+          <h1 className="text-2xl font-bold text-black">Furniture List</h1>
 
           <div className="flex flex-col md:flex-row gap-4 w-full lg:w-auto">
             {/* Search Section */}
@@ -164,10 +237,10 @@ const FurnitureList = () => {
                 placeholder="Search by name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
               />
               <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black"
                 size={20}
               />
             </motion.div>
@@ -177,7 +250,7 @@ const FurnitureList = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center px-4 py-2 bg-slate-700 text-white rounded-xl hover:bg-slate-600 transition-colors"
+                className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
                 onClick={handleExcelDownload}
               >
                 <Download className="w-5 h-5 mr-2" />
@@ -187,7 +260,7 @@ const FurnitureList = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+                className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
                 onClick={() => setIsModalOpen(true)}
               >
                 <Plus className="w-5 h-5 mr-2" />
@@ -199,24 +272,24 @@ const FurnitureList = () => {
       </div>
 
       {/* Table Section */}
-      <div className="bg-slate-800 rounded-xl shadow-xl overflow-hidden">
+      <div className="bg-white rounded-xl shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-700">
-                <th className="p-4 text-left text-slate-300 font-semibold">
+              <tr className="border-b border-[#D6D3CF] bg-tbhead">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Name
                 </th>
-                <th className="p-4 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Category
                 </th>
-                {/* <th className="p-4 text-left text-slate-300 font-semibold">
+                {/* <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Sub Family
                 </th> */}
-                <th className="p-4 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Description
                 </th>
-                <th className="p-4 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Actions
                 </th>
               </tr>
@@ -234,18 +307,17 @@ const FurnitureList = () => {
                 furnitureList.map((furniture) => (
                   <tr
                     key={furniture.familyId}
-                    className="border-b border-slate-700 hover:bg-slate-700/50 transition-colors"
+                    className="border-b border-slate-700 hover:bg-black/10 transition-colors"
                   >
                     <td className="p-4">
-                      <div className="text-white font-medium">
+                      <div className="text-black font-medium">
                         {furniture.name}
-                      </div>
-                      <div className="text-slate-400 text-sm">
-                        {furniture.date}
                       </div>
                     </td>
                     <td className="p-4">
-                      <div className="text-white">{furniture.categoryName}</div>
+                      <div className="text-black font-medium">
+                        {furniture.categoryName}
+                      </div>
                     </td>
                     {/* <td className="p-4">
                       <div className="text-white">
@@ -262,7 +334,7 @@ const FurnitureList = () => {
                       </div>
                     </td> */}
                     <td className="p-4">
-                      <div className="text-white">
+                      <div className="text-black font-medium">
                         {furniture.description.length > 60
                           ? `${furniture.description.slice(0, 60)}...`
                           : furniture.description}
@@ -273,18 +345,18 @@ const FurnitureList = () => {
                         <motion.button
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-green-400"
+                          className="text-green-800"
                           onClick={() => handleEditClick(furniture.familyId)}
                         >
-                          <Edit size={18} />
+                          <Edit size={28} />
                         </motion.button>
                         <motion.button
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-red-400"
+                          className="text-red-800"
                           onClick={() => handleDeleteClick(furniture)}
                         >
-                          <Trash2 size={18} />
+                          <Trash2 size={28} />
                         </motion.button>
                       </div>
                     </td>
@@ -303,12 +375,11 @@ const FurnitureList = () => {
       </div>
 
       {/* Pagination Controls */}
-   
 
       <div className="mt-6 flex flex-col sm:flex-row justify-between items-center text-slate-400">
         <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 sm:mb-0">
           {/* Styled "Showing records" display */}
-          <span className="text-sm bg-gradient-to-r bg-slate-800 border-2 border-blue-500 text-blue-300 px-4 py-2 rounded-full shadow-md">
+          <span className="text-sm bg-gradient-to-r bg-black border-2 border-blue-500 text-white px-4 py-2 rounded-full shadow-md">
             Showing {startItem} to {endItem} of {totalElements} entries
           </span>
 
@@ -320,35 +391,42 @@ const FurnitureList = () => {
                 setSize(Number(e.target.value));
                 setPageNumber(0); // reset to first page on page size change
               }}
-              className="appearance-none pl-4 pr-10 py-2 bg-slate-800 border-2 border-blue-500 rounded-full text-blue-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"
+              className="appearance-none pl-4 pr-10 py-2 bg-black text-white border-2 border-blue-500 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"                
             >
-              {[5, 10, 15, 20, 50,100].map((option) => (
-                <option key={option} value={option} className="bg-slate-800">
+              {[5, 10, 15, 20, 50, 100].map((option) => (
+                <option
+                  key={option}
+                  value={option}
+                  className="bg-black text-white"
+                >
                   Show {option} records
                 </option>
               ))}
             </select>
             <ChevronDown
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white pointer-events-none"
               size={18}
             />
           </div>
         </div>
 
         {/* Pagination Buttons */}
-        <div className="flex space-x-2">
+        <div className="flex items-center space-x-2">
           <button
             onClick={() => setPageNumber(Math.max(0, pageNumber - 1))}
-            disabled={pageNumber === 0}
-            className="appearance-none px-4 py-2 bg-slate-800 text-white rounded-xl border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all hover:bg-slate-600 flex items-center"
+            disabled={pageNumber === 1}
+            className="px-4 py-2 bg-black text-white rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-black transition-all hover:bg-slate-600 flex items-center"
           >
             <ChevronLeft size={18} className="mr-1" />
             Previous
           </button>
+          <div className="flex gap-2">{renderPageNumbers()}</div>
           <button
-            onClick={() => setPageNumber((prev) => prev + 1)}
-            disabled={pageNumber === totalPages - 1}
-            className="appearance-none px-4 py-2 bg-slate-800 border-2 border-blue-500 text-white rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all flex items-center"
+            onClick={() => {
+              setPageNumber((prev) => prev + 1);
+            }}
+            disabled={pageNumber === totalPages}
+            className="px-4 py-2 bg-black border-2 border-black text-white rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all flex items-center"
           >
             Next
             <ChevronRight size={18} className="ml-1" />

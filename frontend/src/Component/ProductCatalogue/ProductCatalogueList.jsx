@@ -191,24 +191,101 @@ const ProductCatalogueList = () => {
   const endItem = Math.min((pageNumber + 1) * size, totalElements);
 
   const handlePreviousPage = () => {
+   
     if (pageNumber > 0) {
       setPageNumber(pageNumber - 1);
     }
   };
 
-  const handleNextPage = () => {
-    if (pageNumber + 1 < totalPages) {
-      setPageNumber(pageNumber + 1);
+const handleNextPage = () => {
+  if (pageNumber < totalPages - 1) {
+    // Corrected condition
+    setPageNumber(pageNumber + 1);
+  }
+};
+
+  const renderPageNumbers = () => {
+    const pageButtons = [];
+    const maxVisiblePages = 5;
+
+    const addPageButton = (page) => {
+      pageButtons.push(
+        <button
+          key={page}
+          onClick={() => setPageNumber(page - 1)} // Changed to page-1
+          className={`w-8 h-8 flex border-2 border-black items-center justify-center rounded-full transition-colors ${
+            page - 1 === pageNumber // Now checks 0-based pageNumber
+              ? "bg-white text-black  font-bold"
+              : "bg-black border border-blue-500 text-white hover:bg-slate-700"
+          }`}
+        >
+          {page}
+        </button>
+      );
+    };
+
+    const addEllipsis = (key) => {
+      pageButtons.push(
+        <span key={`ellipsis-${key}`} className="px-2 text-black">
+          ...
+        </span>
+      );
+    };
+
+    if (totalPages <= maxVisiblePages) {
+      for (let page = 1; page <= totalPages; page++) {
+        addPageButton(page);
+      }
+    } else {
+      // Always show first page
+      addPageButton(1);
+
+      let startPage = Math.max(
+        2,
+        pageNumber - Math.floor((maxVisiblePages - 2) / 2)
+      );
+      let endPage = Math.min(
+        totalPages - 1,
+        pageNumber + Math.floor((maxVisiblePages - 2) / 2)
+      );
+
+      // Adjust if near the start
+      if (pageNumber <= Math.floor(maxVisiblePages / 2)) {
+        startPage = 2;
+        endPage = maxVisiblePages - 1;
+      }
+      // Adjust if near the end
+      else if (pageNumber > totalPages - Math.floor(maxVisiblePages / 2)) {
+        endPage = totalPages - 1;
+        startPage = totalPages - (maxVisiblePages - 2);
+      }
+
+      if (startPage > 2) {
+        addEllipsis("start");
+      }
+
+      for (let page = startPage; page <= endPage; page++) {
+        addPageButton(page);
+      }
+
+      if (endPage < totalPages - 1) {
+        addEllipsis("end");
+      }
+
+      // Always show last page
+      addPageButton(totalPages);
     }
+
+    return pageButtons;
   };
 
   return (
-    <div className="p-4 md:p-6 bg-slate-900 min-h-screen">
+    <div className="p-4 md:p-6 bg-background min-h-screen">
       {/* Header & Controls */}
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-          <h1 className="text-2xl font-bold text-white flex items-center mb-4 sm:mb-0">
-            <Package className="mr-2 text-blue-400" size={24} />
+          <h1 className="text-2xl font-bold text-black flex items-center mb-4 sm:mb-0">
+            <Package className="mr-2 text-black" size={24} />
             Product List
           </h1>
           <div className="flex flex-wrap items-center gap-4">
@@ -219,7 +296,7 @@ const ProductCatalogueList = () => {
                 placeholder="Search by name"
                 value={searchName}
                 onChange={(e) => setSearchName(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
               />
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
@@ -233,7 +310,7 @@ const ProductCatalogueList = () => {
                 placeholder="Search by SKU"
                 value={searchSku}
                 onChange={(e) => setSearchSku(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
               />
               <Filter
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
@@ -248,7 +325,7 @@ const ProductCatalogueList = () => {
                 onClick={() =>
                   setIsDownloadDropdownOpen(!isDownloadDropdownOpen)
                 }
-                className="flex items-center bg-slate-700 text-white px-4 py-2 rounded-xl hover:bg-slate-600 transition-colors duration-300 space-x-2"
+                className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
               >
                 <Download size={20} />
                 <span>Download</span>
@@ -260,7 +337,7 @@ const ProductCatalogueList = () => {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-48 rounded-xl shadow-lg bg-slate-800 ring-1 ring-slate-700 z-50"
+                    className="absolute right-0 mt-2 w-48 rounded-xl shadow-lg bg-black ring-1 ring-slate-700 z-50"
                   >
                     <div className="py-1">
                       <button
@@ -284,7 +361,7 @@ const ProductCatalogueList = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="bg-blue-500 text-white px-6 py-2 rounded-xl hover:bg-blue-600 transition-colors duration-300 flex items-center space-x-2"
+              className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
               onClick={() => setIsModalOpen(true)}
             >
               <Plus size={20} />
@@ -295,23 +372,35 @@ const ProductCatalogueList = () => {
       </div>
 
       {/* Products Table */}
-      <div className="bg-slate-800 rounded-xl shadow-xl overflow-hidden border border-slate-700">
+      <div className="bg-white rounded-xl shadow-xl overflow-hidden ">
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
-              <tr className="bg-slate-900/50 text-left">
-                <th className="p-4 font-semibold text-slate-300">
+              <tr className="border-b border-[#D6D3CF] bg-tbhead">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   <div className="flex items-center space-x-1 hover:text-blue-400 transition-colors cursor-pointer">
                     <span>Product Name</span>
                     <ChevronDown size={16} />
                   </div>
                 </th>
-                <th className="p-4 font-semibold text-slate-300">SKU</th>
-                <th className="p-4 font-semibold text-slate-300">Family</th>
-                <th className="p-4 font-semibold text-slate-300">Sub Family</th>
-                <th className="p-4 font-semibold text-slate-300">Price</th>
-                <th className="p-4 font-semibold text-slate-300">Status</th>
-                <th className="p-4 font-semibold text-slate-300">Action</th>
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
+                  SKU
+                </th>
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
+                  Family
+                </th>
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
+                  Sub Family
+                </th>
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
+                  Price
+                </th>
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
+                  Status
+                </th>
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -327,43 +416,64 @@ const ProductCatalogueList = () => {
                 products.map((product) => (
                   <tr
                     key={product.productId}
-                    className="border-t border-slate-700 hover:bg-slate-700/30 transition-colors duration-150"
+                    className="border-b border-slate-700 hover:bg-black/10 transition-colors"
                   >
-                    <td className="p-4 text-slate-300">{product.name}</td>
-                    <td className="p-4 text-slate-300">{product.sku}</td>
-                    <td className="p-4 text-slate-300">{product.familyName}</td>
-                    <td className="p-4 text-slate-300">
-                      {product.subFamilyName}
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        {product.name}
+                      </div>
                     </td>
-                    <td className="p-4 text-slate-300">
-                      AED {parseFloat(product.price).toFixed(2)}
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        {product.sku}
+                      </div>
                     </td>
-                    <td className="p-4 text-slate-300">{product.status}</td>
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        {product.familyName}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        {product.subFamilyName}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        AED {parseFloat(product.price).toFixed(2)}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        {product.status}
+                      </div>
+                    </td>
+
                     <td className="p-4">
                       <div className="flex items-center space-x-3">
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-blue-400"
+                          className="text-blue-800"
                           onClick={() => handleViewClick(product, navigate)}
                         >
-                          <Eye size={18} />
+                          <Eye size={28} />
                         </motion.button>
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-emerald-400"
+                          className="text-emerald-800"
                           onClick={() => handleEditClick(product)}
                         >
-                          <Edit size={18} />
+                          <Edit size={28} />
                         </motion.button>
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-red-400"
+                          className="text-red-800"
                           onClick={() => handleDeleteClick(product)}
                         >
-                          <Trash2 size={18} />
+                          <Trash2 size={28} />
                         </motion.button>
                       </div>
                     </td>
@@ -382,11 +492,11 @@ const ProductCatalogueList = () => {
       </div>
 
       {/* Pagination Controls */}
-     
+
       <div className="mt-6 flex flex-col sm:flex-row justify-between items-center text-slate-400">
         <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 sm:mb-0">
           {/* Styled "Showing records" display */}
-          <span className="text-sm bg-gradient-to-r bg-slate-800 border-2 border-blue-500 text-blue-300 px-4 py-2 rounded-full shadow-md">
+          <span className="text-sm bg-gradient-to-r bg-black border-2  text-white px-4 py-2 rounded-full shadow-md">
             Showing {startItem} to {endItem} of {totalElements} entries
           </span>
 
@@ -398,35 +508,40 @@ const ProductCatalogueList = () => {
                 setSize(Number(e.target.value));
                 setPageNumber(0); // reset to first page on page size change
               }}
-              className="appearance-none pl-4 pr-10 py-2 bg-slate-800 border-2 border-blue-500 rounded-full text-blue-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"
+              className="appearance-none pl-4 pr-10 py-2 bg-black  rounded-full text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"
             >
-              {[5, 10, 15, 20, 50,100].map((option) => (
-                <option key={option} value={option} className="bg-slate-800">
+              {[5, 10, 15, 20, 50, 100].map((option) => (
+                <option
+                  key={option}
+                  value={option}
+                  className="bg-black text-white"
+                >
                   Show {option} records
                 </option>
               ))}
             </select>
             <ChevronDown
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white pointer-events-none"
               size={18}
             />
           </div>
         </div>
 
         {/* Pagination Buttons */}
-        <div className="flex space-x-2">
+        <div className="flex item-center space-x-2">
           <button
             onClick={handlePreviousPage}
-            disabled={pageNumber === 0}
-            className="appearance-none px-4 py-2 bg-slate-800 text-white rounded-xl border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all hover:bg-slate-600 flex items-center"
+            disabled={pageNumber === 0} // Corrected disabled condition
+            className="px-4 py-2 bg-black text-white rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-black transition-all hover:bg-slate-600 flex items-center"
           >
             <ChevronLeft size={18} className="mr-1" />
             Previous
           </button>
+          <div className="flex gap-2">{renderPageNumbers()}</div>
           <button
             onClick={handleNextPage}
-            disabled={pageNumber === totalPages - 1}
-            className="appearance-none px-4 py-2 bg-slate-800 border-2 border-blue-500 text-white rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all flex items-center"
+            disabled={pageNumber === totalPages - 1} // Corrected disabled condition
+            className="px-4 py-2 bg-black border-2 border-black text-white rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all flex items-center"
           >
             Next
             <ChevronRight size={18} className="ml-1" />

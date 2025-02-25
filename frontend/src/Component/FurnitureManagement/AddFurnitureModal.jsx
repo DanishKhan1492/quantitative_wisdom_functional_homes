@@ -149,10 +149,10 @@ const handleSubmit = async (e) => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-slate-800 rounded-2xl w-full max-w-6xl mx-4 overflow-hidden shadow-2xl custom-scrollbar"
+            className="bg-slate-800 rounded-2xl w-full max-w-[1500px] mx-4 overflow-hidden shadow-2xl custom-scrollbar"
           >
             {/* Header */}
-            <div className="bg-slate-900 p-6">
+            <div className="bg-black p-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-white">
                   {isEditing ? "Update Furniture" : "Add Furniture"}
@@ -162,7 +162,7 @@ const handleSubmit = async (e) => {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setIsSubFamilyModalOpen(true)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors flex items-center space-x-2"
+                    className="px-4 py-2 bg-white text-black rounded-xl hover:bg-blue-600 transition-colors flex items-center space-x-2"
                   >
                     <span>Add Sub Family</span>
                     <Plus size={20} />
@@ -171,7 +171,7 @@ const handleSubmit = async (e) => {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={onClose}
-                    className="text-slate-400 hover:text-white p-2 rounded-full transition-colors"
+                    className="text-white hover:text-white p-2 rounded-full transition-colors"
                     aria-label="Close Modal"
                   >
                     <X size={24} />
@@ -181,17 +181,17 @@ const handleSubmit = async (e) => {
             </div>
 
             {/* Form Container */}
-            <div className="overflow-y-auto max-h-[80vh] p-6 bg-slate-800 custom-scrollbar">
+            <div className="overflow-y-auto max-h-[80vh] p-6 bg-white   custom-scrollbar">
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Basic Information Section */}
                 <div>
-                  <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
-                    <Sofa className="mr-2 text-blue-400" size={24} />
+                  <h3 className="text-xl font-semibold text-black mb-6 flex items-center">
+                    <Sofa className="mr-2 text-black" size={24} />
                     Furniture Information
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="group w-full">
-                      <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                      <label className="block text-md font-medium text-black mb-2  transition-colors duration-200">
                         Furniture Name <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
@@ -203,16 +203,16 @@ const handleSubmit = async (e) => {
                           placeholder="e.g., Leather Sofa"
                           ref={firstInputRef}
                           required
-                          className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 
-                 transition-all duration-300 ease-in-out
-                 focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                 hover:border-blue-400"
+                          className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                         />
                       </div>
                     </div>
 
                     <div className="group w-full">
-                      <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                      <label className="block text-md font-medium text-black mb-2  transition-colors duration-200">
                         Furniture Category
                         <span className="text-red-500">*</span>
                       </label>
@@ -223,15 +223,19 @@ const handleSubmit = async (e) => {
                           value={formData.category}
                           onChange={handleChange}
                           required
-                          className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 
-                 transition-all duration-300 ease-in-out
-                 focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                 hover:border-blue-400"
+                          className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                         >
                           <option value="">Select a category</option>
                           {category &&
                             category.map((cat) => (
-                              <option key={cat.id} value={cat.id}>
+                              <option
+                                key={cat.id}
+                                value={cat.id}
+                                className="text-white bg-black"
+                              >
                                 {cat.name}
                               </option>
                             ))}
@@ -243,7 +247,7 @@ const handleSubmit = async (e) => {
 
                 {/* Description Section */}
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                  <label className="block text-md font-medium text-black mb-2 transition-colors duration-200">
                     Description
                   </label>
                   <div className="relative">
@@ -254,10 +258,10 @@ const handleSubmit = async (e) => {
                       onChange={handleChange}
                       placeholder="Enter furniture description..."
                       rows="4"
-                      className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 
-                 transition-all duration-300 ease-in-out
-                 focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                 hover:border-blue-400 resize-none"
+                      className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                     />
                   </div>
                 </div>
@@ -265,26 +269,26 @@ const handleSubmit = async (e) => {
                 {/* Sub Families Table */}
                 {!isEditing && formData.subFamilies.length > 0 && (
                   <div className="group w-full">
-                    <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                    <label className="block text-lg font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                       Sub Families
                     </label>
                     <div className="relative">
-                      <table className="w-full bg-slate-700 border border-slate-600 rounded-xl text-white">
+                      <table className="w-full bg-white border border-slate-200 rounded-xl text-white">
                         <thead>
-                          <tr>
-                            <th className="px-8 py-3 text-left border-b border-slate-600">
+                          <tr className="border-b border-[#D6D3CF] bg-tbhead">
+                            <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                               ID
                             </th>
-                            <th className="px-8 py-3 text-left border-b border-slate-600">
+                            <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                               Name
                             </th>
-                            <th className="px-8 py-3 text-left border-b border-slate-600">
+                            <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                               Type
                             </th>
-                            <th className="px-8 py-3 text-left border-b border-slate-600">
+                            <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                               Description
                             </th>
-                            <th className="px-8 py-3 text-left border-b border-slate-600">
+                            <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                               Actions
                             </th>
                           </tr>
@@ -292,25 +296,35 @@ const handleSubmit = async (e) => {
                         <tbody>
                           {formData.subFamilies.map((subFamily, index) => (
                             <tr key={index}>
-                              <td className="px-8 py-3 border-b border-slate-600">
-                                {subFamily.subFamilyId || index + 1}
+                              <td className="p-4">
+                                <div className="text-black font-medium">
+                                  {subFamily.subFamilyId || index + 1}
+                                </div>
                               </td>
-                              <td className="px-8 py-3 border-b border-slate-600">
-                                {subFamily.name}
+                              <td className="p-4">
+                                <div className="text-black font-medium">
+                                  {subFamily.name}
+                                </div>
                               </td>
-                              <td className="px-8 py-3 border-b border-slate-600">
-                                {subFamily.type}
+                              <td className="p-4">
+                                <div className="text-black font-medium">
+                                  {subFamily.type}
+                                </div>
                               </td>
-                              <td className="px-8 py-3 border-b border-slate-600">
-                                {subFamily.description}
+                              <td className="p-4">
+                                <div className="text-black font-medium">
+                                  {subFamily.description}
+                                </div>
                               </td>
-                              <td className="px-8 py-3 border-b border-slate-600">
-                                <button
-                                  // onClick={handleDeleteClick(subFamily.subFamilyId)}
-                                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition-colors"
-                                >
-                                  Delete
-                                </button>
+                              <td className="p-4">
+                                <div className="text-black font-medium">
+                                  <button
+                                    // onClick={handleDeleteClick(subFamily.subFamilyId)}
+                                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition-colors"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           ))}
@@ -327,7 +341,7 @@ const handleSubmit = async (e) => {
                     whileTap={{ scale: 0.98 }}
                     onClick={onClose}
                     type="button"
-                    className="px-6 py-2 bg-slate-700 text-white rounded-xl hover:bg-slate-600 transition-colors"
+                    className="px-6 py-2 bg-black/30 text-xl text-black rounded-xl transition-colors"
                   >
                     Cancel
                   </motion.button>
@@ -335,7 +349,7 @@ const handleSubmit = async (e) => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     type="submit"
-                    className="px-6 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors flex items-center space-x-2"
+                    className="px-6 py-2 bg-black text-xl text-white rounded-xl hover:bg-blue-600 transition-colors flex items-center space-x-2"
                     disabled={loading}
                   >
                     <span>
@@ -362,10 +376,10 @@ const handleSubmit = async (e) => {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-slate-800 rounded-2xl w-full max-w-4xl mx-4 overflow-hidden shadow-2xl custom-scrollbar"
+                  className="bg-slate-800 rounded-2xl w-full max-w-[1200px] mx-4 overflow-hidden shadow-2xl custom-scrollbar"
                 >
                   {/* Header */}
-                  <div className="bg-slate-900 p-6">
+                  <div className="bg-black p-6">
                     <div className="flex justify-between items-center">
                       <h2 className="text-2xl font-bold text-white">
                         Add Sub Family
@@ -374,7 +388,7 @@ const handleSubmit = async (e) => {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setIsSubFamilyModalOpen(false)}
-                        className="text-slate-400 hover:text-white p-2 rounded-full transition-colors"
+                        className="text-white p-2 rounded-full transition-colors"
                         aria-label="Close Modal"
                       >
                         <X size={24} />
@@ -383,7 +397,7 @@ const handleSubmit = async (e) => {
                   </div>
 
                   {/* Form Container */}
-                  <div className="overflow-y-auto max-h-[80vh] p-6 bg-slate-800 custom-scrollbar">
+                  <div className="overflow-y-auto max-h-[80vh] p-6 bg-white custom-scrollbar">
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();
@@ -401,7 +415,7 @@ const handleSubmit = async (e) => {
                       {/* Name and Type in One Row */}
                       <div className="flex space-x-4">
                         <div className="group w-1/2">
-                          <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                          <label className="block text-md font-medium text-black  mb-2 group-hover:text-blue-400 transition-colors duration-200">
                             Name <span className="text-red-500">*</span>
                           </label>
                           <div className="relative">
@@ -410,16 +424,16 @@ const handleSubmit = async (e) => {
                               name="name"
                               placeholder="e.g., Leather Sofa"
                               required
-                              className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 
-                        transition-all duration-300 ease-in-out
-                        focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                        hover:border-blue-400"
+                              className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                             />
                           </div>
                         </div>
 
                         <div className="group w-1/2">
-                          <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                          <label className="block text-md font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                             Type <span className="text-red-500">*</span>
                           </label>
                           <div className="relative">
@@ -428,10 +442,10 @@ const handleSubmit = async (e) => {
                               name="type"
                               placeholder="e.g., Sofa"
                               required
-                              className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 
-                        transition-all duration-300 ease-in-out
-                        focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                        hover:border-blue-400"
+                              className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                             />
                           </div>
                         </div>
@@ -439,7 +453,7 @@ const handleSubmit = async (e) => {
 
                       {/* Description in Second Row */}
                       <div className="group w-full">
-                        <label className="block text-sm font-medium text-slate-300 mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                        <label className="block text-md font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                           Description
                         </label>
                         <div className="relative">
@@ -448,10 +462,10 @@ const handleSubmit = async (e) => {
                             name="description"
                             placeholder="Enter sub-family description..."
                             rows="4"
-                            className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 
-                      transition-all duration-300 ease-in-out
-                      focus:bg-slate-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20
-                      hover:border-blue-400 resize-none"
+                            className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
+                   transition-all duration-300 ease-in-out
+                    focus:border-blue-500 
+                   hover:border-blue-400"
                           />
                         </div>
                       </div>
@@ -463,7 +477,7 @@ const handleSubmit = async (e) => {
                           whileTap={{ scale: 0.98 }}
                           onClick={() => setIsSubFamilyModalOpen(false)}
                           type="button"
-                          className="px-6 py-2 bg-slate-700 text-white rounded-xl hover:bg-slate-600 transition-colors"
+                          className="px-6 py-2  bg-black text-xl text-white rounded-xl hover:bg-slate-600 transition-colors"
                         >
                           Cancel
                         </motion.button>
@@ -471,7 +485,7 @@ const handleSubmit = async (e) => {
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           type="submit"
-                          className="px-6 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors flex items-center space-x-2"
+                          className="px-6 py-2 bg-black text-xl text-white rounded-xl hover:bg-blue-600 transition-colors flex items-center space-x-2"
                         >
                           <span>Add Sub Family</span>
                           <ChevronRight size={20} />

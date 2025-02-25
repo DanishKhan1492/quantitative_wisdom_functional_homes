@@ -19,7 +19,7 @@ const Navbar = () => {
 
 
   return (
-    <div className="bg-slate-900 shadow-sm p-4 flex justify-end items-center">
+    <div className="bg-nav shadow-sm p-4 flex justify-end items-center">
       <div className="flex items-center">
         <User
           className="w-8 h-8 text-white mr-3"
@@ -33,7 +33,7 @@ const Navbar = () => {
           <span className="text-lg text-white font-semibold mr-5">
             {data.firstName + " " + data.lastName}
           </span>
-          <span className="text-md font-bold text-white bg-primary w-fit text-center ml-4 items-center px-2 py-0.5 rounded-full">
+          <span className="text-md font-bold text- bg-white w-fit text-center ml-4 items-center px-2 py-0.5 rounded-full">
             
             {data.roles && data.roles[0] === "ROLE_ADMIN" ? "Admin" : "User"}
           </span>

@@ -23,32 +23,32 @@ const MainCard = ({ title, value, icon: Icon, details }) => {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-slate-800 rounded-xl p-6 border border-slate-700"
+      className="bg-white rounded-xl p-6 shadow-2xl "
     >
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-slate-400 text-sm font-medium">{title}</h3>
-          <p className="text-3xl font-bold text-white mt-1">{value}</p>
+          <h3 className="text-black text-xl font-medium">{title}</h3>
+          <p className="text-3xl font-bold text-black mt-1">{value}</p>
         </div>
-        <div className="bg-blue-500/10 p-3 rounded-lg">
-          <Icon className="w-6 h-6 text-blue-400" />
+        <div className="bg-black p-3 rounded-lg">
+          <Icon className="w-6 h-6 text-white" />
         </div>
       </div>
 
       {details && (
-        <div className="space-y-3">
+        <div className="space-y-3 transition-all duration-300 ease-in-out">
           {details.map((detail, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between bg-slate-700/30 p-3 rounded-lg"
+              className="flex items-center justify-between bg-white p-3 rounded-lg shadow-xl border border-gray-100  "
             >
               <div className="flex items-center gap-2">
-                <detail.icon className={`w-4 h-4 ${detail.iconColor}`} />
-                <span className="text-sm font-medium text-slate-300">
+                <detail.icon className={`w-6 h-6 ${detail.iconColor}`} />
+                <span className="text-md font-medium text-black">
                   {detail.label}
                 </span>
               </div>
-              <span className={`text-sm font-semibold ${detail.textColor}`}>
+              <span className={`text-2xl font-semibold ${detail.textColor}`}>
                 {detail.value}
               </span>
             </div>
@@ -64,15 +64,15 @@ const SmallCard = ({ title, value, icon: Icon }) => {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-slate-800 rounded-xl p-6 border border-slate-700"
+      className="bg-white rounded-xl p-6  shadow-2xl"
     >
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-slate-400 text-sm font-medium">{title}</h3>
-          <p className="text-2xl font-bold text-white mt-1">{value}</p>
+          <h3 className="text-black text-md text-xl font-medium">{title}</h3>
+          <p className="text-2xl font-bold text-black mt-1">{value}</p>
         </div>
-        <div className="bg-blue-500/10 p-3 rounded-lg">
-          <Icon className="w-5 h-5 text-blue-400" />
+        <div className="bg-black p-3  rounded-lg">
+          <Icon className="w-6 h-6 text-white" />
         </div>
       </div>
     </motion.div>
@@ -90,15 +90,15 @@ const Dashboard = () => {
           label: "Active",
           value: "98",
           icon: UserCheck,
-          iconColor: "text-green-400",
-          textColor: "text-green-400",
+          iconColor: "text-green-900",
+          textColor: "text-black",
         },
         {
           label: "Inactive",
           value: "28",
           icon: UserX,
           iconColor: "text-red-400",
-          textColor: "text-red-400",
+          textColor: "text-black",
         },
       ],
     },
@@ -184,11 +184,11 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="h-screen bg-slate-900">
+    <div className="h-screen bg-background">
       <div className="w-full p-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white">Dashboard Overview</h1>
-          <p className="text-slate-400 mt-1">Monitor your business metrics</p>
+          <h1 className="text-2xl font-bold text-black">Dashboard Overview</h1>
+          <p className="text-black mt-1">Monitor your business metrics</p>
         </div>
 
         {/* Main Stats */}

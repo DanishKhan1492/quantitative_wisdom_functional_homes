@@ -8,15 +8,53 @@ import axiosInstance from "../axiosConfig";
 const ls = new SecureLS({ encodingType: "aes" });
 const API_BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
-export const getAllMaterials = async (page = 0, size = 10, sort = []) => {
+// export const getAllMaterials = async (page = 0, size = 10, sort = []) => {
+//   try {
+//     const token = ls.get("authToken");
+//     if (!token) {
+//       throw new Error("Authentication token not found");
+//     }
+
+//     const response = await axios.get(`${API_BASE_URL}/api/v1/materials`, {
+//       params: { page, size, sort },
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         Accept: "application/json",
+//       },
+//     });
+
+//     return response.data; // Expected to have 'content', 'totalPages', 'totalElements', etc.
+//   } catch (error) {
+//     console.error("Error fetching materials:", error);
+//     throw error;
+//   }
+// };
+
+
+export const getAllMaterials = async (
+  page = 0,
+  size = 10,
+  searchTerm = "",
+  filterTerm = "",
+  sort = []
+) => {
   try {
     const token = ls.get("authToken");
     if (!token) {
       throw new Error("Authentication token not found");
     }
 
+    // Build the query parameters
+    const params = {
+      page,
+      size,
+      sort,
+      ...(searchTerm && { search: searchTerm }), // Only add if truthy
+      ...(filterTerm && { filter: filterTerm }),
+    };
+
     const response = await axios.get(`${API_BASE_URL}/api/v1/materials`, {
-      params: { page, size, sort },
+      params,
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
@@ -29,6 +67,7 @@ export const getAllMaterials = async (page = 0, size = 10, sort = []) => {
     throw error;
   }
 };
+
 
 export const createMaterial = async (materialData) => {
   try {

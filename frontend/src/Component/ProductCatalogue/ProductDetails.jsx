@@ -42,9 +42,9 @@ const ProductDetails = () => {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-b from-slate-900 to-slate-800 p-6 ">
+    <div className="h-screen bg-background p-6 ">
       <button
-        className="flex items-center text-slate-300 hover:text-white transition-colors"
+        className="flex items-center text-black hover:text-white transition-colors"
         onClick={() => navigate(-1)}
       >
         <ArrowLeft size={20} className="mr-2" /> Back to Products
@@ -52,7 +52,7 @@ const ProductDetails = () => {
 
       <div className="grid grid-cols-12 gap-6 mt-6">
         <div className="col-span-12 lg:col-span-5">
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6">
+          <div className="bg-white backdrop-blur-sm rounded-xl p-6">
             {product.allImages && product.allImages.length > 0 ? (
               <Carousel
                 indicators={product.allImages.length > 1}
@@ -76,8 +76,8 @@ const ProductDetails = () => {
               />
             )}
             <div className="mt-6">
-              <h1 className="text-2xl font-bold text-white"> {product.name}</h1>
-              <p className="text-slate-400 mt-2">{product.description}</p>
+              <h1 className="text-2xl font-bold text-black"> {product.name}</h1>
+              <p className="text-black mt-2">{product.description}</p>
             </div>
           </div>
         </div>
@@ -101,31 +101,31 @@ const ProductDetails = () => {
               value={product.supplierName}
             />
           </div>
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
+          <div className="bg-white backdrop-blur-sm rounded-xl p-6">
+            <h2 className="text-xl font-semibold text-black mb-4">
               Product Details
             </h2>
-            <div className="grid grid-cols-2 gap-y-4">
-              <div>
-                <p className="text-slate-400">Sub Family</p>
-                <p className="text-white">{product.subFamilyName}</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-md p-2 shadow-md">
+                <p className="text-black font-bold ">Sub Family</p>
+                <p className="text-black">{product.subFamilyName}</p>
               </div>
-              <div>
-                <p className="text-slate-400">Status</p>
-                <p className="text-white">{product.status}</p>
+              <div className="bg-white rounded-md p-2 shadow-md">
+                <p className="text-black font-bold">Status</p>
+                <p className="text-black">{product.status}</p>
               </div>
-              <div>
-                <p className="text-slate-400">Date Added</p>
-                <p className="text-white">{product.createdAt.split("T")[0]}</p>
+              <div className="bg-white rounded-md p-2 shadow-md">
+                <p className="text-black font-bold">Date Added</p>
+                <p className="text-black">{product.createdAt.split("T")[0]}</p>
               </div>
-              <div>
-                <p className="text-slate-400">Product Family</p>
-                <p className="text-white">{product.familyName}</p>
+              <div className="bg-white rounded-md p-2 shadow-md">
+                <p className="text-black font-bold">Product Family</p>
+                <p className="text-black">{product.familyName}</p>
               </div>
             </div>
           </div>
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
+          <div className="bg-white backdrop-blur-sm rounded-xl p-6">
+            <h2 className="text-xl font-semibold text-black mb-4">
               Specifications
             </h2>
             <div className="space-y-4">
@@ -134,16 +134,16 @@ const ProductDetails = () => {
                 <span className="text-white">10 x 15 x 20 cm</span>
               </div> */}
               <div className="flex items-center justify-between py-2 border-b border-slate-700">
-                <span className="text-slate-400">Height</span>
-                <span className="text-white">{product.height.toFixed(1)}</span>
+                <span className="text-black font-bold">Height</span>
+                <span className="text-black">{product.height.toFixed(1)}</span>
               </div>
               <div className="flex items-center justify-between py-2 border-b border-slate-700">
-                <span className="text-slate-400">Length</span>
-                <span className="text-white">{product.length.toFixed(1)}</span>
+                <span className="text-black font-bold">Length</span>
+                <span className="text-black">{product.length.toFixed(1)}</span>
               </div>
               <div className="flex items-center justify-between py-2">
-                <span className="text-slate-400">Width</span>
-                <span className="text-white">{product.width.toFixed(1)}</span>
+                <span className="text-black font-bold">Width</span>
+                <span className="text-black">{product.width.toFixed(1)}</span>
               </div>
             </div>
           </div>
@@ -154,14 +154,14 @@ const ProductDetails = () => {
 };
 
 const InfoCard = ({ icon: Icon, label, value }) => (
-  <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-4">
+  <div className="bg-white shadow-md backdrop-blur-sm rounded-xl p-4">
     <div className="flex items-center gap-3">
-      <div className="bg-blue-500/10 p-2 rounded-lg">
-        <Icon className="text-blue-400" size={20} />
+      <div className="bg-black p-2 rounded-lg">
+        <Icon className="text-white" size={20} />
       </div>
       <div>
-        <p className="text-slate-400 text-sm">{label}</p>
-        <p className="text-white font-medium">{value}</p>
+        <p className="text-black text-md">{label}</p>
+        <p className="text-black font-medium">{value}</p>
       </div>
     </div>
   </div>

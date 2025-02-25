@@ -4,9 +4,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#27667B",
-        white: "white",
-      
+        background: "#EEEBE7",
+        sidebar: "#262525",
+        white: "#EEEBE7",
+        nav: "#262525",
+        black: "#262525",
+        tbhead: "#D6D3CF",
       },
       animation: {
         float: "float 6s ease-in-out infinite",

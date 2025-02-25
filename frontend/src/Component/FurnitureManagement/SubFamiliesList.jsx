@@ -141,18 +141,84 @@ const FurnitureSubFamilyList = () => {
     }
   };
 
+
+   const renderPageNumbers = () => {
+     const pageButtons = [];
+     const maxVisiblePages = 5;
+     const currentPage = page + 1; // display value
+     const total = totalPages; // total pages in 1-indexed form
+
+     const addPageButton = (p) => {
+       pageButtons.push(
+         <button
+           key={p}
+           onClick={() => setPage(p - 1)}
+           className={`w-8 h-8 flex items-center border-2 border-black justify-center rounded-full transition-colors ${
+             p === currentPage
+               ? "bg-white text-black  font-bold"
+               : "bg-black border border-blue-500 text-white hover:bg-slate-700"
+           }`}
+         >
+           {p}
+         </button>
+       );
+     };
+
+     const addEllipsis = (key) => {
+       pageButtons.push(
+         <span key={`ellipsis-${key}`} className="px-2 text-black">
+           ...
+         </span>
+       );
+     };
+
+     if (total <= maxVisiblePages) {
+       for (let p = 1; p <= total; p++) {
+         addPageButton(p);
+       }
+     } else {
+       addPageButton(1);
+       let startPage = Math.max(
+         2,
+         currentPage - Math.floor((maxVisiblePages - 2) / 2)
+       );
+       let endPage = Math.min(
+         total - 1,
+         currentPage + Math.floor((maxVisiblePages - 2) / 2)
+       );
+       if (currentPage <= Math.floor(maxVisiblePages / 2)) {
+         startPage = 2;
+         endPage = maxVisiblePages - 1;
+       } else if (currentPage > total - Math.floor(maxVisiblePages / 2)) {
+         endPage = total - 1;
+         startPage = total - (maxVisiblePages - 2);
+       }
+       if (startPage > 2) {
+         addEllipsis("start");
+       }
+       for (let p = startPage; p <= endPage; p++) {
+         addPageButton(p);
+       }
+       if (endPage < total - 1) {
+         addEllipsis("end");
+       }
+       addPageButton(total);
+     }
+     return pageButtons;
+   };
+
   return (
-    <div className="p-6 bg-slate-900 ">
+    <div className="p-6 bg-background h-screen">
       <div className="mb-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-white flex items-center">
-            <FolderTree className="mr-2 text-blue-400" size={24} />
+          <h1 className="text-2xl font-bold text-black flex items-center">
+            <FolderTree className="mr-2 text-black" size={24} />
             Furniture Sub-Family
           </h1>
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="bg-blue-500 text-white px-6 py-2 rounded-xl hover:bg-blue-600 transition-colors duration-300 shadow-md flex items-center space-x-2"
+            className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
             onClick={() => {
               setSelectedSubFamily(null);
               setIsSubFamilyModalOpen(true);
@@ -164,22 +230,26 @@ const FurnitureSubFamilyList = () => {
         </div>
       </div>
 
-      <div className="bg-slate-800 rounded-xl shadow-xl overflow-hidden border border-slate-700">
+      <div className="bg-white rounded-xl shadow-xl overflow-hidden ">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-900/50 text-left">
-                <th className="p-4 font-semibold text-slate-300">
+              <tr className="border-b border-[#D6D3CF] bg-tbhead">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Family Name
                 </th>
-                <th className="p-4 font-semibold text-slate-300">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Sub Family Name
                 </th>
-                <th className="p-4 font-semibold text-slate-300">Type</th>
-                <th className="p-4 font-semibold text-slate-300">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
+                  Type
+                </th>
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Description
                 </th>
-                <th className="p-4 font-semibold text-slate-300">Action</th>
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -195,39 +265,53 @@ const FurnitureSubFamilyList = () => {
                 subFamilyList.map((subFamily) => (
                   <tr
                     key={subFamily.subFamilyId}
-                    className="border-t border-slate-700 hover:bg-slate-700/30 transition-colors duration-150"
+                    className="border-b border-slate-700 hover:bg-black/10 transition-colors"
                   >
-                    <td className="p-4 text-slate-300">
-                      {subFamily.familyName}
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        {subFamily.familyName}
+                      </div>
                     </td>
-                    <td className="p-4 text-slate-300">{subFamily.name}</td>
-                    <td className="p-4 text-slate-300">{subFamily.type}</td>
-                    <td className="p-4 text-slate-300">
-                      {subFamily.description.length > 60
-                        ? `${subFamily.description.slice(0, 60)}...`
-                        : subFamily.description}
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        {subFamily.name}
+                      </div>
                     </td>
-                    <td className="p-4 flex space-x-3">
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="text-emerald-400 hover:text-emerald-300 transition-colors"
-                        onClick={() =>
-                          handleEditSubFamily(subFamily.subFamilyId)
-                        }
-                      >
-                        <Edit size={18} />
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="text-red-400 hover:text-red-300 transition-colors"
-                        onClick={() =>
-                          handleDeleteSubFamily(subFamily.subFamilyId)
-                        }
-                      >
-                        <Trash2 size={18} />
-                      </motion.button>
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        {subFamily.type}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        {subFamily.description.length > 60
+                          ? `${subFamily.description.slice(0, 60)}...`
+                          : subFamily.description}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="text-emerald-900 hover:text-emerald-300 transition-colors"
+                          onClick={() =>
+                            handleEditSubFamily(subFamily.subFamilyId)
+                          }
+                        >
+                          <Edit size={28} />
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="text-red-900 hover:text-red-300 transition-colors"
+                          onClick={() =>
+                            handleDeleteSubFamily(subFamily.subFamilyId)
+                          }
+                        >
+                          <Trash2 size={28} />
+                        </motion.button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -248,51 +332,51 @@ const FurnitureSubFamilyList = () => {
       </div>
 
       {/* Pagination Controls */}
-    
+
       <div className="mt-6 flex flex-col sm:flex-row justify-between items-center text-slate-400">
         <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 sm:mb-0">
-          {/* Styled "Showing records" display */}
-          <span className="text-sm bg-gradient-to-r bg-slate-800 border-2 border-blue-500 text-blue-300 px-4 py-2 rounded-full shadow-md">
+          <span className="text-sm bg-gradient-to-r bg-black border-2 border-blue-500 text-white px-4 py-2 rounded-full shadow-md">
             Showing {startItem} to {endItem} of {totalElements} entries
           </span>
-
-          {/* Styled Page Size Selector */}
           <div className="relative">
             <select
               value={size}
               onChange={(e) => {
                 setSize(Number(e.target.value));
-                setPageNumber(0); // reset to first page on page size change
+                setPage(0); // reset to first page on page size change
               }}
-              className="appearance-none pl-4 pr-10 py-2 bg-slate-800 border-2 border-blue-500 rounded-full text-blue-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"
+              className="appearance-none pl-4 pr-10 py-2 bg-black text-white border-2 border-blue-500 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"
             >
-              {[5, 10, 15, 20, 50,100].map((option) => (
-                <option key={option} value={option} className="bg-slate-800">
+              {[5, 10, 15, 20, 50, 100].map((option) => (
+                <option
+                  key={option}
+                  value={option}
+                  className="bg-black text-white"
+                >
                   Show {option} records
                 </option>
               ))}
             </select>
             <ChevronDown
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white pointer-events-none"
               size={18}
             />
           </div>
         </div>
-
-        {/* Pagination Buttons */}
-        <div className="flex space-x-2">
+        <div className="flex items-center space-x-2">
           <button
             onClick={handlePreviousPage}
             disabled={page === 0}
-            className="appearance-none px-4 py-2 bg-slate-800 text-white rounded-xl border-2 border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all hover:bg-slate-600 flex items-center"
+            className="px-4 py-2 bg-black text-white rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-black transition-all hover:bg-slate-600 flex items-center"
           >
             <ChevronLeft size={18} className="mr-1" />
             Previous
           </button>
+          <div className="flex gap-2">{renderPageNumbers()}</div>
           <button
             onClick={handleNextPage}
             disabled={page === totalPages - 1}
-            className="appearance-none px-4 py-2 bg-slate-800 border-2 border-blue-500 text-white rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all flex items-center"
+            className="px-4 py-2 bg-black border-2 border-black text-white rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all flex items-center"
           >
             Next
             <ChevronRight size={18} className="ml-1" />

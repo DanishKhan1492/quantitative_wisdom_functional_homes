@@ -8,6 +8,9 @@ import {
   Download,
   Plus,
   FileDown,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -20,6 +23,7 @@ const ProposalList = () => {
   const [filterTerm, setFilterTerm] = useState("");
   const [pageNumber, setPageNumber] = useState(0);
   const [size] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [proposalToDelete, setProposalToDelete] = useState(null);
@@ -138,11 +142,86 @@ const ProposalList = () => {
     (pageNumber + 1) * size
   );
 
+   const renderPageNumbers = () => {
+     const pageButtons = [];
+     const maxVisiblePages = 5;
+
+     const addPageButton = (page) => {
+       pageButtons.push(
+         <button
+           key={page}
+           onClick={() => setPageNumber(page - 1)} // Changed to page-1
+           className={`w-8 h-8 flex border-2 border-black items-center justify-center rounded-full transition-colors ${
+             page - 1 === pageNumber // Now checks 0-based pageNumber
+               ? "bg-white text-black  font-bold"
+               : "bg-black border border-blue-500 text-white hover:bg-slate-700"
+           }`}
+         >
+           {page}
+         </button>
+       );
+     };
+
+     const addEllipsis = (key) => {
+       pageButtons.push(
+         <span key={`ellipsis-${key}`} className="px-2 text-black">
+           ...
+         </span>
+       );
+     };
+
+     if (totalPages <= maxVisiblePages) {
+       for (let page = 1; page <= totalPages; page++) {
+         addPageButton(page);
+       }
+     } else {
+       // Always show first page
+       addPageButton(1);
+
+       let startPage = Math.max(
+         2,
+         pageNumber - Math.floor((maxVisiblePages - 2) / 2)
+       );
+       let endPage = Math.min(
+         totalPages - 1,
+         pageNumber + Math.floor((maxVisiblePages - 2) / 2)
+       );
+
+       // Adjust if near the start
+       if (pageNumber <= Math.floor(maxVisiblePages / 2)) {
+         startPage = 2;
+         endPage = maxVisiblePages - 1;
+       }
+       // Adjust if near the end
+       else if (pageNumber > totalPages - Math.floor(maxVisiblePages / 2)) {
+         endPage = totalPages - 1;
+         startPage = totalPages - (maxVisiblePages - 2);
+       }
+
+       if (startPage > 2) {
+         addEllipsis("start");
+       }
+
+       for (let page = startPage; page <= endPage; page++) {
+         addPageButton(page);
+       }
+
+       if (endPage < totalPages - 1) {
+         addEllipsis("end");
+       }
+
+       // Always show last page
+       addPageButton(totalPages);
+     }
+
+     return pageButtons;
+   };
+
   return (
-    <div className="h-screen bg-gradient-to-b from-slate-900 to-slate-800 p-6">
+    <div className="h-screen bg-background p-6">
       <div className="mb-6">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-          <h1 className="text-2xl font-bold text-white">Proposal Management</h1>
+          <h1 className="text-2xl font-bold text-black">Proposal Management</h1>
 
           <div className="flex flex-col md:flex-row gap-4 w-full lg:w-auto">
             <div className="flex flex-1 gap-4">
@@ -155,10 +234,10 @@ const ProposalList = () => {
                   placeholder="Search proposals..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
                 />
                 <Search
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black"
                   size={20}
                 />
               </motion.div>
@@ -172,10 +251,10 @@ const ProposalList = () => {
                   placeholder="Filter by status..."
                   value={filterTerm}
                   onChange={(e) => setFilterTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
                 />
                 <Filter
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black"
                   size={20}
                 />
               </motion.div>
@@ -185,7 +264,7 @@ const ProposalList = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center px-4 py-2 bg-slate-700 text-white rounded-xl hover:bg-slate-600 transition-colors"
+                className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
                 onClick={() => console.log("Export clicked")}
               >
                 <Download className="w-5 h-5 mr-2" />
@@ -195,7 +274,7 @@ const ProposalList = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors"
+                className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
                 onClick={() => setIsModalOpen(true)}
               >
                 <Plus className="w-5 h-5 mr-2" />
@@ -206,27 +285,27 @@ const ProposalList = () => {
         </div>
       </div>
 
-      <div className="bg-slate-800 rounded-xl shadow-xl overflow-hidden">
+      <div className="bg-white rounded-xl shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-slate-700">
-                <th className="p-4 text-left text-slate-300 font-semibold">
+              <tr className="border-b border-[#D6D3CF] bg-tbhead">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Proposal Details
                 </th>
-                <th className="p-4 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Apartment
                 </th>
-                <th className="p-4 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Client Info
                 </th>
-                <th className="p-4 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Price Details
                 </th>
-                <th className="p-4 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Status
                 </th>
-                <th className="p-4 text-left text-slate-300 font-semibold">
+                <th className="p-4 text-left text-black font-semibold first:rounded-tl-xl">
                   Actions
                 </th>
               </tr>
@@ -235,30 +314,34 @@ const ProposalList = () => {
               {paginatedProposals.map((proposal) => (
                 <tr
                   key={proposal.id}
-                  className="border-b border-slate-700 hover:bg-slate-700/50 transition-colors"
+                  className="border-b border-slate-700 hover:bg-black/10 transition-colors"
                 >
                   <td className="p-4">
-                    <div className="text-white font-medium">
+                    <div className="text-black font-medium">
                       {proposal.name}
                     </div>
-                    <div className="text-slate-400 text-sm">
+                    <div className="text-black font-medium">
                       {proposal.date}
                     </div>
                   </td>
                   <td className="p-4">
-                    <div className="text-white">{proposal.apartmentName}</div>
-                    <div className="text-slate-400 text-sm">
+                    <div className="text-black font-medium">
+                      {proposal.apartmentName}
+                    </div>
+                    <div className="text-black font-medium">
                       Quantity: {proposal.quantity}
                     </div>
                   </td>
                   <td className="p-4">
-                    <div className="text-white">{proposal.clientInfo}</div>
+                    <div className="text-black font-medium">
+                      {proposal.clientInfo}
+                    </div>
                   </td>
                   <td className="p-4">
-                    <div className="text-white">
+                    <div className="text-black font-medium">
                       AED {proposal.price.toFixed(2)}
                     </div>
-                    <div className="text-slate-400 text-sm">
+                    <div className="text-black font-medium">
                       Total: AED {proposal.totalPrice.toFixed(2)}
                     </div>
                   </td>
@@ -266,10 +349,10 @@ const ProposalList = () => {
                     <span
                       className={`px-3 py-1 rounded-full text-sm ${
                         proposal.status === "Approved"
-                          ? "bg-green-500/20 text-green-400"
+                          ? "bg-green-700 text-white"
                           : proposal.status === "Draft"
-                          ? "bg-yellow-400/20 text-yellow-400"
-                          : "bg-blue-500/20 text-blue-400"
+                          ? "bg-yellow-700 text-white"
+                          : "bg-blue-700 text-white"
                       }`}
                     >
                       {proposal.status}
@@ -283,7 +366,7 @@ const ProposalList = () => {
                         className="text-blue-500"
                         onClick={() => handleViewClick(proposal)}
                       >
-                        <Eye size={18} />
+                        <Eye size={28} />
                       </motion.button>
                       <motion.button
                         whileHover={{ scale: 1.2 }}
@@ -292,7 +375,7 @@ const ProposalList = () => {
                         onClick={() => handleEditClick(proposal)}
                         disabled={proposal.status === "Approved"}
                       >
-                        <Edit size={18} />
+                        <Edit size={28} />
                       </motion.button>
                       <motion.button
                         whileHover={{ scale: 1.2 }}
@@ -300,7 +383,7 @@ const ProposalList = () => {
                         className="text-red-400"
                         onClick={() => handleDeleteClick(proposal)}
                       >
-                        <Trash2 size={18} />
+                        <Trash2 size={28} />
                       </motion.button>
                     </div>
                   </td>
@@ -311,7 +394,64 @@ const ProposalList = () => {
         </div>
       </div>
 
-      <div className="mt-6 flex justify-between items-center text-slate-400">
+      <div className="mt-6 flex flex-col sm:flex-row justify-between items-center text-slate-400">
+        <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 sm:mb-0">
+          {/* Styled "Showing records" display */}
+          <span className="text-sm bg-gradient-to-r bg-black border-2  text-white px-4 py-2 rounded-full shadow-md">
+            Showing {pageNumber * size + 1} to
+            {Math.min((pageNumber + 1) * size, filteredProposals.length)} of
+            {filteredProposals.length} entries
+          </span>
+
+          {/* Styled Page Size Selector */}
+          <div className="relative">
+            <select
+              value={size}
+              onChange={(e) => {
+                setSize(Number(e.target.value));
+                setPageNumber(0); // reset to first page on page size change
+              }}
+              className="appearance-none pl-4 pr-10 py-2 bg-black  rounded-full text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"
+            >
+              {[5, 10, 15, 20, 50, 100].map((option) => (
+                <option
+                  key={option}
+                  value={option}
+                  className="bg-black text-white"
+                >
+                  Show {option} records
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white pointer-events-none"
+              size={18}
+            />
+          </div>
+        </div>
+
+        {/* Pagination Buttons */}
+        <div className="flex item-center space-x-2">
+          <button
+            onClick={() => setPageNumber(Math.max(0, pageNumber - 1))}
+            disabled={pageNumber === 0} // Corrected disabled condition
+            className="px-4 py-2 bg-black text-white rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-black transition-all hover:bg-slate-600 flex items-center"
+          >
+            <ChevronLeft size={18} className="mr-1" />
+            Previous
+          </button>
+          <div className="flex gap-2">{renderPageNumbers()}</div>
+          <button
+            onClick={() => setPageNumber(pageNumber + 1)}
+            disabled={pageNumber === totalPages - 1} // Corrected disabled condition
+            className="px-4 py-2 bg-black border-2 border-black text-white rounded-xl hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all flex items-center"
+          >
+            Next
+            <ChevronRight size={18} className="ml-1" />
+          </button>
+        </div>
+      </div>
+      {/* <div className="mt-6 flex justify-between items-center text-slate-400">
         <div>
           Showing {pageNumber * size + 1} to{" "}
           {Math.min((pageNumber + 1) * size, filteredProposals.length)} of{" "}
@@ -337,7 +477,7 @@ const ProposalList = () => {
             Next
           </motion.button>
         </div>
-      </div>
+      </div> */}
 
       <AddProposalModal
         isOpen={isModalOpen}
