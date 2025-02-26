@@ -12,7 +12,7 @@ export const createApartmentRequirement = async (requirementData) => {
 
   try {
     const token = ls.get("authToken");
-    const response = await axiosInstance.post(url, requirementData, {
+    const response = await axios.post(url, requirementData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

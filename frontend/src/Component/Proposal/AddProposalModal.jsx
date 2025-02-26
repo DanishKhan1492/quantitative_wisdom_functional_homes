@@ -192,32 +192,34 @@ useEffect(() => {
 
 
 const handleSaveRequirement = async (e) => {
-  e.preventDefault()
+  e.preventDefault();
   try {
     const requestData = {
-      apartmentTypeId: Number(reqFormValues.apartmentTypeId), // Convert to number
-      familyId: Number(reqFormValues.familyId), // Convert to number
-      subFamilyId: Number(reqFormValues.subFamilyId), // Convert to number
-      quantity: Number(reqFormValues.quantity), // Ensure quantity is also a number
+      apartmentTypeId: Number(reqFormValues.apartmentTypeId),
+      familyId: Number(reqFormValues.familyId),
+      subFamilyId: Number(reqFormValues.subFamilyId),
+      quantity: Number(reqFormValues.quantity),
     };
 
     await createApartmentRequirement(requestData);
-    
 
+    // Reset form fields after successful submission
     setReqFormValues({
       apartmentTypeId: "",
       familyId: "",
       subFamilyId: "",
-      quantity: 1,
+      quantity: "",
     });
 
- 
+    // Refresh requirements list without closing modal
+    loadRequirements();
+
+   
   } catch (error) {
     console.error("Error saving requirement:", error);
     toast.error("Failed to create apartment requirement");
   }
 };
-
  
 
  if (!isOpen) return null;
@@ -668,7 +670,7 @@ const handleSaveRequirement = async (e) => {
                   </div>
 
                   {/* Requirements List */}
-                  <div className="flex-1 bg-white rounded-2xl border-2 border-slate-700/50 p-6 shadow-xl backdrop-blur-sm">
+                  <div className="flex-1 bg-white rounded-2xl border-2 border-slate-700/50 p-2 shadow-xl backdrop-blur-sm">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-xl font-bold text-black">
                         Requirements List
@@ -686,6 +688,9 @@ const handleSaveRequirement = async (e) => {
                         <thead className="sticky top-0 z-20">
                           <tr className="border-b border-[#D6D3CF] bg-tbhead">
                             <th className="px-6 py-4 text-left text-md font-semibold text-black uppercase tracking-wider border-b-2 border-slate-700/50">
+                              Appartment Type
+                            </th>
+                            <th className="px-6 py-4 text-left text-md font-semibold text-black uppercase tracking-wider border-b-2 border-slate-700/50">
                               Family
                             </th>
                             <th className="px-6 py-4 text-left text-md font-semibold text-black uppercase tracking-wider border-b-2 border-slate-700/50">
@@ -700,19 +705,22 @@ const handleSaveRequirement = async (e) => {
                           </tr>
                         </thead>
                         <tbody>
-                          {/* {requirements &&
+                          {requirements &&
                             requirements.map((req, index) => (
                               <tr
                                 key={index}
-                                className="group hover:bg-slate-800/40 transition-all duration-200 border-b border-slate-700/20 last:border-0"
+                                className="group hover:bg-slate-800/10 transition-all duration-200 border-b border-slate-700/20 last:border-0"
                               >
-                                <td className="px-6 py-4 text-sm font-medium text-white/90">
-                                  {req.familyId}
+                                <td className="px-6 py-4 text-sm font-medium text-black">
+                                  {req.apartmentTypeName}
                                 </td>
-                                <td className="px-6 py-4 text-sm text-white/80">
-                                  {req.subFamilyId}
+                                <td className="px-6 py-4 text-sm font-medium text-black">
+                                  {req.familyName}
                                 </td>
-                                <td className="px-6 py-4 text-sm text-blue-300 font-medium">
+                                <td className="px-6 py-4 text-sm text-black">
+                                  {req.subFamilyName}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-black font-medium">
                                   {req.quantity}
                                 </td>
                                 <td className="px-6 py-4">
@@ -721,11 +729,9 @@ const handleSaveRequirement = async (e) => {
                                     onClick={async () => {
                                       try {
                                         await deleteApartmentRequirement(
-                                          req.id
+                                          req.apartmentTypeRequirementId
                                         );
-                                        toast.success(
-                                          "Requirement deleted successfully"
-                                        );
+
                                         loadRequirements();
                                       } catch (error) {
                                         console.error(
@@ -737,16 +743,16 @@ const handleSaveRequirement = async (e) => {
                                         );
                                       }
                                     }}
-                                    className="p-2 rounded-lg hover:bg-slate-700/50 transition-all duration-200"
+                                    className="p-2 rounded-lg hover:bg-slate-200 transition-all duration-200"
                                   >
                                     <Trash2
-                                      size={18}
-                                      className="text-slate-400 hover:text-red-400 transition-colors duration-200"
+                                      size={28}
+                                      className="text-black hover:text-red-400 transition-colors duration-200"
                                     />
                                   </button>
                                 </td>
                               </tr>
-                            ))} */}
+                            ))}
                           {requirements.length === 0 && (
                             <tr>
                               <td colSpan="4" className="py-12 text-center">
