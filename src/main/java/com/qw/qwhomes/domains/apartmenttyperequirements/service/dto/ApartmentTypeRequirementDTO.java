@@ -26,6 +26,15 @@ public class ApartmentTypeRequirementDTO {
     private Integer quantity;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String familyName;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String subFamilyName;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private String apartmentTypeName;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime createdAt;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

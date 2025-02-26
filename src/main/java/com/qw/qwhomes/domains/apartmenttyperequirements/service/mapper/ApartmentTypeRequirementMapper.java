@@ -19,6 +19,10 @@ public interface ApartmentTypeRequirementMapper {
 
     @Mapping(target = "familyId", source = "family.familyId")
     @Mapping(target = "subFamilyId", source = "subFamily.subFamilyId")
+    @Mapping(target = "apartmentTypeId", source = "apartmentType.apartmentId")
+    @Mapping(target = "familyName", source = "family.name")
+    @Mapping(target = "subFamilyName", source = "subFamily.name")
+    @Mapping(target = "apartmentTypeName", source = "apartmentType.name")
     ApartmentTypeRequirementDTO toDTO(ApartmentTypeRequirement entity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
