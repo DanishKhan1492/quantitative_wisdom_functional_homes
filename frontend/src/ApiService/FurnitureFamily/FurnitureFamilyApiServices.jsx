@@ -51,8 +51,9 @@ export const getAllFurnitureFamilies = async (
     };
 
     const params = {
-      page:pageNumber-1,
+      page: pageNumber - 1,
       size,
+      sort: "createdAt,desc",
     };
 
     if (searchName) {

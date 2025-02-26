@@ -53,6 +53,7 @@ export const getAllColours = async (
     const params = {
       page: pageNumber,
       size: size,
+      sort: "createdAt,desc",
     };
 
     if (searchName) {

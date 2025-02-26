@@ -48,7 +48,7 @@ export const getAllMaterials = async (
     const params = {
       page,
       size,
-      sort,
+      sort: "createdAt,desc",
       ...(searchTerm && { search: searchTerm }), // Only add if truthy
       ...(filterTerm && { filter: filterTerm }),
     };

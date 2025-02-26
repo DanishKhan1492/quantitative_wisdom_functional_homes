@@ -51,7 +51,7 @@ export const getAllApartmentTypes = async (
     const params = {
       page: pageNumber - 1,
       size,
-    
+      sort: "createdAt,desc",
     };
 
     if (searchName) {

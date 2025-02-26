@@ -55,7 +55,7 @@ export const getAllSubFamilies = async (
       "Content-Type": "application/json",
       Accept: "application/json",
     };
-    const params = { page, size };
+    const params = { page, size, sort: "createdAt,desc" };
     const response = await axios.get(
       `${API_BASE_URL}/api/v1/furniture-families/sub-families`,
       { params, headers }

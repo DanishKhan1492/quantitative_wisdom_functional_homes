@@ -68,6 +68,7 @@ export const getAllProducts = async (
     const params = {
       page: pageNumber,
       size,
+      sort: "createdAt,desc",
     };
 
     if (searchName) {
