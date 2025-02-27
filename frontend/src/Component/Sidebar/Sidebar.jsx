@@ -84,6 +84,7 @@ const Sidebar = ({ onLogout }) => {
       items: [
         { name: "Dashboard", icon: Home, to: "/dashboard" },
         { name: "Suppliers", icon: Users, to: "/supplier" },
+        { name: "Client", icon: Users, to: "/client" },
       ],
     },
     {

@@ -122,7 +122,7 @@ const ProposalDetails = () => {
                 <InfoCard
                   icon={DollarSign}
                   title="Unit Price"
-                  value={`AED ${proposal.price.toFixed(2)}`}
+                  value={`AED ${proposal.price}`}
                 />
                 <InfoCard
                   icon={DollarSign}

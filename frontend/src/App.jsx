@@ -22,6 +22,7 @@ import Dashboard from "./Component/Dashboard/Dashboard";
 import { setupInterceptors } from "./ApiService/axiosConfig";
 import SecureLS from "secure-ls";
 import { LoadingProvider, LoadingContext } from "./contexts/LoadingContext"; // Corrected path
+import ClientList from "./Component/Clients/ClientList";
 import LoadingOverlay from "./Component/Loading/LoadingOverlay";
 const ls = new SecureLS({ encodingType: "aes" });
 
@@ -105,6 +106,7 @@ function AppContent() {
               <AuthenticatedLayout>
                 <Routes>
                   <Route path="/supplier" element={<ShowSupplierRecord />} />
+                  <Route path="/client" element={<ClientList />} />
                   <Route
                     path="/supplier-details/:supplierId"
                     element={<SupplierDetails />}
