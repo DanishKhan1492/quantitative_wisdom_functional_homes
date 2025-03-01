@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 001-create-colour-table
-      author: muhammad-danish-khan (generated)
+      author: muhammad danish khan
       changes:
         - createSequence:
             sequenceName: colour_id_seq

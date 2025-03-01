@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 1
-      author: muhammad-danish-khan (generated)
+      author: muhammad danish khan
       changes:
         - createSequence:
             sequenceName: supplier_id_seq

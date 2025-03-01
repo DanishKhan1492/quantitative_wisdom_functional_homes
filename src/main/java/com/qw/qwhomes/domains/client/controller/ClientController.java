@@ -73,4 +73,12 @@ public class ClientController {
         clientService.deleteClient(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/{status}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @Operation(summary = "Update an client status")
+    public ResponseEntity<Void> updateClientStatus(@PathVariable Long id, @PathVariable boolean status) {
+        clientService.updateClientStatus(id, status);
+        return ResponseEntity.ok().build();
+    }
 }

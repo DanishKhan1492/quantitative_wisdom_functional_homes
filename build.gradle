@@ -118,8 +118,7 @@ liquibase {
             username project.ext.liquibaseLocalEnvUsername
             password project.ext.liquibaseLocalEnvPassword
             changelogFile project.ext.diffLogLocalEnvChangelogFile
-            referenceUrl "hibernate:spring:com.qw.qwhomes?hibernate.enhanced_id=true&dialect=org.hibernate.dialect.PostgreSQLDialect&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy"
-            referenceDriver "liquibase.ext.hibernate.database.connection.HibernateDriver"
+            referenceUrl "hibernate:spring:com.qw.qwhomes.domains?hibernate.enhanced_id=true&dialect=org.hibernate.dialect.PostgreSQLDialect"
             defaultSchemaName project.ext.liquibaseLocalEnvDefaultSchemaName
             logLevel "debug"
             classpath "$buildDir/classes/java/main"
@@ -129,105 +128,3 @@ liquibase {
 }
 
 
-// Node Changes
-/*
-node {
-    version = '20.17.0'
-    download = true
-    nodeProjectDir = file("${project.projectDir}/frontend")
-}
-
-def reactAppDir = "$projectDir/frontend"
-
-tasks.register('installReactDeps', NodeTask) {
-    script = file("${reactAppDir}/package.json")
-    args = ['install']
-}
-
-tasks.register('buildReactApp', NodeTask) {
-    dependsOn installReactDeps
-    script = file("${reactAppDir}/package.json")
-    args = ['run', 'build']
-}
-
-tasks.register('startReactDev') {
-    dependsOn installReactDeps
-    doLast {
-        def process = new ProcessBuilder()
-                .directory(file(reactAppDir))
-                .command("npm", "start")
-                .redirectErrorStream(true)
-                .start()
-
-        // Create a buffer reader to capture the output
-        def reader = new BufferedReader(new InputStreamReader(process.getInputStream()))
-
-        // Start a thread to continuously read and print the output
-        Thread.start {
-            String line
-            while ((line = reader.readLine()) != null) {
-                println "React: $line"
-            }
-        }
-
-        // Check if the process is still running
-        if (!process.isAlive()) {
-            throw new GradleException("React development server failed to start. Exit code: ${process.exitValue()}")
-        }
-
-        // Add shutdown hook to kill the React process when Gradle exits
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            void run() {
-                process.destroy()
-            }
-        })
-
-        // Store the process in an ext property so it can be accessed by other tasks
-        project.ext.reactProcess = process
-    }
-}
-
-tasks.register('waitForReactDev') {
-    dependsOn startReactDev
-    doLast {
-        println "Waiting for React dev server to start..."
-        def maxRetries = 60  // Increased timeout to 60 seconds
-        def retryCount = 0
-        while (retryCount < maxRetries) {
-            try {
-                def connection = new URL("http://localhost:4000").openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
-                connection.connectTimeout = 1000
-                connection.readTimeout = 1000
-
-                if (connection.responseCode == 200) {
-                    println "React dev server is up!"
-                    return
-                }
-            } catch (Exception e) {
-                if (project.hasProperty('reactProcess') && !project.reactProcess.isAlive()) {
-                    throw new GradleException("React process died unexpectedly")
-                }
-                println "Waiting for React server... (${retryCount + 1}/${maxRetries})"
-                Thread.sleep(1000)
-                retryCount++
-            }
-        }
-        throw new GradleException("React dev server did not start in time")
-    }
-}
-*/
-
-bootRun {
-//    dependsOn startReactDev
-//    dependsOn waitForReactDev
-}
-
-// For production build
-//processResources {
-//    dependsOn buildReactApp
-//    from("$reactAppDir/build") {
-//        into 'static'
-//    }
-//}

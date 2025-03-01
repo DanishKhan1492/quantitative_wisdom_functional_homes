@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/apartment-type-requirements")
 @RequiredArgsConstructor
@@ -72,5 +74,12 @@ public class ApartmentTypeRequirementController {
     public ResponseEntity<Void> deleteApartmentType(@PathVariable Long id) {
         apartmentTypeRequirementService.deleteApartmentTypeRequirement(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{apartment-id}/families-and-sub-families")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @Operation(summary = "Get apartment type families and sub families")
+    public ResponseEntity<Map<Long, Object>> getApartmentTypeFamiliesAndSubFamilies(@PathVariable("apartment-id") Long id) {
+        return ResponseEntity.ok(apartmentTypeRequirementService.getApartmentTypeFamiliesAndSubFamilies(id));
     }
 }

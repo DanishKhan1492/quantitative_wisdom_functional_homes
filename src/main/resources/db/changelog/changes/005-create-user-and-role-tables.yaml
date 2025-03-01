@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 005-create-user-and-role-tables
-      author: muhammad-danish-khan (generated)
+      author: muhammad danish khan
       changes:
         - createSequence:
             sequenceName: role_id_seq

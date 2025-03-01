@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 001-create-apartmenttype-tables
-      author: system
+      author: muhammad danish khan
       changes:
         - createSequence:
             sequenceName: apartment_type_id_seq

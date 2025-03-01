@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 003-create-furniture-subfamily-table
-      author: assistant
+      author: muhammad danish khan
       changes:
         - createSequence:
             sequenceName: subfamily_id_seq

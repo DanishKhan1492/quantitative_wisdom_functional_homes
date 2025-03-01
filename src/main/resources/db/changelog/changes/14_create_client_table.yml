@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20240301-001
+      author: muhammad danish khan
+      changes:
+        - createSequence:
+            sequenceName: client_id_seq
+            incrementBy: 1
+            startValue: 1
+
+        - createTable:
+            tableName: client
+            columns:
+              - column:
+                  name: client_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueSequenceNext: client_id_seq
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: secondary_email
+                  type: varchar(255)
+              - column:
+                  name: address
+                  type: text
+              - column:
+                  name: phone
+                  type: varchar(50)
+              - column:
+                  name: secondary_phone
+                  type: varchar(50)
+              - column:
+                  name: status
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: bigint
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: bigint
+
+        - createIndex:
+            indexName: idx_client_email
+            tableName: client
+            columns:
+              - column:
+                  name: email

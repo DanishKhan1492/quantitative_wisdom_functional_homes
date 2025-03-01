@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 001-create-product-table
-      author: muhammad-danish-khan
+      author: muhammad danish khan
       changes:
         - createSequence:
               sequenceName: product_id_seq

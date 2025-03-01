@@ -14,7 +14,8 @@ import lombok.*;
 public class Material extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "material_seq")
+    @SequenceGenerator(name = "material_seq", sequenceName = "material_id_seq", allocationSize = 1)
     @Column(name = "material_id")
     private Long materialId;
 

@@ -12,4 +12,5 @@ public interface ClientService {
     ClientDTO updateClient(Long id, ClientDTO clientDTO);
     void deleteClient(Long id);
     ClientDashboardDTO getClientsMetaData();
+    void updateClientStatus(Long id, boolean status);
 }

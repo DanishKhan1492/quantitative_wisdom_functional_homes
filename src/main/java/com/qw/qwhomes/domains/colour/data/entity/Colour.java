@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +31,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Colour extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "colour_seq")
+    @SequenceGenerator(name = "colour_seq", sequenceName = "colour_id_seq", allocationSize = 1)
     @Column(name = "colour_id")
     private Long colourId;
 

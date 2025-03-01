@@ -5,6 +5,7 @@ import com.qw.qwhomes.config.QWContext;
 import com.qw.qwhomes.domains.apartmenttype.data.entity.ApartmentType;
 import com.qw.qwhomes.domains.apartmenttype.data.repository.ApartmentTypeRepository;
 import com.qw.qwhomes.domains.apartmenttyperequirements.data.entity.ApartmentTypeRequirement;
+import com.qw.qwhomes.domains.apartmenttyperequirements.data.repository.ApartmentTypeFamiliesAndSubFamiliesProjection;
 import com.qw.qwhomes.domains.apartmenttyperequirements.data.repository.ApartmentTypeRequirementRepository;
 import com.qw.qwhomes.domains.apartmenttyperequirements.service.ApartmentTypeRequirementService;
 import com.qw.qwhomes.domains.apartmenttyperequirements.service.dto.ApartmentTypeRequirementDTO;
@@ -20,7 +21,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -113,5 +118,30 @@ public class ApartmentTypeRequirementServiceImpl implements ApartmentTypeRequire
             throw new BusinessException("ApartmentType not found");
         }
         apartmentTypeRequirementRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Map<Long, Object> getApartmentTypeFamiliesAndSubFamilies(Long id) {
+        List<ApartmentTypeFamiliesAndSubFamiliesProjection> familiesAndSubFamilies = apartmentTypeRequirementRepository.findFamiliesAndSubFamiliesByApartmentTypeId(id);
+        return familiesAndSubFamilies.stream()
+                .collect(Collectors.groupingBy(
+                        ApartmentTypeFamiliesAndSubFamiliesProjection::getFamilyId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    Map<String, Object> familyData = new HashMap<>();
+                                    familyData.put("familyName", list.get(0).getFamilyName());
+                                    Map<Long, String> subFamilies = list.stream()
+                                            .collect(Collectors.toMap(
+                                                    ApartmentTypeFamiliesAndSubFamiliesProjection::getSubFamilyId,
+                                                    ApartmentTypeFamiliesAndSubFamiliesProjection::getSubFamilyName,
+                                                    (existing, replacement) -> existing
+                                            ));
+                                    familyData.put("subFamilies", subFamilies);
+                                    return familyData;
+                                }
+                        )
+                ));
     }
 }

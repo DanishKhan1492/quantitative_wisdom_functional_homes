@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,13 +30,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Client extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "client_seq")
+    @SequenceGenerator(name = "client_seq", sequenceName = "client_id_seq", allocationSize = 1)
     @Column(name = "client_id")
     private Long clientId;
 
-    @Column(nullable = false, length = 50, unique = true)
     private String name;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String secondaryEmail;

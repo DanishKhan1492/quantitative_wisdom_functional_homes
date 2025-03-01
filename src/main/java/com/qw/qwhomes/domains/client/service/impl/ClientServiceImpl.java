@@ -102,4 +102,10 @@ public class ClientServiceImpl implements ClientService {
     public ClientDashboardDTO getClientsMetaData() {
         return clientRepository.getClientsMetaData();
     }
+
+    @Transactional
+    @Override
+    public void updateClientStatus(Long id, boolean status) {
+        clientRepository.updateClientStatus(id, status);
+    }
 }

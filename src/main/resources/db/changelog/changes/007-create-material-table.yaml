@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 001-create-material-table
-      author: system
+      author: muhammad danish khan
       changes:
         - createSequence:
             sequenceName: material_id_seq

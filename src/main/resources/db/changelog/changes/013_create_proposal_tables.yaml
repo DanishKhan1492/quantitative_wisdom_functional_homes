@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 20230701-001
-      author: your_name
+      author: muhammad danish khan
       changes:
         - createSequence:
             sequenceName: proposal_id_seq

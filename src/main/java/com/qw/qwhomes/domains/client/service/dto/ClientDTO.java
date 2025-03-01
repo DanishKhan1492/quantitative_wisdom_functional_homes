@@ -30,6 +30,8 @@ public class ClientDTO {
 
     private String address;
 
+    private boolean status;
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime createdAt;
 
