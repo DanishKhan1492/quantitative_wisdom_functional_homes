@@ -16,10 +16,19 @@ import {
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import AddClientModal from "./AddClientModal";
-// import DeleteConfirmationModal from "./DeleteModal";
-
+import DeleteClientModal from "./DeleteClientModal";
+import {
+  getAllClients,
+  createClient,
+  updateClient,
+  deleteClient,
+  updateClientStatus,
+  getClientById
+} from "../../ApiService/ClientApiService/ClientApiService";
+import { useNavigate } from "react-router-dom";
 const ShowClientRecord = () => {
-  // Modal and client editing states
+  const navigate = useNavigate();
+  // Modal and editing states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [clientToDelete, setClientToDelete] = useState(null);
@@ -31,7 +40,7 @@ const ShowClientRecord = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterTerm, setFilterTerm] = useState("");
 
-  // Pagination states
+  // Pagination states (API is 0-indexed, so we adjust for display)
   const [pageNumber, setPageNumber] = useState(1);
   const [size, setSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
@@ -39,125 +48,94 @@ const ShowClientRecord = () => {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  // Dummy client data
-  const dummyClientsData = [
-    {
-      id: 1,
-      name: "Client One",
-      email: "client1@example.com",
-      primaryContactName: "Alice Smith",
-      phoneNumber: "111-222-3333",
-      city: "New York",
-      stateProvince: "NY",
-      country: "USA",
-      status: true,
-    },
-    {
-      id: 2,
-      name: "Client Two",
-      email: "client2@example.com",
-      primaryContactName: "Bob Johnson",
-      phoneNumber: "444-555-6666",
-      city: "Los Angeles",
-      stateProvince: "CA",
-      country: "USA",
-      status: false,
-    },
-    {
-      id: 3,
-      name: "Client Three",
-      email: "client3@example.com",
-      primaryContactName: "Charlie Brown",
-      phoneNumber: "777-888-9999",
-      city: "Chicago",
-      stateProvince: "IL",
-      country: "USA",
-      status: true,
-    },
-    // Add more dummy clients if needed
-  ];
-
-  // Simulate fetching clients (using dummy data)
-  const fetchClients = () => {
+  // Fetch clients from the API
+  const fetchClients = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setClients(dummyClientsData);
-      setFilteredClients(dummyClientsData);
-      setTotalElements(dummyClientsData.length);
-      setTotalPages(Math.ceil(dummyClientsData.length / size));
-      setIsLoading(false);
-    }, 500);
+    try {
+      // API is 0-indexed; hence we pass pageNumber - 1
+      const data = await getAllClients(pageNumber - 1, size, [
+        "createdAt,desc",
+      ]);
+      console.log(data, "------fdss---------");
+      setClients(data.data);
+      setFilteredClients(data.content);
+      setTotalElements(data.totalElements);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      toast.error("Error fetching clients");
+    }
+    setIsLoading(false);
   };
 
   useEffect(() => {
     fetchClients();
   }, [pageNumber, size]);
 
+  //Filter clients locally after data is fetched
   useEffect(() => {
     filterClients();
   }, [filterTerm, clients, searchTerm]);
 
   const filterClients = () => {
-    let filtered = clients;
+    let filtered = [...clients];
     if (searchTerm) {
       const lowerSearch = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (client) =>
-          client.name.toLowerCase().includes(lowerSearch) ||
-          client.primaryContactName.toLowerCase().includes(lowerSearch)
+      filtered = filtered.filter((client) =>
+        client.name.toLowerCase().includes(lowerSearch)
       );
     }
     if (filterTerm) {
       const lowerFilter = filterTerm.toLowerCase();
       filtered = filtered.filter(
         (client) =>
-          (client.city && client.city.toLowerCase().includes(lowerFilter)) ||
-          (client.stateProvince &&
-            client.stateProvince.toLowerCase().includes(lowerFilter)) ||
-          (client.country && client.country.toLowerCase().includes(lowerFilter))
+          client.address && client.address.toLowerCase().includes(lowerFilter)
       );
     }
     setFilteredClients(filtered);
   };
 
-  const handleCreateOrUpdateClient = (clientData) => {
-    if (editingClient) {
-      // Update existing client
-      const updatedClients = clients.map((client) =>
-        client.id === editingClient.id ? { ...client, ...clientData } : client
-      );
-      setClients(updatedClients);
-      toast.success("Client updated successfully");
+  // Create or update client using API calls
+  const handleCreateOrUpdateClient = async (clientData) => {
+    try {
+      if (editingClient) {
+        console.log(editingClient.clientId, "------editingClient.clientId---------");
+        await updateClient(editingClient.clientId, clientData);
+        toast.success("Client updated successfully");
+      } else {
+        await createClient(clientData);
+        toast.success("Client created successfully");
+      }
+      setIsModalOpen(false);
       setEditingClient(null);
-      setIsModalOpen(false);
-    } else {
-      // Create new client (assign a unique id using Date.now())
-      const newClient = { ...clientData, id: Date.now(), status: true };
-      setClients([newClient, ...clients]);
-      toast.success("Client added successfully");
-      setIsModalOpen(false);
+      fetchClients();
+    } catch (error) {
+      toast.error("Error saving client");
     }
   };
 
+  // Delete a client via API
   const handleDeleteClick = (client) => {
     setClientToDelete(client);
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (clientToDelete) {
-      const updatedClients = clients.filter(
-        (client) => client.id !== clientToDelete.id
-      );
-      setClients(updatedClients);
-      toast.success("Client deleted successfully");
+      console.log(clientToDelete.clientId, "------clientToDelete.clientId---------");
+      try {
+        await deleteClient(clientToDelete.clientId);
+        toast.success("Client deleted successfully");
+        fetchClients();
+      } catch (error) {
+        toast.error("Error deleting client");
+      }
       setIsDeleteModalOpen(false);
       setClientToDelete(null);
     }
   };
 
   const handleEditClick = (clientId) => {
-    const clientData = clients.find((client) => client.id === clientId);
+    const clientData = clients.find((client) => client.clientId === clientId);
     if (clientData) {
       setEditingClient(clientData);
       setIsModalOpen(true);
@@ -166,19 +144,29 @@ const ShowClientRecord = () => {
     }
   };
 
-  const handleViewClick = (clientId) => {
-    // Implement view logic (e.g., navigate to a client details page)
+  const handleViewClick = async(clientId) => {
+    // Redirect to client details page
+    console.log(clientId, "------clientId---------");
+  //  await getClientById(clientId);
+   navigate(`/clients/${clientId}`);
   };
 
-  const handleStatusToggle = (clientId) => {
-    const updatedClients = clients.map((client) =>
-      client.id === clientId ? { ...client, status: !client.status } : client
-    );
-    setClients(updatedClients);
-    toast.success("Client status updated");
+  // Toggle client status using API call
+  const handleStatusToggle = async (clientId) => {
+    try {
+      const client = clients.find((client) => client.clientId === clientId);
+      if (client) {
+        const newStatus = !client.status;
+        await updateClientStatus(clientId, newStatus);
+        toast.success("Client status updated");
+        fetchClients();
+      }
+    } catch (error) {
+      toast.error("Error updating client status");
+    }
   };
 
-  // Render pagination page numbers
+  // Render pagination buttons
   const renderPageNumbers = () => {
     const pageButtons = [];
     const maxVisiblePages = 5;
@@ -191,7 +179,7 @@ const ShowClientRecord = () => {
           className={`w-8 h-8 flex border-2 border-black items-center justify-center rounded-full transition-colors ${
             page === pageNumber
               ? "bg-white text-black font-bold"
-              : "bg-black border border-blue-500 text-white hover:bg-slate-700"
+              : "bg-black text-white hover:bg-slate-700"
           }`}
         >
           {page}
@@ -247,7 +235,7 @@ const ShowClientRecord = () => {
     return pageButtons;
   };
 
-  // Pagination calculations (1-indexed)
+  
   const startItem = (pageNumber - 1) * size + 1;
   const endItem = Math.min(pageNumber * size, totalElements);
 
@@ -258,7 +246,7 @@ const ShowClientRecord = () => {
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <h1 className="text-2xl font-bold text-black">Clients Management</h1>
           <div className="flex flex-col md:flex-row gap-4 w-full lg:w-auto">
-            {/* Search and Filter Section */}
+            {/* Search and Filter */}
             <div className="flex flex-1 gap-4">
               <motion.div
                 className="relative flex-1"
@@ -282,7 +270,7 @@ const ShowClientRecord = () => {
               >
                 <input
                   type="text"
-                  placeholder="Filter by location..."
+                  placeholder="Filter by address..."
                   value={filterTerm}
                   onChange={(e) => setFilterTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
@@ -295,7 +283,7 @@ const ShowClientRecord = () => {
             </div>
             {/* Action Buttons */}
             <div className="flex gap-4">
-              <motion.button
+              {/* <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="flex items-center px-6 py-2 bg-black text-white rounded-xl hover:bg-slate-600 transition-colors"
@@ -303,7 +291,7 @@ const ShowClientRecord = () => {
               >
                 <Download className="w-5 h-5 mr-2" />
                 Export
-              </motion.button>
+              </motion.button> */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -321,7 +309,7 @@ const ShowClientRecord = () => {
         </div>
       </div>
 
-      {/* Table Section */}
+      {/* Clients Table */}
       <div className="bg-white rounded-2xl shadow-2xl">
         <div className="overflow-x-auto">
           <table className="w-full min-h-60">
@@ -334,7 +322,7 @@ const ShowClientRecord = () => {
                   Contact
                 </th>
                 <th className="p-4 text-left text-black font-semibold">
-                  Location
+                  Address
                 </th>
                 <th className="p-4 text-left text-black font-semibold">
                   Status
@@ -356,7 +344,7 @@ const ShowClientRecord = () => {
               ) : filteredClients && filteredClients.length > 0 ? (
                 filteredClients.map((client) => (
                   <tr
-                    key={client.id}
+                    key={client.clientId}
                     className="border-b border-slate-700 hover:bg-black/10 transition-colors"
                   >
                     <td className="px-4">
@@ -369,25 +357,22 @@ const ShowClientRecord = () => {
                     </td>
                     <td className="px-3">
                       <div className="text-black font-medium">
-                        {client.primaryContactName}
+                        {client.phone}
                       </div>
-                      <div className="text-black text-sm">
-                        {client.phoneNumber}
-                      </div>
+                      {/* <div className="text-black text-sm">
+                        {client.secondaryPhone}
+                      </div> */}
                     </td>
                     <td className="px-3 py-2">
                       <div className="text-black font-medium">
-                        {client.city}
-                      </div>
-                      <div className="text-black text-sm">
-                        {client.stateProvince}, {client.country}
+                        {client.address}
                       </div>
                     </td>
                     <td className="p-4">
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        onClick={() => handleStatusToggle(client.id)}
+                        onClick={() => handleStatusToggle(client.clientId)}
                         className={`px-3 py-1 rounded-full flex items-center gap-2 ${
                           client.status
                             ? "bg-blue-500/20 text-black"
@@ -413,7 +398,7 @@ const ShowClientRecord = () => {
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
                           className="text-blue-800"
-                          onClick={() => handleViewClick(client.id)}
+                          onClick={() => handleViewClick(client.clientId)}
                         >
                           <Eye size={28} />
                         </motion.button>
@@ -421,7 +406,7 @@ const ShowClientRecord = () => {
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
                           className="text-green-800"
-                          onClick={() => handleEditClick(client.id)}
+                          onClick={() => handleEditClick(client.clientId)}
                         >
                           <Edit size={28} />
                         </motion.button>
@@ -515,11 +500,13 @@ const ShowClientRecord = () => {
         isEditing={!!editingClient}
         clientData={editingClient}
       />
-      {/* <DeleteConfirmationModal
+      {/* Uncomment below if you implement a DeleteConfirmationModal */}
+      <DeleteClientModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-      /> */}
+        clientToDelete={clientToDelete}
+      />
     </div>
   );
 };

@@ -9,16 +9,14 @@ const AddClientModal = ({
   isEditing,
   clientData,
 }) => {
-  const [newClient, setNewClient] = useState({
+  // Updated client object based on your JSON schema
+  const [client, setClient] = useState({
     name: "",
     email: "",
-    phoneNumber: "",
-    primaryContactName: "",
-    websiteUrl: "",
-    streetAddress: "",
-    city: "",
-    stateProvince: "",
-    country: "",
+    secondaryEmail: "",
+    phone: "",
+    secondaryPhone: "",
+    address: "",
     status: true,
   });
 
@@ -26,44 +24,36 @@ const AddClientModal = ({
 
   useEffect(() => {
     if (isEditing && clientData) {
-      setNewClient({
+      setClient({
         ...clientData,
-        status: clientData.status ?? true,
+        status: clientData.status !== undefined ? clientData.status : true,
       });
     } else {
-      setNewClient({
+      setClient({
         name: "",
         email: "",
-        phoneNumber: "",
-        primaryContactName: "",
-        websiteUrl: "",
-        streetAddress: "",
-        city: "",
-        stateProvince: "",
-        country: "",
+        secondaryEmail: "",
+        phone: "",
+        secondaryPhone: "",
+        address: "",
         status: true,
       });
     }
   }, [isEditing, clientData]);
 
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setClient((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
     try {
-      const result = await onSubmit(newClient);
-      setNewClient({
-        name: "",
-        email: "",
-        phoneNumber: "",
-        primaryContactName: "",
-        websiteUrl: "",
-        streetAddress: "",
-        city: "",
-        stateProvince: "",
-        country: "",
-        status: true,
-      });
+      const result = await onSubmit(client);
       if (result) {
         onClose();
       }
@@ -76,14 +66,7 @@ const AddClientModal = ({
 
   if (!isOpen) return null;
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setNewClient((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
+  // Reusable Checkbox field component
   const CheckboxField = ({ label, id, name, checked, onChange }) => (
     <div className="flex items-center group">
       <input
@@ -129,193 +112,113 @@ const AddClientModal = ({
           </div>
         </div>
 
-        {/* Form Container */}
+        {/* Form */}
         <div className="overflow-y-auto max-h-[80vh] p-6 bg-white custom-scrollbar">
           <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Client Information Section */}
+            {/* Client Information */}
             <div>
-              <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
+              <h3 className="text-xl font-semibold text-black mb-6">
                 Client Information
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="group w-full">
-                  <label className="block text-sm font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
-                    Name<span className="text-red-500">*</span>
+                  <label className="block text-sm font-medium text-black mb-2">
+                    Name <span className="text-red-500">*</span>
                   </label>
-                  <div className="relative">
-                    <input
-                      id="name"
-                      name="name"
-                      value={newClient.name}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="Enter client name"
-                      className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
-                    />
-                  </div>
-                </div>
-                <div className="group w-full">
-                  <label className="block text-sm font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
-                    Email<span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={newClient.email}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="Enter email address"
-                      className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
-                    />
-                  </div>
-                </div>
-                <div className="group w-full">
-                  <label className="block text-sm font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
-                    Phone Number<span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      id="phoneNumber"
-                      name="phoneNumber"
-                      value={newClient.phoneNumber}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="Enter phone number"
-                      className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
-                    />
-                  </div>
-                </div>
-                <div className="group w-full">
-                  <label className="block text-sm font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
-                    Primary Contact Name
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      id="primaryContactName"
-                      name="primaryContactName"
-                      value={newClient.primaryContactName}
-                      onChange={handleInputChange}
-                      placeholder="Enter primary contact name"
-                      className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Address Information Section */}
-            <div>
-              <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
-                Address Information
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="group w-full">
-                  <label className="block text-sm font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
-                    Street Address<span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      id="streetAddress"
-                      name="streetAddress"
-                      value={newClient.streetAddress}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="Enter street address"
-                      className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
-                    />
-                  </div>
-                </div>
-                <div className="group w-full">
-                  <label className="block text-sm font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
-                    City<span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      value={newClient.city}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="Enter city"
-                      className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
-                    />
-                  </div>
-                </div>
-                <div className="group w-full">
-                  <label className="block text-sm font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
-                    State/Province<span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      id="stateProvince"
-                      name="stateProvince"
-                      value={newClient.stateProvince}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="Enter state or province"
-                      className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
-                    />
-                  </div>
-                </div>
-                <div className="group w-full">
-                  <label className="block text-sm font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
-                    Country<span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      id="country"
-                      name="country"
-                      value={newClient.country}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="Enter country"
-                      className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Other Information Section */}
-            <div>
-              <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
-                Other Information
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="group w-full">
-                  <label className="block text-sm font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
-                    Website URL
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="url"
-                      id="websiteUrl"
-                      name="websiteUrl"
-                      value={newClient.websiteUrl}
-                      onChange={handleInputChange}
-                      placeholder="Enter website URL"
-                      className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-6 items-center mt-8">
-                  <CheckboxField
-                    label="Active"
-                    id="status"
-                    name="status"
-                    checked={newClient.status}
+                  <input
+                    type="text"
+                    name="name"
+                    value={client.name}
                     onChange={handleInputChange}
+                    required
+                    placeholder="Enter client name"
+                    className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
                   />
                 </div>
+                <div className="group w-full">
+                  <label className="block text-sm font-medium text-black mb-2">
+                    Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={client.email}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter email address"
+                    className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
+                  />
+                </div>
+                <div className="group w-full">
+                  <label className="block text-sm font-medium text-black mb-2">
+                    Secondary Email
+                  </label>
+                  <input
+                    type="email"
+                    name="secondaryEmail"
+                    value={client.secondaryEmail}
+                    onChange={handleInputChange}
+                    placeholder="Enter secondary email"
+                    className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
+                  />
+                </div>
+                <div className="group w-full">
+                  <label className="block text-sm font-medium text-black mb-2">
+                    Phone <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="phone"
+                    value={client.phone}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter phone number"
+                    className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
+                  />
+                </div>
+                <div className="group w-full">
+                  <label className="block text-sm font-medium text-black mb-2">
+                    Secondary Phone
+                  </label>
+                  <input
+                    type="text"
+                    name="secondaryPhone"
+                    value={client.secondaryPhone}
+                    onChange={handleInputChange}
+                    placeholder="Enter secondary phone number"
+                    className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
+                  />
+                </div>
+                <div className="group w-full">
+                  <label className="block text-sm font-medium text-black mb-2">
+                    Address <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    name="address"
+                    value={client.address}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Enter address"
+                    className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
+                    rows="3"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Other Information */}
+            <div>
+              <h3 className="text-xl font-semibold text-black mb-6">
+                Other Information
+              </h3>
+              <div className="flex items-center">
+                <CheckboxField
+                  label="Active"
+                  id="status"
+                  name="status"
+                  checked={client.status}
+                  onChange={handleInputChange}
+                />
               </div>
             </div>
 
@@ -337,13 +240,11 @@ const AddClientModal = ({
                 className="px-6 py-2 bg-black text-xl text-white rounded-xl hover:bg-blue-600 transition-colors"
                 disabled={isLoading}
               >
-                {isLoading ? (
-                  <div className="flex items-center">Loading...</div>
-                ) : isEditing ? (
-                  "Update Client"
-                ) : (
-                  "Add Client"
-                )}
+                {isLoading
+                  ? "Loading..."
+                  : isEditing
+                  ? "Update Client"
+                  : "Add Client"}
               </motion.button>
             </div>
           </form>

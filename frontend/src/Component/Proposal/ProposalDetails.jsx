@@ -1,40 +1,54 @@
-import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, FileText, User, Home, DollarSign, Calendar, Package } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  ArrowLeft,
+  FileText,
+  User,
+  Home,
+  DollarSign,
+  Calendar,
+  Package,
+} from "lucide-react";
 import { motion } from "framer-motion";
+import { getProposalById } from "../../ApiService/ProposalServices/PorposalApiSurvice";
+import { toast } from "react-toastify";
 
 const ProposalDetails = () => {
   const navigate = useNavigate();
-  const { state: proposal } = useLocation();
-  
-  const proposals = {
-    items: [
-      {
-        id: 1,
-        name: "Modern Sofa",
-        quantity: 2,
-        unitPrice: 1500,
-        totalPrice: 3000,
-      },
-      {
-        id: 2,
-        name: "Coffee Table",
-        quantity: 3,
-        unitPrice: 500,
-        totalPrice: 1500,
-      },
-      {
-        id: 3,
-        name: "Armchair",
-        quantity: 2,
-        unitPrice: 250,
-        totalPrice: 500,
-      },
-    ],
-  };
+  const { id } = useParams();
+  const [proposal, setProposal] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch proposal details when component mounts or id changes
+  useEffect(() => {
+    const fetchProposal = async () => {
+      try {
+        const data = await getProposalById(id);
+        setProposal(data);
+      } catch (error) {
+        console.error("Error fetching proposal details:", error);
+        toast.error("Failed to load proposal details");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProposal();
+  }, [id]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!proposal) {
+    return (
+      <div className="h-screen bg-background p-6">
+        <div className="text-black">Proposal not found.</div>
+      </div>
+    );
+  }
 
   const InfoCard = ({ icon: Icon, title, value }) => (
-    <motion.div 
+    <motion.div
       whileHover={{ scale: 1.02 }}
       className="bg-white shadow-md rounded-xl p-4 flex items-start gap-3"
     >
@@ -84,12 +98,12 @@ const ProposalDetails = () => {
                 </span>
               </div>
               <div className="p-6">
-                <p className="text-black mb-6">{proposal.description}</p>
+                <p className="text-black mb-6">{proposal.description || ""}</p>
                 <div className="space-y-4">
                   <InfoCard
                     icon={Calendar}
                     title="Date"
-                    value={proposal.date}
+                    value={new Date(proposal.createdAt).toLocaleDateString()}
                   />
                   <InfoCard
                     icon={Home}
@@ -99,7 +113,7 @@ const ProposalDetails = () => {
                   <InfoCard
                     icon={User}
                     title="Client Info"
-                    value={proposal.clientInfo}
+                    value={proposal.clientName}
                   />
                 </div>
               </div>
@@ -117,12 +131,12 @@ const ProposalDetails = () => {
                 <InfoCard
                   icon={Package}
                   title="Quantity"
-                  value={proposal.quantity}
+                  value={proposal.proposalProducts[0]?.quantity || 0}
                 />
                 <InfoCard
                   icon={DollarSign}
                   title="Unit Price"
-                  value={`AED ${proposal.price}`}
+                  value={`AED ${proposal.totalPrice}`}
                 />
                 <InfoCard
                   icon={DollarSign}
@@ -138,22 +152,24 @@ const ProposalDetails = () => {
                 Items Included
               </h2>
               <div className="space-y-4">
-                {proposals.items.map((item) => (
+                {proposal.proposalProducts.map((item, index) => (
                   <motion.div
-                    key={item.id}
+                    key={index}
                     whileHover={{ scale: 1.01 }}
                     className="bg-white shadow-md rounded-xl p-4"
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="text-black font-medium">{item.name}</h3>
+                        <h3 className="text-black font-medium">
+                          {item.name || "Item"}
+                        </h3>
                         <p className="text-black text-md mt-1">
                           Quantity: {item.quantity} × AED{" "}
-                          {item.unitPrice.toFixed(2)}
+                          {item.price?.toFixed(2)}
                         </p>
                       </div>
                       <div className="text-black font-semibold">
-                        AED {item.totalPrice.toFixed(2)}
+                        AED {item.totalPrice?.toFixed(2)}
                       </div>
                     </div>
                   </motion.div>

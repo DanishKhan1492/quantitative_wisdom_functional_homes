@@ -16,7 +16,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, proposalToDelete 
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
         transition={{ duration: 0.3 }}
-        className="bg-slate-800 rounded-xl w-full max-w-lg p-6 relative shadow-2xl mx-4"
+        className="bg-background rounded-xl w-full max-w-lg p-6 relative shadow-2xl mx-4"
       >
         <div className="absolute inset-0 bg-slate-800/40 rounded-xl backdrop-blur-sm -z-10" />
         
@@ -33,7 +33,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, proposalToDelete 
           <h3 className="text-3xl font-bold mb-3 bg-gradient-to-r from-red-400 to-red-500 bg-clip-text text-transparent">
             Confirm Deletion
           </h3>
-          <p className="text-slate-400 text-lg">
+          <p className="text-black text-lg">
             Are you sure you want to delete this proposal? This action cannot be undone.
           </p>
         </div>
@@ -70,8 +70,8 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, proposalToDelete 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onClose}
-            className="flex-1 px-6 py-3 border border-slate-600 rounded-lg text-slate-300 
-                     hover:bg-slate-700 hover:border-slate-500 transition-all duration-200 font-medium"
+            className="flex-1 px-6 py-3 border border-slate-600 rounded-lg text-black bg-black/30
+                      transition-all duration-200 font-medium"
           >
             Cancel
           </motion.button>
@@ -79,7 +79,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, proposalToDelete 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onConfirm}
-            className="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg
+            className="flex-1 px-6 py-3 bg-black text-white rounded-lg
                      hover:from-red-700 hover:to-red-600 transition-all duration-200 font-medium
                      shadow-lg shadow-red-500/10 hover:shadow-red-500/20 flex items-center justify-center gap-2"
           >

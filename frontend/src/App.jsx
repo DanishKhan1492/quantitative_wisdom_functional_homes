@@ -24,6 +24,7 @@ import SecureLS from "secure-ls";
 import { LoadingProvider, LoadingContext } from "./contexts/LoadingContext"; // Corrected path
 import ClientList from "./Component/Clients/ClientList";
 import LoadingOverlay from "./Component/Loading/LoadingOverlay";
+import ClientDetails from "./Component/Clients/ClientDetails";
 const ls = new SecureLS({ encodingType: "aes" });
 
 function App() {
@@ -106,11 +107,12 @@ function AppContent() {
               <AuthenticatedLayout>
                 <Routes>
                   <Route path="/supplier" element={<ShowSupplierRecord />} />
-                  <Route path="/client" element={<ClientList />} />
                   <Route
                     path="/supplier-details/:supplierId"
                     element={<SupplierDetails />}
                   />
+                  <Route path="/client" element={<ClientList />} />
+                  <Route path="/clients/:id" element={<ClientDetails />} />
                   <Route path="/apartment" element={<AppartmentList />} />
                   <Route path="/dashboard" element={<Dashboard />} />
 
