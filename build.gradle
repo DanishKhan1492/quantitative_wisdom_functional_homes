@@ -59,7 +59,7 @@ dependencies {
     liquibaseRuntime 'info.picocli:picocli:4.7.6'
     liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate6:4.29.2'
     liquibaseRuntime 'org.springframework.boot:spring-boot-starter-data-jpa'
-    liquibaseRuntime(sourceSets.main.output)
+    liquibaseRuntime (sourceSets.main.output)
 
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
@@ -80,10 +80,6 @@ test{
 if (!project.hasProperty("runList")) {
     project.ext.runList = "localEnv"
 }
-
-diff.dependsOn compileJava
-diffChangelog.dependsOn compileJava
-generateChangelog.dependsOn compileJava
 
 project.ext {
     // Local Env DB
@@ -127,4 +123,7 @@ liquibase {
     runList = project.ext.runList
 }
 
+diff.dependsOn compileJava
+diffChangelog.dependsOn compileJava
+generateChangelog.dependsOn compileJava
 

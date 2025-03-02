@@ -2,6 +2,7 @@ package com.qw.qwhomes.domains.proposal.data.entity;
 
 import com.qw.qwhomes.common.entity.BaseEntity;
 import com.qw.qwhomes.domains.apartmenttype.data.entity.ApartmentType;
+import com.qw.qwhomes.domains.client.data.entity.Client;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +18,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,7 +31,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Proposal extends BaseEntity {
 
     @Id
@@ -47,15 +46,16 @@ public class Proposal extends BaseEntity {
     @JoinColumn(name = "apartment_type_id")
     private ApartmentType apartmentType;
 
-    @Column(name = "client_info")
-    private String clientInfo;
-
     @Column(name = "total_price")
     private Double totalPrice;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private ProposalStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
 
     @OneToMany(mappedBy = "proposal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProposalProduct> proposalProducts = new ArrayList<>();

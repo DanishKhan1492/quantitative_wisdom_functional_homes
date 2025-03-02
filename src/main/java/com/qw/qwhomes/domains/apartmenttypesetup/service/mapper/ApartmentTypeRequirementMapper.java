@@ -1,7 +1,7 @@
-package com.qw.qwhomes.domains.apartmenttyperequirements.service.mapper;
+package com.qw.qwhomes.domains.apartmenttypesetup.service.mapper;
 
-import com.qw.qwhomes.domains.apartmenttyperequirements.data.entity.ApartmentTypeRequirement;
-import com.qw.qwhomes.domains.apartmenttyperequirements.service.dto.ApartmentTypeRequirementDTO;
+import com.qw.qwhomes.domains.apartmenttypesetup.data.entity.ApartmentTypeRequirement;
+import com.qw.qwhomes.domains.apartmenttypesetup.service.dto.ApartmentTypeRequirementDTO;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

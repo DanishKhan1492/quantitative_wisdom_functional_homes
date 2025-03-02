@@ -1,6 +1,6 @@
-package com.qw.qwhomes.domains.apartmenttyperequirements.data.repository;
+package com.qw.qwhomes.domains.apartmenttypesetup.data.repository;
 
-import com.qw.qwhomes.domains.apartmenttyperequirements.data.entity.ApartmentTypeRequirement;
+import com.qw.qwhomes.domains.apartmenttypesetup.data.entity.ApartmentTypeRequirement;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;

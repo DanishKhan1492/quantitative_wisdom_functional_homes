@@ -1,4 +1,4 @@
-package com.qw.qwhomes.domains.apartmenttyperequirements.data.repository;
+package com.qw.qwhomes.domains.apartmenttypesetup.data.repository;
 
 public interface ApartmentTypeFamiliesAndSubFamiliesProjection {
     Long getFamilyId();

@@ -1,15 +1,15 @@
-package com.qw.qwhomes.domains.apartmenttyperequirements.service.impl;
+package com.qw.qwhomes.domains.apartmenttypesetup.service.impl;
 
 import com.qw.qwhomes.common.exceptions.BusinessException;
 import com.qw.qwhomes.config.QWContext;
 import com.qw.qwhomes.domains.apartmenttype.data.entity.ApartmentType;
 import com.qw.qwhomes.domains.apartmenttype.data.repository.ApartmentTypeRepository;
-import com.qw.qwhomes.domains.apartmenttyperequirements.data.entity.ApartmentTypeRequirement;
-import com.qw.qwhomes.domains.apartmenttyperequirements.data.repository.ApartmentTypeFamiliesAndSubFamiliesProjection;
-import com.qw.qwhomes.domains.apartmenttyperequirements.data.repository.ApartmentTypeRequirementRepository;
-import com.qw.qwhomes.domains.apartmenttyperequirements.service.ApartmentTypeRequirementService;
-import com.qw.qwhomes.domains.apartmenttyperequirements.service.dto.ApartmentTypeRequirementDTO;
-import com.qw.qwhomes.domains.apartmenttyperequirements.service.mapper.ApartmentTypeRequirementMapper;
+import com.qw.qwhomes.domains.apartmenttypesetup.data.entity.ApartmentTypeRequirement;
+import com.qw.qwhomes.domains.apartmenttypesetup.data.repository.ApartmentTypeFamiliesAndSubFamiliesProjection;
+import com.qw.qwhomes.domains.apartmenttypesetup.data.repository.ApartmentTypeRequirementRepository;
+import com.qw.qwhomes.domains.apartmenttypesetup.service.ApartmentTypeRequirementService;
+import com.qw.qwhomes.domains.apartmenttypesetup.service.dto.ApartmentTypeRequirementDTO;
+import com.qw.qwhomes.domains.apartmenttypesetup.service.mapper.ApartmentTypeRequirementMapper;
 import com.qw.qwhomes.domains.furniturefamily.data.entity.FurnitureFamily;
 import com.qw.qwhomes.domains.furniturefamily.data.entity.FurnitureSubFamily;
 import com.qw.qwhomes.domains.furniturefamily.data.repository.FurnitureFamilyRepository;

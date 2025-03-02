@@ -1,7 +1,6 @@
-package com.qw.qwhomes.domains.apartmenttyperequirements.service;
+package com.qw.qwhomes.domains.apartmenttypesetup.service;
 
-import com.qw.qwhomes.domains.apartmenttype.service.dto.ApartmentTypeDTO;
-import com.qw.qwhomes.domains.apartmenttyperequirements.service.dto.ApartmentTypeRequirementDTO;
+import com.qw.qwhomes.domains.apartmenttypesetup.service.dto.ApartmentTypeRequirementDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

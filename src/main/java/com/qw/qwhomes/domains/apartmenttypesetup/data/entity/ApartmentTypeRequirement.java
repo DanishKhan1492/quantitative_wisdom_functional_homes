@@ -1,4 +1,4 @@
-package com.qw.qwhomes.domains.apartmenttyperequirements.data.entity;
+package com.qw.qwhomes.domains.apartmenttypesetup.data.entity;
 
 import com.qw.qwhomes.common.entity.BaseEntity;
 import com.qw.qwhomes.domains.apartmenttype.data.entity.ApartmentType;
@@ -15,7 +15,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,7 +25,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ApartmentTypeRequirement extends BaseEntity {
 
     @Id

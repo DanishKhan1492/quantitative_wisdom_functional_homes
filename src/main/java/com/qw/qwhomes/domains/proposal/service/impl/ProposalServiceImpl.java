@@ -4,6 +4,8 @@ import com.qw.qwhomes.common.exceptions.BusinessException;
 import com.qw.qwhomes.common.exceptions.ResourceNotFoundException;
 import com.qw.qwhomes.domains.apartmenttype.data.entity.ApartmentType;
 import com.qw.qwhomes.domains.apartmenttype.data.repository.ApartmentTypeRepository;
+import com.qw.qwhomes.domains.client.data.entity.Client;
+import com.qw.qwhomes.domains.client.data.repository.ClientRepository;
 import com.qw.qwhomes.domains.product.data.entity.Product;
 import com.qw.qwhomes.domains.product.data.repository.ProductRepository;
 import com.qw.qwhomes.domains.proposal.data.entity.Proposal;
@@ -28,6 +30,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,6 +53,8 @@ public class ProposalServiceImpl implements ProposalService {
     private final ApartmentTypeRepository apartmentTypeRepository;
     private final ProductRepository productRepository;
     private final ProposalMapper proposalMapper;
+    private final MessageSource messageSource;
+    private final ClientRepository clientRepository;
 
     @Value("${proposal.export.path}")
     private String exportPath;
@@ -60,8 +66,12 @@ public class ProposalServiceImpl implements ProposalService {
         proposal.setStatus(Proposal.ProposalStatus.DRAFT);
 
         ApartmentType apartmentType = apartmentTypeRepository.findById(createDTO.getApartmentTypeId())
-                .orElseThrow(() -> new ResourceNotFoundException("ApartmentType not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("apartmentType.notFound", new Object[]{createDTO.getApartmentTypeId()}, Locale.getDefault())));
         proposal.setApartmentType(apartmentType);
+
+        Client client = clientRepository.findById(createDTO.getClientId())
+                .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("client.notFound", new Object[]{createDTO.getClientId()}, Locale.getDefault())));
+        proposal.setClient(client);
 
         List<ProposalProduct> proposalProducts = createProposalProducts(createDTO.getProposalProducts(), proposal);
         proposal.setProposalProducts(proposalProducts);
@@ -77,7 +87,7 @@ public class ProposalServiceImpl implements ProposalService {
     @Transactional
     public ProposalResponseDTO updateProposal(Long id, ProposalUpdateDTO updateDTO) {
         Proposal proposal = proposalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("proposal.notFound", new Object[]{id}, Locale.getDefault())));
 
         if (proposal.getStatus() != Proposal.ProposalStatus.DRAFT) {
             throw new BusinessException("Only draft proposals can be updated");
@@ -86,7 +96,7 @@ public class ProposalServiceImpl implements ProposalService {
         proposalMapper.updateEntityFromDto(updateDTO, proposal);
 
         ApartmentType apartmentType = apartmentTypeRepository.findById(updateDTO.getApartmentTypeId())
-                .orElseThrow(() -> new ResourceNotFoundException("ApartmentType not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("apartmentType.notFound", new Object[]{updateDTO.getApartmentTypeId()}, Locale.getDefault())));
         proposal.setApartmentType(apartmentType);
 
         proposal.getProposalProducts().clear();
@@ -104,7 +114,7 @@ public class ProposalServiceImpl implements ProposalService {
     @Transactional(readOnly = true)
     public ProposalResponseDTO getProposal(Long id) {
         Proposal proposal = proposalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("proposal.notFound", new Object[]{id}, Locale.getDefault())));
         return proposalMapper.toDto(proposal);
     }
 
@@ -118,10 +128,10 @@ public class ProposalServiceImpl implements ProposalService {
     @Transactional
     public void deleteProposal(Long id) {
         Proposal proposal = proposalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("proposal.notFound", new Object[]{id}, Locale.getDefault())));
 
         if (proposal.getStatus() != Proposal.ProposalStatus.DRAFT) {
-            throw new BusinessException("Only draft proposals can be deleted");
+            throw new BusinessException(messageSource.getMessage("proposal.flow.exception", new Object[]{Proposal.ProposalStatus.DRAFT, "deleted"}, Locale.getDefault()));
         }
 
         proposalRepository.delete(proposal);
@@ -131,10 +141,10 @@ public class ProposalServiceImpl implements ProposalService {
     @Transactional
     public ProposalResponseDTO finalizeProposal(Long id) {
         Proposal proposal = proposalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("proposal.notFound", new Object[]{id}, Locale.getDefault())));
 
         if (proposal.getStatus() != Proposal.ProposalStatus.DRAFT) {
-            throw new BusinessException("Only draft proposals can be finalized");
+            throw new BusinessException(messageSource.getMessage("proposal.flow.exception", new Object[]{Proposal.ProposalStatus.DRAFT, "finalized"}, Locale.getDefault()));
         }
 
         proposal.setStatus(Proposal.ProposalStatus.FINALIZED);
@@ -146,10 +156,10 @@ public class ProposalServiceImpl implements ProposalService {
     @Transactional
     public ProposalResponseDTO approveProposal(Long id) {
         Proposal proposal = proposalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("proposal.notFound", new Object[]{id}, Locale.getDefault())));
 
         if (proposal.getStatus() != Proposal.ProposalStatus.FINALIZED) {
-            throw new BusinessException("Only finalized proposals can be approved");
+            throw new BusinessException(messageSource.getMessage("proposal.flow.exception", new Object[]{Proposal.ProposalStatus.FINALIZED, "approved"}, Locale.getDefault()));
         }
 
         proposal.setStatus(Proposal.ProposalStatus.APPROVED);
@@ -161,7 +171,7 @@ public class ProposalServiceImpl implements ProposalService {
     @Transactional
     public String exportProposalAsPdf(Long id) {
         Proposal proposal = proposalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("proposal.notFound", new Object[]{id}, Locale.getDefault())));
 
         try {
             String pdfPath = generatePdf(proposal);
@@ -185,7 +195,7 @@ public class ProposalServiceImpl implements ProposalService {
     @Transactional
     public String exportProposalAsExcel(Long id) {
         Proposal proposal = proposalRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("proposal.notFound", new Object[]{id}, Locale.getDefault())));
 
         try {
             String excelPath = generateExcel(proposal);
@@ -208,12 +218,12 @@ public class ProposalServiceImpl implements ProposalService {
     private List<ProposalProduct> createProposalProducts(List<ProposalProductDTO> productDTOs, Proposal proposal) {
         return productDTOs.stream().map(dto -> {
             Product product = productRepository.findById(dto.getProductId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("product.notFound", new Object[]{dto.getProductId()}, Locale.getDefault())));
 
             ProposalProduct proposalProduct = proposalMapper.toEntity(dto);
             proposalProduct.setProposal(proposal);
             proposalProduct.setProduct(product);
-            proposalProduct.setTotalPrice(dto.getPrice()*dto.getQuantity());
+            proposalProduct.setTotalPrice(product.getPrice() * dto.getQuantity());
 
             return proposalProduct;
         }).collect(Collectors.toList());
@@ -353,8 +363,8 @@ public class ProposalServiceImpl implements ProposalService {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(product.getProduct().getName());
                 row.createCell(1).setCellValue(product.getQuantity());
-                row.createCell(2).setCellValue(product.getPrice().doubleValue());
-                row.createCell(3).setCellValue(product.getTotalPrice().doubleValue());
+                row.createCell(2).setCellValue(product.getPrice());
+                row.createCell(3).setCellValue(product.getTotalPrice());
             }
 
             // Auto-size columns

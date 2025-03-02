@@ -1,6 +1,7 @@
 package com.qw.qwhomes.domains.proposal.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -9,17 +10,18 @@ import java.util.List;
 
 @Data
 public class ProposalCreateDTO {
-    @NotBlank(message = "Proposal name is required")
-    @Size(max = 255, message = "Proposal name must not exceed 255 characters")
+    @NotBlank(message = "proposal.name.required")
+    @Size(min = 3, max = 255, message = "proposal.name.size")
     private String name;
 
-    @NotNull(message = "Apartment type ID is required")
+    @NotNull(message = "proposal.apartmentType.required")
     private Long apartmentTypeId;
 
-    @NotNull(message = "Client info is required")
-    private String clientInfo;
+    @NotNull(message = "proposal.client.required")
+    private Long clientId;
 
-    @NotNull(message = "At least one product is required")
-    @Size(min = 1, message = "At least one product is required")
+    @NotEmpty(message = "proposal.products.required")
+    @NotNull(message = "proposal.products.required")
+    @Size(min = 1, message = "proposal.products.min")
     private List<ProposalProductDTO> proposalProducts;
 }

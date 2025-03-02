@@ -19,6 +19,8 @@ public interface ProposalMapper {
     @Mapping(target = "proposalFiles", ignore = true)
     void updateEntityFromDto(ProposalUpdateDTO dto, @MappingTarget Proposal entity);
 
+    @Mapping(target = "clientId", source = "client.clientId")
+    @Mapping(target = "clientName", source = "client.name")
     @Mapping(target = "apartmentTypeId", source = "apartmentType.apartmentId")
     ProposalResponseDTO toDto(Proposal entity);
 

@@ -1,7 +1,7 @@
-package com.qw.qwhomes.domains.apartmenttyperequirements.controller;
+package com.qw.qwhomes.domains.apartmenttypesetup.controller;
 
-import com.qw.qwhomes.domains.apartmenttyperequirements.service.ApartmentTypeRequirementService;
-import com.qw.qwhomes.domains.apartmenttyperequirements.service.dto.ApartmentTypeRequirementDTO;
+import com.qw.qwhomes.domains.apartmenttypesetup.service.ApartmentTypeRequirementService;
+import com.qw.qwhomes.domains.apartmenttypesetup.service.dto.ApartmentTypeRequirementDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

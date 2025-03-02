@@ -44,3 +44,6 @@ databaseChangeLog:
   - include:
       file: changes/14_create_client_table.yml
       relativeToChangelogFile: true
+  - include:
+      file: changes/20250302151551-changelog.yaml
+      relativeToChangelogFile: true

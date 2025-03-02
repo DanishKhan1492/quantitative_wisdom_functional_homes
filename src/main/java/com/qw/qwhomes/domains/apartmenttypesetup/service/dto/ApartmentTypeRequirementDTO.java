@@ -1,4 +1,4 @@
-package com.qw.qwhomes.domains.apartmenttyperequirements.service.dto;
+package com.qw.qwhomes.domains.apartmenttypesetup.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;

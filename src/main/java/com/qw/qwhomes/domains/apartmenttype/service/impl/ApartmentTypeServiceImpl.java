@@ -2,22 +2,22 @@ package com.qw.qwhomes.domains.apartmenttype.service.impl;
 
 import com.qw.qwhomes.common.exceptions.BusinessException;
 import com.qw.qwhomes.config.QWContext;
-import com.qw.qwhomes.config.QWContextFilter;
 import com.qw.qwhomes.domains.apartmenttype.data.entity.ApartmentType;
 import com.qw.qwhomes.domains.apartmenttype.data.repository.ApartmentTypeRepository;
+import com.qw.qwhomes.domains.apartmenttype.service.ApartmentTypeService;
 import com.qw.qwhomes.domains.apartmenttype.service.dto.ApartmentTypeDTO;
 import com.qw.qwhomes.domains.apartmenttype.service.mapper.ApartmentTypeMapper;
-import com.qw.qwhomes.domains.apartmenttype.service.ApartmentTypeService;
 import com.qw.qwhomes.domains.category.data.entity.Category;
 import com.qw.qwhomes.domains.category.data.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -26,12 +26,13 @@ public class ApartmentTypeServiceImpl implements ApartmentTypeService {
     private final ApartmentTypeRepository apartmentTypeRepository;
     private final CategoryRepository categoryRepository;
     private final ApartmentTypeMapper apartmentTypeMapper;
+    private final MessageSource messageSource;
 
     @Override
     @Transactional
     public ApartmentTypeDTO createApartmentType(ApartmentTypeDTO createDTO) {
         Category category = categoryRepository.findById(createDTO.getCategoryId())
-                .orElseThrow(() -> new BusinessException("Category not found"));
+                .orElseThrow(() -> new BusinessException(messageSource.getMessage("category.notFound", new Object[]{createDTO.getCategoryId()}, Locale.getDefault())));
 
         ApartmentType apartmentType = apartmentTypeMapper.toEntity(createDTO);
         apartmentType.setCategory(category);
@@ -44,7 +45,7 @@ public class ApartmentTypeServiceImpl implements ApartmentTypeService {
     @Transactional(readOnly = true)
     public ApartmentTypeDTO getApartmentTypeById(Long id) {
         ApartmentType apartmentType = apartmentTypeRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("ApartmentType not found"));
+                .orElseThrow(() -> new BusinessException(messageSource.getMessage("apartmentType.notFound", new Object[]{id}, Locale.getDefault())));
         return apartmentTypeMapper.toResponseDTO(apartmentType);
     }
 
@@ -69,11 +70,11 @@ public class ApartmentTypeServiceImpl implements ApartmentTypeService {
     @Transactional
     public ApartmentTypeDTO updateApartmentType(ApartmentTypeDTO updateDTO) {
         ApartmentType existingApartmentType = apartmentTypeRepository.findById(updateDTO.getApartmentId())
-                .orElseThrow(() -> new BusinessException("ApartmentType not found"));
+                .orElseThrow(() -> new BusinessException(messageSource.getMessage("apartmentType.notFound", new Object[]{updateDTO.getApartmentId()}, Locale.getDefault())));
 
         if (updateDTO.getCategoryId() != null && !updateDTO.getCategoryId().equals(existingApartmentType.getCategory().getId())) {
             Category newCategory = categoryRepository.findById(updateDTO.getCategoryId())
-                    .orElseThrow(() -> new BusinessException("Category not found"));
+                    .orElseThrow(() -> new BusinessException(messageSource.getMessage("category.notFound", new Object[]{updateDTO.getCategoryId()}, Locale.getDefault())));
             existingApartmentType.setCategory(newCategory);
         }
 
@@ -87,7 +88,7 @@ public class ApartmentTypeServiceImpl implements ApartmentTypeService {
     @Transactional
     public void deleteApartmentType(Long id) {
         if (!apartmentTypeRepository.existsById(id)) {
-            throw new BusinessException("ApartmentType not found");
+            throw new BusinessException(messageSource.getMessage("apartmentType.notFound", new Object[]{id}, Locale.getDefault()));
         }
         apartmentTypeRepository.deleteById(id);
     }

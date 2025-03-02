@@ -6,16 +6,12 @@ import lombok.Data;
 
 @Data
 public class ProposalProductDTO {
-    @NotNull(message = "Product ID is required")
+    @NotNull(message = "proposal.product.id.required")
     private Long productId;
 
-    @NotNull(message = "Quantity is required")
-    @Positive(message = "Quantity must be a positive number")
+    @NotNull(message = "proposal.product.quantity.required")
+    @Positive(message = "proposal.product.quantity.min")
     private Integer quantity;
-
-    @NotNull(message = "Price is required")
-    @Positive(message = "Price must be a positive number")
-    private Double price;
 
     private Double totalPrice;
 }
