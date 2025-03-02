@@ -223,6 +223,7 @@ public class ProposalServiceImpl implements ProposalService {
             ProposalProduct proposalProduct = proposalMapper.toEntity(dto);
             proposalProduct.setProposal(proposal);
             proposalProduct.setProduct(product);
+            proposalProduct.setPrice(product.getPrice());
             proposalProduct.setTotalPrice(product.getPrice() * dto.getQuantity());
 
             return proposalProduct;
