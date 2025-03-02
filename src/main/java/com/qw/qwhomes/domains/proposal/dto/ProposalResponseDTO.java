@@ -11,6 +11,7 @@ public class ProposalResponseDTO {
     private Long id;
     private String name;
     private Long apartmentTypeId;
+    private String apartmentName;
     private Long clientId;
     private String clientName;
     private Double totalPrice;

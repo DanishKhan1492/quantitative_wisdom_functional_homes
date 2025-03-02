@@ -22,6 +22,7 @@ public interface ProposalMapper {
     @Mapping(target = "clientId", source = "client.clientId")
     @Mapping(target = "clientName", source = "client.name")
     @Mapping(target = "apartmentTypeId", source = "apartmentType.apartmentId")
+    @Mapping(target = "apartmentName", source = "apartmentType.name")
     ProposalResponseDTO toDto(Proposal entity);
 
     ProposalProductDTO toDto(ProposalProduct entity);
