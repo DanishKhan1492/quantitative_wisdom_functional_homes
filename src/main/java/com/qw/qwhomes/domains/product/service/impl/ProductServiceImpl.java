@@ -16,6 +16,7 @@ import com.qw.qwhomes.domains.product.data.entity.Product;
 import com.qw.qwhomes.domains.product.data.entity.ProductStatus;
 import com.qw.qwhomes.domains.product.data.repository.ProductRepository;
 import com.qw.qwhomes.domains.product.service.dto.ProductDTO;
+import com.qw.qwhomes.domains.product.service.dto.ProductDashboardDTO;
 import com.qw.qwhomes.domains.product.service.dto.ProductFilterDto;
 import com.qw.qwhomes.domains.product.service.mapper.ProductMapper;
 import com.qw.qwhomes.domains.product.service.ProductService;
@@ -240,6 +241,12 @@ public class ProductServiceImpl implements ProductService {
 
         product.setStatus(status);
         productRepository.save(product);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ProductDashboardDTO getProductsMetadata() {
+        return productRepository.getProductsMetadata();
     }
 
     private void setProductRelations(Product product, ProductDTO productDTO) {

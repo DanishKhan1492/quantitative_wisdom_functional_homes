@@ -2,6 +2,7 @@ package com.qw.qwhomes.domains.product.service;
 
 import com.qw.qwhomes.domains.product.data.entity.ProductStatus;
 import com.qw.qwhomes.domains.product.service.dto.ProductDTO;
+import com.qw.qwhomes.domains.product.service.dto.ProductDashboardDTO;
 import com.qw.qwhomes.domains.product.service.dto.ProductFilterDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,6 @@ public interface ProductService {
     ProductDTO updateProduct(Long id, ProductDTO productDTO, List<MultipartFile> images);
     void deleteProduct(Long id);
     ProductDTO updateProductImages(Long productId, List<MultipartFile> images);
-
     void updateProductStatus(Long productId, ProductStatus status);
+    ProductDashboardDTO getProductsMetadata();
 }

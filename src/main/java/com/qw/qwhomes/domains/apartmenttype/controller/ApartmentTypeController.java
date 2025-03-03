@@ -2,6 +2,8 @@ package com.qw.qwhomes.domains.apartmenttype.controller;
 
 import com.qw.qwhomes.domains.apartmenttype.service.dto.ApartmentTypeDTO;
 import com.qw.qwhomes.domains.apartmenttype.service.ApartmentTypeService;
+import com.qw.qwhomes.domains.apartmenttype.service.dto.ApartmentTypeDashboardDTO;
+import com.qw.qwhomes.domains.colour.service.dto.ColourDashboardDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -72,5 +74,12 @@ public class ApartmentTypeController {
     public ResponseEntity<Void> deleteApartmentType(@PathVariable Long id) {
         apartmentTypeService.deleteApartmentType(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/metadata")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @Operation(summary = "Get Apartment Type Metadata")
+    public ResponseEntity<ApartmentTypeDashboardDTO> getApartmentTypeMetadata() {
+        return ResponseEntity.ok(apartmentTypeService.getApartmentTypeMetadata());
     }
 }

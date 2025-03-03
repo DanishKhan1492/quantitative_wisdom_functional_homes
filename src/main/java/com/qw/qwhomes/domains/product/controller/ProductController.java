@@ -1,7 +1,9 @@
 package com.qw.qwhomes.domains.product.controller;
 
+import com.qw.qwhomes.domains.colour.service.dto.ColourDashboardDTO;
 import com.qw.qwhomes.domains.product.data.entity.ProductStatus;
 import com.qw.qwhomes.domains.product.service.dto.ProductDTO;
+import com.qw.qwhomes.domains.product.service.dto.ProductDashboardDTO;
 import com.qw.qwhomes.domains.product.service.dto.ProductFilterDto;
 import com.qw.qwhomes.domains.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -114,5 +116,12 @@ public class ProductController {
     public ResponseEntity<Void> updateProductStatus(@PathVariable("id") Long productId, @RequestParam("status")ProductStatus status) {
         productService.updateProductStatus(productId, status);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/metadata")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @Operation(summary = "Get Products Metadata")
+    public ResponseEntity<ProductDashboardDTO> getProductsMetadata() {
+        return ResponseEntity.ok(productService.getProductsMetadata());
     }
 }

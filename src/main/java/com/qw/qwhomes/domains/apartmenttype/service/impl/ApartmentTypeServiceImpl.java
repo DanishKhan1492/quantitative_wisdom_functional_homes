@@ -6,6 +6,7 @@ import com.qw.qwhomes.domains.apartmenttype.data.entity.ApartmentType;
 import com.qw.qwhomes.domains.apartmenttype.data.repository.ApartmentTypeRepository;
 import com.qw.qwhomes.domains.apartmenttype.service.ApartmentTypeService;
 import com.qw.qwhomes.domains.apartmenttype.service.dto.ApartmentTypeDTO;
+import com.qw.qwhomes.domains.apartmenttype.service.dto.ApartmentTypeDashboardDTO;
 import com.qw.qwhomes.domains.apartmenttype.service.mapper.ApartmentTypeMapper;
 import com.qw.qwhomes.domains.category.data.entity.Category;
 import com.qw.qwhomes.domains.category.data.repository.CategoryRepository;
@@ -91,5 +92,11 @@ public class ApartmentTypeServiceImpl implements ApartmentTypeService {
             throw new BusinessException(messageSource.getMessage("apartmentType.notFound", new Object[]{id}, Locale.getDefault()));
         }
         apartmentTypeRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ApartmentTypeDashboardDTO getApartmentTypeMetadata() {
+        return apartmentTypeRepository.getApartmentTypeMetadata();
     }
 }

@@ -12,11 +12,11 @@ import com.qw.qwhomes.domains.proposal.data.entity.Proposal;
 import com.qw.qwhomes.domains.proposal.data.entity.ProposalFile;
 import com.qw.qwhomes.domains.proposal.data.entity.ProposalProduct;
 import com.qw.qwhomes.domains.proposal.data.repository.ProposalRepository;
-import com.qw.qwhomes.domains.proposal.dto.ProposalCreateDTO;
-import com.qw.qwhomes.domains.proposal.dto.ProposalProductDTO;
-import com.qw.qwhomes.domains.proposal.dto.ProposalResponseDTO;
-import com.qw.qwhomes.domains.proposal.dto.ProposalUpdateDTO;
-import com.qw.qwhomes.domains.proposal.mapper.ProposalMapper;
+import com.qw.qwhomes.domains.proposal.service.dto.ProposalDTO;
+import com.qw.qwhomes.domains.proposal.service.dto.ProposalDashboardDTO;
+import com.qw.qwhomes.domains.proposal.service.dto.ProposalProductDTO;
+import com.qw.qwhomes.domains.proposal.service.dto.ProposalResponseDTO;
+import com.qw.qwhomes.domains.proposal.service.mapper.ProposalMapper;
 import com.qw.qwhomes.domains.proposal.service.ProposalService;
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -61,7 +61,7 @@ public class ProposalServiceImpl implements ProposalService {
 
     @Override
     @Transactional
-    public ProposalResponseDTO createProposal(ProposalCreateDTO createDTO) {
+    public ProposalResponseDTO createProposal(ProposalDTO createDTO) {
         Proposal proposal = proposalMapper.toEntity(createDTO);
         proposal.setStatus(Proposal.ProposalStatus.DRAFT);
 
@@ -85,7 +85,7 @@ public class ProposalServiceImpl implements ProposalService {
 
     @Override
     @Transactional
-    public ProposalResponseDTO updateProposal(Long id, ProposalUpdateDTO updateDTO) {
+    public ProposalResponseDTO updateProposal(Long id, ProposalDTO updateDTO) {
         Proposal proposal = proposalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("proposal.notFound", new Object[]{id}, Locale.getDefault())));
 
@@ -213,6 +213,11 @@ public class ProposalServiceImpl implements ProposalService {
         } catch (IOException e) {
             throw new BusinessException("Failed to generate Excel: " + e.getMessage());
         }
+    }
+
+    @Override
+    public ProposalDashboardDTO getProposalMetadata() {
+        return proposalRepository.getProposalMetadata();
     }
 
     private List<ProposalProduct> createProposalProducts(List<ProposalProductDTO> productDTOs, Proposal proposal) {

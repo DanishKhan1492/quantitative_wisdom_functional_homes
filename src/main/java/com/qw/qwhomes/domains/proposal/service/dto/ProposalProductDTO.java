@@ -1,4 +1,4 @@
-package com.qw.qwhomes.domains.proposal.dto;
+package com.qw.qwhomes.domains.proposal.service.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

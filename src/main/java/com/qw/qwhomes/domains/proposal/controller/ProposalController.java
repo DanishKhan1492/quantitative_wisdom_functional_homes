@@ -1,8 +1,8 @@
 package com.qw.qwhomes.domains.proposal.controller;
 
-import com.qw.qwhomes.domains.proposal.dto.ProposalCreateDTO;
-import com.qw.qwhomes.domains.proposal.dto.ProposalResponseDTO;
-import com.qw.qwhomes.domains.proposal.dto.ProposalUpdateDTO;
+import com.qw.qwhomes.domains.proposal.service.dto.ProposalDTO;
+import com.qw.qwhomes.domains.proposal.service.dto.ProposalDashboardDTO;
+import com.qw.qwhomes.domains.proposal.service.dto.ProposalResponseDTO;
 import com.qw.qwhomes.domains.proposal.service.ProposalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,7 +41,7 @@ public class ProposalController {
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Create a new proposal")
-    public ResponseEntity<ProposalResponseDTO> createProposal(@Valid @RequestBody ProposalCreateDTO createDTO) {
+    public ResponseEntity<ProposalResponseDTO> createProposal(@Valid @RequestBody ProposalDTO createDTO) {
         ProposalResponseDTO response = proposalService.createProposal(createDTO);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -49,7 +49,7 @@ public class ProposalController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Update an existing proposal")
-    public ResponseEntity<ProposalResponseDTO> updateProposal(@PathVariable Long id, @Valid @RequestBody ProposalUpdateDTO updateDTO) {
+    public ResponseEntity<ProposalResponseDTO> updateProposal(@PathVariable Long id, @Valid @RequestBody ProposalDTO updateDTO) {
         ProposalResponseDTO response = proposalService.updateProposal(id, updateDTO);
         return ResponseEntity.ok(response);
     }
@@ -120,5 +120,13 @@ public class ProposalController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+
+    @GetMapping("/metadata")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @Operation(summary = "Get Proposals metadata")
+    public ResponseEntity<ProposalDashboardDTO> getProposalMetadata() {
+        return ResponseEntity.ok(proposalService.getProposalMetadata());
     }
 }

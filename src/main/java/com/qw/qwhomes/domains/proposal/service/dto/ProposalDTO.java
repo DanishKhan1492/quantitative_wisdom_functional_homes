@@ -1,4 +1,4 @@
-package com.qw.qwhomes.domains.proposal.dto;
+package com.qw.qwhomes.domains.proposal.service.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -9,7 +9,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ProposalCreateDTO {
+public class ProposalDTO {
     @NotBlank(message = "proposal.name.required")
     @Size(min = 3, max = 255, message = "proposal.name.size")
     private String name;
