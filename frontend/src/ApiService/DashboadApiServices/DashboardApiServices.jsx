@@ -75,3 +75,48 @@ export const getFurnitureMetadata = async () => {
   }
 };
 
+export const getProductsMetadata = async () => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/api/v1/products/metadata`,
+      {
+        headers: getHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching furniture metadata:", error);
+    throw error;
+  }
+};
+export const getProposalMetadata = async () => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/api/v1/proposals/metadata`,
+      {
+        headers: getHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching furniture metadata:", error);
+    throw error;
+  }
+};
+
+
+export const getAppartmentMetadata = async () => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/api/v1/apartment-types/metadata`,
+      {
+        headers: getHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching furniture metadata:", error);
+    throw error;
+  }
+};
+

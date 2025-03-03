@@ -29,6 +29,7 @@ const AddProposalModal = ({
     name: "",
     clientInfo: "",
     discount: 0,
+    
   });
 
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -63,23 +64,26 @@ const AddProposalModal = ({
   }, []);
 
   // If editing, populate fields
-  useEffect(() => {
-    if (isEditMode && proposalData) {
-      setFormValues({
-        name: proposalData.name,
-        clientInfo: proposalData.clientId || "",
-        discount: proposalData.discount || 0,
-      });
-      setSelectedProducts(proposalData.proposalProducts || []);
-    } else {
-      setFormValues({
-        name: "",
-        clientInfo: "",
-        discount: 0,
-      });
-      setSelectedProducts([]);
-    }
-  }, [isEditMode, proposalData]);
+ useEffect(() => {
+   if (isEditMode && proposalData) {
+     setFormValues({
+       name: proposalData.name,
+       clientInfo: proposalData.clientId || "",
+       discount: proposalData.discount || 0,
+       apartmentTypeId: proposalData.apartmentTypeId || "", // prepopulate apartment type
+     });
+     setSelectedProducts(proposalData.proposalProducts || []);
+   } else {
+     setFormValues({
+       name: "",
+       clientInfo: "",
+       discount: 0,
+       apartmentTypeId: "",
+     });
+     setSelectedProducts([]);
+   }
+ }, [isEditMode, proposalData]);
+
 
   // Convert discount to final price
   const discountAmount = (originalPrice * formValues.discount) / 100;
@@ -145,14 +149,52 @@ const AddProposalModal = ({
   };
 
   // Submit proposal
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   const payload = {
+  //     name: formValues.name,
+  //     apartmentTypeId:
+  //       selectedProducts.length > 0
+  //         ? Number(selectedProducts[0].apartmentTypeId)
+  //         : 0,
+  //     clientId: Number(formValues.clientInfo),
+  //     proposalProducts: selectedProducts.map((product) => ({
+  //       productId: product.productId,
+  //       quantity: product.quantity,
+  //       price: product.price,
+  //       totalPrice: product.totalPrice,
+  //     })),
+  //   };
+  //   onSubmit(payload);
+  //   onClose();
+  // };
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (selectedProducts.length === 0) {
+      toast.error(
+        "At least one product is required to create or update a proposal."
+      );
+      return;
+    }
+
+    const productApartmentTypeId = Number(selectedProducts[0].apartmentTypeId);
+    const apartmentTypeId =
+      productApartmentTypeId ||
+      (isEditMode && proposalData?.apartmentTypeId
+        ? Number(proposalData.apartmentTypeId)
+        : null);
+
+    if (!apartmentTypeId) {
+      toast.error(
+        "A valid Apartment Type is required. Please add a product with a selected Apartment Type."
+      );
+      return;
+    }
+
     const payload = {
       name: formValues.name,
-      apartmentTypeId:
-        selectedProducts.length > 0
-          ? Number(selectedProducts[0].apartmentTypeId)
-          : 0,
+      apartmentTypeId: apartmentTypeId,
       clientId: Number(formValues.clientInfo),
       proposalProducts: selectedProducts.map((product) => ({
         productId: product.productId,
@@ -161,9 +203,11 @@ const AddProposalModal = ({
         totalPrice: product.totalPrice,
       })),
     };
+
     onSubmit(payload);
     onClose();
   };
+
 
   // Requirements code (unchanged)
   const [reqFormValues, setReqFormValues] = useState({

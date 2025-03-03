@@ -77,15 +77,15 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
 
   // When adding a product, include the selected apartmentTypeId in the product object
   const handleAddProductClick = (product) => {
-    const productToAdd = {
-      productId: product.productId,
-      name: product.name,
-      sku: product.sku,
-      price: product.price,
-      quantity: 1,
-      totalPrice: product.price,
-      apartmentTypeId: selectedApartmentType,
-    };
+     const productToAdd = {
+       productId: product.productId,
+       name: product.name,
+       sku: product.sku,
+       price: product.price,
+       quantity: 1,
+       totalPrice: product.price,
+       apartmentTypeId: selectedApartmentType, // This should now be valid.
+     };
     onAddProduct(productToAdd);
   //  onClose();
   };
