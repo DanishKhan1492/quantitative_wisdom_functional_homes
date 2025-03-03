@@ -38,11 +38,11 @@ export const createProposal = async (proposalData) => {
 export const getAllProposals = async (
   page = 0,
   size = 10,
-  sort = "createdAt,desc"
+  sort,
 ) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/api/v1/proposals`, {
-      params: { page, size, sort },
+      params: { page, size, sort : "createdAt,desc" },
       headers: getHeaders(),
     });
 
@@ -82,7 +82,7 @@ export const updateProposal = async (proposalId, proposalData) => {
     toast.success("Proposal updated successfully");
     return response.data;
   } catch (error) {
-    toast.error("Failed to update proposal");
+    toast.error(error.response?.data?.message || "Failed to update proposal");
     console.error("Error updating proposal:", error);
     throw error;
   }

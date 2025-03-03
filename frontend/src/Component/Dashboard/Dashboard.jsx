@@ -128,21 +128,21 @@ const Dashboard = () => {
       details: [
         {
           label: "In Stock",
-          value: "634",
+          value: "0",
           icon: PackageCheck,
           iconColor: "text-green-400",
           textColor: "text-green-400",
         },
         {
           label: "Out of Stock",
-          value: "158",
+          value: "0",
           icon: PackageX,
           iconColor: "text-red-400",
           textColor: "text-red-400",
         },
         {
           label: "Low Stock",
-          value: "100",
+          value: "0",
           icon: AlertTriangle,
           iconColor: "text-amber-400",
           textColor: "text-amber-400",
@@ -156,21 +156,21 @@ const Dashboard = () => {
       details: [
         {
           label: "Draft",
-          value: "45",
+          value: "0",
           icon: FileClock,
           iconColor: "text-slate-400",
           textColor: "text-slate-400",
         },
         {
           label: "Finalized",
-          value: "156",
+          value: "0",
           icon: FileCheck,
           iconColor: "text-blue-400",
           textColor: "text-blue-400",
         },
         {
           label: "Approved",
-          value: "111",
+          value: "0",
           icon: FileOutput,
           iconColor: "text-green-400",
           textColor: "text-green-400",

@@ -1,152 +1,187 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion"; // Assuming you're using framer-motion as in your main component
-
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   approveProposal,
   finalizeProposal,
+  getProposalById,
 } from "../../ApiService/ProposalServices/PorposalApiSurvice";
-const ProposalStatusCell = ({ proposal, onStatusChange }) => {
-  const [status, setStatus] = useState(proposal.status || "DRAFT");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
-  // Function to handle status change
-  const handleStatusChange = async (e) => {
-    const newStatus = e.target.value;
+const getStatusStyles = (statusValue) => {
+  const normalizedStatus = statusValue?.toUpperCase() || "DRAFT";
 
-    if (newStatus === status) return;
-
-    setIsLoading(true);
-
-    try {
-      // Determine which API to call based on selected status
-     if (newStatus === "Finalized") {
-       await finalizeProposal(proposal.id);
-     } else if (newStatus === "Approved") {
-       await approveProposal(proposal.id);
-     }
-
-      // Update local state after successful API call
-      setStatus(newStatus);
-
-      // Notify parent component about the status change
-      if (onStatusChange) {
-        onStatusChange(proposal.id, newStatus);
-      }
-    } catch (error) {
-      console.error("Failed to update status:", error);
-      // You could add error handling here with toast notification
-    } finally {
-      setIsLoading(false);
-    }
+  const statusStyles = {
+    DRAFT: {
+      background: "bg-gradient-to-r from-amber-400 to-yellow-500",
+      icon: "📝",
+      display: "Draft",
+    },
+    FINALIZED: {
+      background: "bg-gradient-to-r from-blue-400 to-blue-600",
+      icon: "📋",
+      display: "Finalized",
+    },
+    APPROVED: {
+      background: "bg-gradient-to-r from-emerald-400 to-green-600",
+      icon: "✅",
+      display: "Approved",
+    },
+    // REJECTED: {
+    //   background: "bg-gradient-to-r from-red-400 to-red-600",
+    //   icon: "❌",
+    //   display: "Rejected",
+    // },
   };
 
-  // Get background and effects based on status
-  const getStatusStyles = (statusValue) => {
-    switch (statusValue) {
-      case "DRAFT":
-        return {
-          background: "bg-gradient-to-r from-amber-400 to-yellow-500",
-          icon: "⚙️",
-          animation: "pulse",
-        };
-      case "Finalized":
-        return {
-          background: "bg-gradient-to-r from-blue-400 to-blue-600",
-          icon: "📋",
-          animation: "none",
-        };
-      case "Approved":
-        return {
-          background: "bg-gradient-to-r from-emerald-400 to-green-600",
-          icon: "✅",
-          animation: "none",
-        };
-      case "Rejected":
-        return {
-          background: "bg-gradient-to-r from-red-400 to-red-600",
-          icon: "❌",
-          animation: "none",
-        };
-      default:
-        return {
-          background: "bg-gradient-to-r from-gray-400 to-gray-600",
-          icon: "❓",
-          animation: "none",
-        };
+  return statusStyles[normalizedStatus] || statusStyles.DRAFT;
+};
+
+const ProposalStatusCell = ({ proposal, onStatusChange }) => {
+  const validStatuses = ["DRAFT", "FINALIZED", "APPROVED"];
+  const [currentProposal, setCurrentProposal] = useState(proposal);
+  const [status, setStatus] = useState(
+    getStatusStyles(proposal?.status).display
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const normalizedStatus = getStatusStyles(proposal?.status).display;
+    setStatus(normalizedStatus);
+    setCurrentProposal(proposal);
+  }, [proposal]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleStatusChange = async (newStatus) => {
+    const normalizedNew = newStatus.toUpperCase();
+    const currentStatus = status.toUpperCase();
+
+    if (
+      !validStatuses.includes(normalizedNew) ||
+      normalizedNew === currentStatus
+    )
+      return;
+
+    setIsLoading(true);
+    try {
+      if (normalizedNew === "FINALIZED") {
+        await finalizeProposal(currentProposal.id);
+      } else if (normalizedNew === "APPROVED") {
+        await approveProposal(currentProposal.id);
+      }
+
+      const updatedProposal = await getProposalById(currentProposal.id);
+      const newStatusData = getStatusStyles(updatedProposal.status);
+
+      setCurrentProposal(updatedProposal);
+      setStatus(newStatusData.display);
+
+      onStatusChange?.(updatedProposal);
+    } catch (error) {
+      console.error("Status update failed:", error);
+    } finally {
+      setIsLoading(false);
+      setIsDropdownOpen(false);
     }
   };
 
   const statusInfo = getStatusStyles(status);
 
   return (
-    <motion.div
-      className="relative"
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      whileHover={{ scale: 1.03 }}
-      transition={{ duration: 0.2 }}
-    >
-      {/* Display the current status with styling */}
-      <motion.div
+    <div className="relative" ref={dropdownRef}>
+      <motion.button
         className={`
-          text-white font-medium px-3 py-1.5 rounded-full 
-          inline-block min-w-24 text-center shadow-sm
+          relative text-white font-medium px-4 py-2 rounded-xl
+          min-w-32 text-left shadow-lg transition-all
           ${statusInfo.background}
-          
-          border-2 border-white/20
+          hover:shadow-xl hover:scale-[1.02] focus:outline-none
+          flex items-center justify-between
+          ${isLoading ? "opacity-75 cursor-not-allowed" : ""}
+          ${status === "Approved" ? "cursor-default" : "cursor-pointer"}
         `}
-        animate={
-          isHovered && !isLoading && status !== "Approved"
-            ? { y: [-1, 1, -1] }
-            : {}
+        onClick={() =>
+          status !== "Approved" && setIsDropdownOpen(!isDropdownOpen)
         }
-        transition={{ repeat: Infinity, duration: 1 }}
+        disabled={status === "Approved" || isLoading}
+        whileTap={{ scale: status === "Approved" ? 1 : 0.98 }}
       >
-        <span className="mr-2">{statusInfo.icon}</span>
-        {status}
-        {isHovered && !isLoading && status !== "Approved" && (
-          <span className="ml-2">▼</span>
+        <div className="flex items-center space-x-2">
+          <span className="text-lg">{statusInfo.icon}</span>
+          <span>{status}</span>
+        </div>
+
+        {!isLoading && status !== "Approved" && (
+          <motion.span
+            className="ml-2"
+            animate={{ rotate: isDropdownOpen ? 180 : 0 }}
+          >
+            ▼
+          </motion.span>
         )}
-      </motion.div>
 
-      {/* Dropdown for changing status */}
-      <select
-        className="absolute inset-0 opacity-0 cursor-pointer w-full"
-        value={status}
-        onChange={handleStatusChange}
-        disabled={isLoading || status === "Approved"} // Prevent changes after approval
-      >
-        <option value="DRAFT">DRAFT</option>
-        <option value="Finalized">Finalized</option>
-        <option value="Approved">Approved</option>
-        <option value="Rejected">Rejected</option>
-      </select>
-
-      {/* Loading indicator */}
-      {isLoading && (
-        <div className="absolute right-0 top-0 h-full flex items-center pr-2">
+        {isLoading && (
           <motion.div
             className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
             animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          ></motion.div>
-        </div>
-      )}
+            transition={{ repeat: Infinity, duration: 1 }}
+          />
+        )}
+      </motion.button>
 
-      {/* Tooltip */}
-      {isHovered && !isLoading && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute z-10 left-0 top-full mt-2 bg-black/90 text-white text-xs rounded px-2 py-1 shadow-lg"
-        >
-          {status === "Approved"
-            ? "This proposal has been approved and can't be changed"
-            : "Click to change status"}
-        </motion.div>
-      )}
-    </motion.div>
+      <AnimatePresence>
+        {isDropdownOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute z-20 mt-2 w-full origin-top"
+            transition={{ duration: 0.2 }}
+          >
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-2 space-y-1 border border-gray-200 dark:border-gray-700">
+              {validStatuses.map((option) => {
+                const optionStyle = getStatusStyles(option);
+                const currentStatus = status.toUpperCase();
+                const isDisabled =
+                  option === currentStatus || // Always disable current status
+                  (currentStatus === "DRAFT" && option !== "FINALIZED") || // Only allow Finalized from Draft
+                  (currentStatus === "APPROVED" && option !== "APPROVED"); // Lock Approved status
+
+                return (
+                  <motion.button
+                    key={option}
+                    className={`
+                      w-full px-4 py-2.5 rounded-lg flex items-center space-x-3
+                      transition-all text-sm font-medium
+                      ${
+                        isDisabled
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                      }
+                      ${optionStyle.background}
+                    `}
+                    onClick={() => !isDisabled && handleStatusChange(option)}
+                    disabled={isDisabled}
+                    whileHover={!isDisabled ? { scale: 1.02 } : {}}
+                  >
+                    <span className="text-lg">{optionStyle.icon}</span>
+                    <span className="text-white">{optionStyle.display}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 

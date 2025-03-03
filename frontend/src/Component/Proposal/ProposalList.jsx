@@ -94,7 +94,7 @@ const ProposalList = () => {
       try {
         await deleteProposal(proposalToDelete.id);
         setProposals(proposals.filter((p) => p.id !== proposalToDelete.id));
-        toast.success("Proposal deleted successfully");
+        
         setIsDeleteModalOpen(false);
         setProposalToDelete(null);
       } catch (error) {
