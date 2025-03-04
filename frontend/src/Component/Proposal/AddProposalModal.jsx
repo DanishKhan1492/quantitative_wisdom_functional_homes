@@ -29,7 +29,6 @@ const AddProposalModal = ({
     name: "",
     clientInfo: "",
     discount: 0,
-    
   });
 
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -40,6 +39,14 @@ const AddProposalModal = ({
   const [subFamilies, setSubFamilies] = useState([]);
   const [showProductModal, setShowProductModal] = useState(false);
   const [clientList, setClientList] = useState([]);
+
+  // Requirements code (unchanged)
+  const [reqFormValues, setReqFormValues] = useState({
+    apartmentTypeId: "",
+    familyId: "",
+    subFamilyId: "",
+    quantity: "",
+  });
 
   // For demonstration only
   const originalPrice = 999;
@@ -52,6 +59,7 @@ const AddProposalModal = ({
         setClientList(resClients.data);
 
         const resFamilies = await getAllFurnitureFamilies();
+       
         setFamilies(resFamilies.content);
 
         const resApts = await getAllApartmentTypes();
@@ -63,27 +71,50 @@ const AddProposalModal = ({
     fetchAll();
   }, []);
 
-  // If editing, populate fields
- useEffect(() => {
-   if (isEditMode && proposalData) {
-     setFormValues({
-       name: proposalData.name,
-       clientInfo: proposalData.clientId || "",
-       discount: proposalData.discount || 0,
-       apartmentTypeId: proposalData.apartmentTypeId || "", // prepopulate apartment type
-     });
-     setSelectedProducts(proposalData.proposalProducts || []);
-   } else {
-     setFormValues({
-       name: "",
-       clientInfo: "",
-       discount: 0,
-       apartmentTypeId: "",
-     });
-     setSelectedProducts([]);
-   }
- }, [isEditMode, proposalData]);
+  useEffect(() => {
+    const fetchSubFamilies = async () => {
+      console.log(reqFormValues.familyId, "-------reqFormValues.familyId");
+      
+      if (reqFormValues.familyId) {
+        try {
+          const res = await getSubFamilyByFamilyId(reqFormValues.familyId);
+          console.log(
+            res,
+            "-------res subfamilies-------"
+          );
+          setSubFamilies(res);
+        } catch (error) {
+          console.error("Error fetching subfamilies:", error);
+          setSubFamilies([]);
+        }
+      } else {
+        setSubFamilies([]);
+      }
+    };
 
+    fetchSubFamilies();
+  }, [reqFormValues.familyId]);
+
+  // If editing, populate fields
+  useEffect(() => {
+    if (isEditMode && proposalData) {
+      setFormValues({
+        name: proposalData.name,
+        clientInfo: proposalData.clientId || "",
+        discount: proposalData.discount || 0,
+        apartmentTypeId: proposalData.apartmentTypeId || "", // prepopulate apartment type
+      });
+      setSelectedProducts(proposalData.proposalProducts || []);
+    } else {
+      setFormValues({
+        name: "",
+        clientInfo: "",
+        discount: 0,
+        apartmentTypeId: "",
+      });
+      setSelectedProducts([]);
+    }
+  }, [isEditMode, proposalData]);
 
   // Convert discount to final price
   const discountAmount = (originalPrice * formValues.discount) / 100;
@@ -103,29 +134,29 @@ const AddProposalModal = ({
   };
 
   // Key modification: If the product already exists, increment quantity
- const handleAddProduct = (newProduct) => {
-   if (clickHandledRef.current) return; // Prevent multiple calls
-   clickHandledRef.current = true;
-   setSelectedProducts((prevProducts) => {
-     const existingIndex = prevProducts.findIndex(
-       (p) => p.productId === newProduct.productId
-     );
-     if (existingIndex >= 0) {
-       const updatedProducts = [...prevProducts];
-       updatedProducts[existingIndex].quantity += 1;
-       updatedProducts[existingIndex].totalPrice =
-         updatedProducts[existingIndex].quantity *
-         updatedProducts[existingIndex].price;
-       return updatedProducts;
-     } else {
-       return [...prevProducts, newProduct];
-     }
-   });
-   // Reset the flag on next tick
-   setTimeout(() => {
-     clickHandledRef.current = false;
-   }, 0);
- };
+  const handleAddProduct = (newProduct) => {
+    if (clickHandledRef.current) return; // Prevent multiple calls
+    clickHandledRef.current = true;
+    setSelectedProducts((prevProducts) => {
+      const existingIndex = prevProducts.findIndex(
+        (p) => p.productId === newProduct.productId
+      );
+      if (existingIndex >= 0) {
+        const updatedProducts = [...prevProducts];
+        updatedProducts[existingIndex].quantity += 1;
+        updatedProducts[existingIndex].totalPrice =
+          updatedProducts[existingIndex].quantity *
+          updatedProducts[existingIndex].price;
+        return updatedProducts;
+      } else {
+        return [...prevProducts, newProduct];
+      }
+    });
+    // Reset the flag on next tick
+    setTimeout(() => {
+      clickHandledRef.current = false;
+    }, 0);
+  };
   // Update product quantity from the list
   const updateProductQuantity = (productId, newQuantity) => {
     setSelectedProducts((prev) =>
@@ -148,26 +179,6 @@ const AddProposalModal = ({
     );
   };
 
-  // Submit proposal
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   const payload = {
-  //     name: formValues.name,
-  //     apartmentTypeId:
-  //       selectedProducts.length > 0
-  //         ? Number(selectedProducts[0].apartmentTypeId)
-  //         : 0,
-  //     clientId: Number(formValues.clientInfo),
-  //     proposalProducts: selectedProducts.map((product) => ({
-  //       productId: product.productId,
-  //       quantity: product.quantity,
-  //       price: product.price,
-  //       totalPrice: product.totalPrice,
-  //     })),
-  //   };
-  //   onSubmit(payload);
-  //   onClose();
-  // };
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -207,15 +218,6 @@ const AddProposalModal = ({
     onSubmit(payload);
     onClose();
   };
-
-
-  // Requirements code (unchanged)
-  const [reqFormValues, setReqFormValues] = useState({
-    apartmentTypeId: "",
-    familyId: "",
-    subFamilyId: "",
-    quantity: "",
-  });
 
   const handleReqChange = (e) => {
     const { name, value } = e.target;
@@ -495,6 +497,7 @@ const AddProposalModal = ({
                           <option value="">Select SubFamily</option>
                           {subFamilies.map((data) => (
                             <option
+                              key={data.subFamilyId}
                               value={data.subFamilyId}
                               className="bg-black text-white"
                             >
