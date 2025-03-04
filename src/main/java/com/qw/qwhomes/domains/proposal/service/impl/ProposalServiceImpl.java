@@ -222,8 +222,8 @@ public class ProposalServiceImpl implements ProposalService {
 
     private List<ProposalProduct> createProposalProducts(List<ProposalProductDTO> productDTOs, Proposal proposal) {
         return productDTOs.stream().map(dto -> {
-            Product product = productRepository.findById(dto.getProductId())
-                    .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("product.notFound", new Object[]{dto.getProductId()}, Locale.getDefault())));
+            Product product = productRepository.findById(dto.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("product.notFound", new Object[]{dto.getId()}, Locale.getDefault())));
 
             ProposalProduct proposalProduct = proposalMapper.toEntity(dto);
             proposalProduct.setProposal(proposal);

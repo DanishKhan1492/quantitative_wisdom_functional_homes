@@ -31,10 +31,10 @@ public interface ProposalMapper {
     @Mapping(target = "apartmentName", source = "apartmentType.name")
     ProposalResponseDTO toDto(Proposal entity);
 
+    @Mapping(target = "name", source = "product.name")
+    @Mapping(target = "sku", source = "product.sku")
     ProposalProductDTO toDto(ProposalProduct entity);
 
-    @Mapping(target = "proposal", ignore = true)
-    @Mapping(target = "product.productId", source = "productId")
     ProposalProduct toEntity(ProposalProductDTO dto);
 
     ProposalFileDTO toDto(ProposalFile entity);
