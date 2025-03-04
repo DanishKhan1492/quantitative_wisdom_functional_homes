@@ -41,8 +41,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,11 +101,9 @@ public class ProposalServiceImpl implements ProposalService {
                 .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("apartmentType.notFound", new Object[]{updateDTO.getApartmentTypeId()}, Locale.getDefault())));
         proposal.setApartmentType(apartmentType);
 
-        proposal.getProposalProducts().clear();
-        List<ProposalProduct> proposalProducts = createProposalProducts(updateDTO.getProposalProducts(), proposal);
-        proposal.getProposalProducts().addAll(proposalProducts);
+        updateProposalProducts(updateDTO.getProposalProducts(), proposal);
 
-        Double totalPrice = calculateTotalPrice(proposalProducts);
+        Double totalPrice = calculateTotalPrice(proposal.getProposalProducts());
         proposal.setTotalPrice(totalPrice);
 
         Proposal updatedProposal = proposalRepository.save(proposal);
@@ -222,8 +222,8 @@ public class ProposalServiceImpl implements ProposalService {
 
     private List<ProposalProduct> createProposalProducts(List<ProposalProductDTO> productDTOs, Proposal proposal) {
         return productDTOs.stream().map(dto -> {
-            Product product = productRepository.findById(dto.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("product.notFound", new Object[]{dto.getId()}, Locale.getDefault())));
+            Product product = productRepository.findById(dto.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("product.notFound", new Object[]{dto.getProductId()}, Locale.getDefault())));
 
             ProposalProduct proposalProduct = proposalMapper.toEntity(dto);
             proposalProduct.setProposal(proposal);
@@ -385,5 +385,35 @@ public class ProposalServiceImpl implements ProposalService {
         }
 
         return filePath;
+    }
+
+    private void updateProposalProducts(List<ProposalProductDTO> productDTOs, Proposal proposal) {
+        // remove those which are not present in productDTOs
+        proposal.getProposalProducts().removeIf(proProduct -> productDTOs.stream().noneMatch(prod -> prod.getProductId().equals(proProduct.getProduct().getProductId())));
+
+        productDTOs.forEach(proProduct -> {
+            if (proposal.getProposalProducts().stream().noneMatch(pp -> proProduct.getProductId().equals(pp.getProduct().getProductId()))) {
+                Product product = productRepository.findById(proProduct.getProductId())
+                        .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("product.notFound", new Object[]{proProduct.getProductId()}, Locale.getDefault())));
+
+                ProposalProduct proposalProduct = proposalMapper.toEntity(proProduct);
+                proposalProduct.setProposal(proposal);
+                proposalProduct.setProduct(product);
+                proposalProduct.setPrice(product.getPrice());
+                proposalProduct.setTotalPrice(product.getPrice() * proProduct.getQuantity());
+
+                proposal.getProposalProducts().add(proposalProduct);
+            } else {
+                ProposalProduct proposalProduct = proposal.getProposalProducts().stream().filter(pp -> proProduct.getProductId().equals(pp.getProduct().getProductId())).findFirst().get();
+                if (!proProduct.getQuantity().equals(proposalProduct.getQuantity())) {
+                    proposalProduct.setQuantity(proProduct.getQuantity());
+                    proposalProduct.setTotalPrice(proProduct.getQuantity() * proposalProduct.getPrice());
+
+                    // now remove the same product from list and add updated one
+                    proposal.getProposalProducts().removeIf(pp -> proProduct.getProductId().equals(pp.getProduct().getProductId()));
+                    proposal.getProposalProducts().add(proposalProduct);
+                }
+            }
+        });
     }
 }

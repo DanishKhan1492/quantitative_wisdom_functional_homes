@@ -7,8 +7,11 @@ import lombok.Data;
 
 @Data
 public class ProposalProductDTO {
+
+    private Integer id;
+
     @NotNull(message = "proposal.product.id.required")
-    private Long id;
+    private Long productId;
 
     @NotNull(message = "proposal.product.quantity.required")
     @Positive(message = "proposal.product.quantity.min")
