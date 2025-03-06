@@ -1,6 +1,3 @@
-
-
-
 import { useState , useEffect} from "react";
 import { motion } from "framer-motion";
 import {
@@ -16,6 +13,7 @@ import {
   Home,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import sidebarlogo from "../../images/sidebar_logo.png";
 
 const LogoHeader = ({ isCollapsed = false }) => {
   return (
@@ -26,37 +24,17 @@ const LogoHeader = ({ isCollapsed = false }) => {
       >
         {!isCollapsed && (
           <>
-            <div className="relative">
-              <motion.div
-                initial={{ rotate: -20, scale: 0.8 }}
-                animate={{ rotate: 0, scale: 1 }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                className="w-12 h-12 bg-white/15 rounded-2xl shadow-xl flex items-center justify-center"
-              >
-                <Building2
-                  className="w-8 h-8 text-white"
-                  style={{ background: "transparent" }}
-                />
-              </motion.div>
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className="absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full"
-              />
-            </div>
-
-          
             <motion.div
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="ml-3 flex items-center"
+              className="flex items-center"
             >
-              <span className="font-bold text-2xl text-white">QW</span>
-              <span className="font-medium text-2xl text-white ml-1.5">
-                Homes
-              </span>
+              <img
+                src={sidebarlogo}
+                alt="logo"
+                className="w-full h-auto max-w-[140px]"
+              />
             </motion.div>
           </>
         )}
@@ -168,8 +146,9 @@ const Sidebar = ({ onLogout }) => {
       <div
         className="overflow-y-auto px-3 py-8 scrollable-view "
         style={{
-          scrollbarWidth: "none",
-          scrollbarColor: "#1e293b #121212",
+          scrollbarWidth: "thin",
+          scrollbarColor: "#EEEBE7 #262525",
+          borderRight: "1px solid rgba(255, 255, 255, 0.1)",
         }}
       >
         {menuGroups.map((group, groupIndex) => (

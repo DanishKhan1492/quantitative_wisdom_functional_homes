@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
+  ChevronUp,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -26,6 +27,7 @@ import {
 } from "../../ApiService/ProposalServices/PorposalApiSurvice";
 import { toast } from "react-toastify";
 import ProposalStatusCell from "./ProposalStatusCell";
+
 const ProposalList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,6 +42,11 @@ const ProposalList = () => {
   const [proposalToDelete, setProposalToDelete] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [proposalToEdit, setProposalToEdit] = useState(null);
+
+  // State to track which proposal rows are expanded
+  const [expandedRows, setExpandedRows] = useState([]);
+  // State to store related products for each proposal by id
+  const [relatedProductsData, setRelatedProductsData] = useState({});
 
   const fetchProposals = async () => {
     try {
@@ -75,16 +82,13 @@ const ProposalList = () => {
   };
 
   const handleUpdateProposal = async (updatedProposal) => {
-   
     try {
       await updateProposal(proposalToEdit.id, updatedProposal);
       fetchProposals();
-    
       setIsModalOpen(false);
       setIsEditMode(false);
       setProposalToEdit(null);
     } catch (error) {
-      
       console.error("Error updating proposal:", error);
     }
   };
@@ -94,7 +98,6 @@ const ProposalList = () => {
       try {
         await deleteProposal(proposalToDelete.id);
         setProposals(proposals.filter((p) => p.id !== proposalToDelete.id));
-        
         setIsDeleteModalOpen(false);
         setProposalToDelete(null);
       } catch (error) {
@@ -104,27 +107,31 @@ const ProposalList = () => {
     }
   };
 
-  const handleViewClick = async (proposalId) => {
+  const handleViewClick = async (e, proposalId) => {
+    e.stopPropagation();
     const result = await getProposalById(proposalId);
     if (result) {
       navigate(`/proposal-details/${proposalId}`, { state: result });
     }
   };
 
-  const handleEditClick = async (proposal) => {
-    const result =await getProposalById(proposal.id);
-    console.log(result,"+++++++++ result-------");
+  const handleEditClick = async (e, proposal) => {
+    e.stopPropagation();
+    const result = await getProposalById(proposal.id);
+    console.log(result, "+++++++++ result-------");
     setProposalToEdit(result);
     setIsEditMode(true);
     setIsModalOpen(true);
   };
 
-  const handleDeleteClick = (proposal) => {
+  const handleDeleteClick = (e, proposal) => {
+    e.stopPropagation();
     setProposalToDelete(proposal);
     setIsDeleteModalOpen(true);
   };
 
-  const handleExportPdf = async (proposalId) => {
+  const handleExportPdf = async (e, proposalId) => {
+    e.stopPropagation();
     try {
       const data = await exportProposalPdf(proposalId);
       const fileURL = window.URL.createObjectURL(new Blob([data]));
@@ -139,6 +146,35 @@ const ProposalList = () => {
       console.error("PDF export error:", error);
     }
   };
+
+  // Dummy async function to simulate fetching related products for a proposal
+  const fetchRelatedProducts = async (proposalId) => {
+    // Simulate network delay
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve([
+          {
+            id: 1,
+            productName: `Product A for proposal ${proposalId}`,
+            description: "Description for Product A",
+          },
+          {
+            id: 2,
+            productName: `Product B for proposal ${proposalId}`,
+            description: "Description for Product B",
+          },
+        ]);
+      }, 500);
+    });
+  };
+
+const toggleRowExpand = (proposalId) => {
+  setExpandedRows((prev) =>
+    prev.includes(proposalId)
+      ? prev.filter((id) => id !== proposalId)
+      : [...prev, proposalId]
+  );
+};
 
   const renderPageNumbers = () => {
     const pageButtons = [];
@@ -203,18 +239,13 @@ const ProposalList = () => {
     return pageButtons;
   };
 
-const handleProposalStatusChange = (proposalId, newStatus) => {
-
-  setProposals(
-    proposals.map((p) =>
-      p.id === proposalId ? { ...p, status: newStatus } : p
-    )
-  );
- 
-};
-
-
-  
+  const handleProposalStatusChange = (proposalId, newStatus) => {
+    setProposals(
+      proposals.map((p) =>
+        p.id === proposalId ? { ...p, status: newStatus } : p
+      )
+    );
+  };
 
   return (
     <div className="h-screen bg-background p-6">
@@ -281,7 +312,6 @@ const handleProposalStatusChange = (proposalId, newStatus) => {
       </div>
       <div className="bg-white rounded-xl shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
-          {/* Directly map the proposals array (no slicing needed) */}
           <table className="w-full">
             <thead>
               <tr className="border-b border-[#D6D3CF] bg-tbhead">
@@ -300,6 +330,7 @@ const handleProposalStatusChange = (proposalId, newStatus) => {
                 <th className="p-4 text-left text-black font-semibold">
                   Status
                 </th>
+                <th className="p-4 text-left text-black font-semibold">Date</th>
                 <th className="p-4 text-left text-black font-semibold">
                   Download
                 </th>
@@ -310,90 +341,155 @@ const handleProposalStatusChange = (proposalId, newStatus) => {
             </thead>
             <tbody>
               {proposals.map((proposal) => (
-                <tr key={proposal.id}>
-                  <td className="p-4">
-                    <div className="text-black font-medium">
-                      {proposal.name}
-                    </div>
-                    <div className="text-black font-medium">
-                      {new Date(proposal.createdAt).toLocaleDateString()}
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="text-black font-medium">
-                      {proposal.apartmentName || "N/A"}
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="text-black font-medium">
-                      {proposal.clientName}
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="text-black font-medium">
-                      AED {proposal.totalPrice.toFixed(1)}
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <ProposalStatusCell
-                      proposal={proposal}
-                      onStatusChange={handleProposalStatusChange}
-                    />
-                  </td>
-
-                  <td className="p-4">
-                    <div className="flex gap-2">
-                      {/* Excel Button (disabled) */}
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        disabled
-                        className="flex items-center gap-2 px-3 py-2 bg-green-100 text-green-600 rounded-xl cursor-not-allowed"
-                      >
-                        <FileText size={16} />
-                        Excel
-                      </motion.button>
-                      {/* PDF Button */}
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handleExportPdf(proposal.id)}
-                        className="flex items-center gap-2 px-3 py-2 bg-red-100 text-red-600 rounded-xl"
-                      >
-                        <FileText size={16} />
-                        PDF
-                      </motion.button>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <motion.button
-                        whileHover={{ scale: 1.2 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="text-blue-800"
-                        onClick={() => handleViewClick(proposal.id)}
-                      >
-                        <Eye size={28} />
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.2 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="text-green-800"
-                        onClick={() => handleEditClick(proposal)}
-                      >
-                        <Edit size={28} />
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.2 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="text-red-800"
-                        onClick={() => handleDeleteClick(proposal)}
-                      >
-                        <Trash2 size={28} />
-                      </motion.button>
-                    </div>
-                  </td>
-                </tr>
+                // Main proposal row with an onClick to toggle expansion
+                <React.Fragment key={proposal.id}>
+                  <tr
+                    onClick={() => toggleRowExpand(proposal.id)}
+                    className="cursor-pointer hover:bg-gray-100"
+                  >
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <motion.div
+                          animate={{
+                            rotate: expandedRows.includes(proposal.id)
+                              ? 180
+                              : 0,
+                          }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ChevronDown className="w-6 h-6 text-black font-bold" />
+                        </motion.div>
+                        <span className="text-black font-medium">
+                          {proposal.name}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        {proposal.apartmentName || "N/A"}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        {proposal.clientName}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        AED {proposal.totalPrice.toFixed(1)}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <ProposalStatusCell
+                        proposal={proposal}
+                        onStatusChange={handleProposalStatusChange}
+                      />
+                    </td>
+                    <td className="p-4">
+                      <div className="text-black font-medium">
+                        {new Date(proposal.createdAt).toLocaleDateString()}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex gap-2">
+                        {/* Excel Button (disabled) */}
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          disabled
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-2 px-3 py-2 bg-green-100 text-green-600 rounded-xl cursor-not-allowed"
+                        >
+                          <FileText size={16} />
+                          Excel
+                        </motion.button>
+                        {/* PDF Button */}
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={(e) => handleExportPdf(e, proposal.id)}
+                          className="flex items-center gap-2 px-3 py-2 bg-red-100 text-red-600 rounded-xl"
+                        >
+                          <FileText size={16} />
+                          PDF
+                        </motion.button>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <motion.button
+                          whileHover={{ scale: 1.2 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={(e) => handleViewClick(e, proposal.id)}
+                          className="text-blue-800"
+                        >
+                          <Eye size={28} />
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.2 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={(e) => handleEditClick(e, proposal)}
+                          className="text-green-800"
+                        >
+                          <Edit size={28} />
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.2 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={(e) => handleDeleteClick(e, proposal)}
+                          className="text-red-800"
+                        >
+                          <Trash2 size={28} />
+                        </motion.button>
+                      </div>
+                    </td>
+                  </tr>
+                  {/* Expanded row for related products */}
+                  {expandedRows.includes(proposal.id) && (
+                    <tr className="bg-gray-50">
+                      <td colSpan="8" className="p-4">
+                        <div className="text-lg font-semibold mb-3">
+                          Related Products
+                        </div>
+                        <div className="overflow-x-auto">
+                          <table className="w-full min-w-[600px]">
+                            <thead>
+                              <tr className="bg-gray-200">
+                                <th className="p-3 text-left text-sm font-semibold">
+                                  Product Name
+                                </th>
+                                <th className="p-3 text-left text-sm font-semibold">
+                                  SKU
+                                </th>
+                                <th className="p-3 text-left text-sm font-semibold">
+                                  Quantity
+                                </th>
+                                <th className="p-3 text-left text-sm font-semibold">
+                                  Total Price
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {proposal.proposalProducts.map((product) => (
+                                <tr
+                                  key={product.id}
+                                  className="border-b border-gray-200"
+                                >
+                                  <td className="p-3">{product.name}</td>
+                                  <td className="p-3">{product.sku}</td>
+                                  <td className="p-3">{product.quantity}</td>
+                                  <td className="p-3">
+                                    AED {product.totalPrice.toFixed(1)}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>

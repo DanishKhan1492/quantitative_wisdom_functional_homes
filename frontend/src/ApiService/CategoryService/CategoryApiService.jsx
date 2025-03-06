@@ -51,3 +51,33 @@ export const getAllCategories = async () =>
       throw error;
     }
   };
+
+  
+export const getCategoriesByType = async (type) => {
+  try {
+    const token = ls.get("authToken");
+
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    const response = await axios.get(
+      `${API_BASE_URL}/api/v1/categories/type/${type}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      console.error("Unauthorized access:", error);
+    }
+    console.error(`Error fetching categories by type ${type}:`, error);
+    throw error;
+  }
+};

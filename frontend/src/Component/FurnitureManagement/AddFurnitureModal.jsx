@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { X, ChevronRight, Sofa, FileText, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { getAllCategories } from "../../ApiService/CategoryService/CategoryApiService";
+import { getCategoriesByType } from "../../ApiService/CategoryService/CategoryApiService";
 
 import { useNavigate } from "react-router-dom";
 
@@ -32,7 +32,7 @@ const AddFurnitureModal = ({
 
   const fetchAllCategory = async () => {
     try {
-      const categories = await getAllCategories();
+      const categories = await getCategoriesByType("Furniture");
       setCategory(categories.content);
     } catch (err) {
       console.error("Error fetching categories:", err);

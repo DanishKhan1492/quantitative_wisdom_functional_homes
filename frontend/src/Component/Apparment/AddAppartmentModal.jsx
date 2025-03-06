@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X, Building2, Ruler, FileText } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import { getAllCategories } from "../../ApiService/CategoryService/CategoryApiService";
+import { getCategoriesByType } from "../../ApiService/CategoryService/CategoryApiService";
 
 const AddApartmentModal = ({
   isOpen,
@@ -25,8 +25,9 @@ const AddApartmentModal = ({
 
   useEffect(() => {
     const getAllCategory = async () => {
-      const response = await getAllCategories();
-      setOptions(response.content);
+      const response = await getCategoriesByType("Apartment");
+     console.log(response,"-------category appartemnt ========")
+     setOptions(response);
     };
     getAllCategory();
   }, []);
