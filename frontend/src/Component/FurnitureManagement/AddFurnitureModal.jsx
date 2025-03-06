@@ -33,7 +33,8 @@ const AddFurnitureModal = ({
   const fetchAllCategory = async () => {
     try {
       const categories = await getCategoriesByType("Furniture");
-      setCategory(categories.content);
+      console.log(categories,"======furniture category===")
+      setCategory(categories);
     } catch (err) {
       console.error("Error fetching categories:", err);
     }
