@@ -17,7 +17,7 @@ import sidebarlogo from "../../images/sidebar_logo.png";
 
 const LogoHeader = ({ isCollapsed = false }) => {
   return (
-    <div className="p-6 flex items-center justify-center">
+    <div className="p-4 flex items-center justify-center">
       <motion.div
         animate={{ scale: isCollapsed ? 0.8 : 1 }}
         className="flex items-center"
@@ -28,7 +28,7 @@ const LogoHeader = ({ isCollapsed = false }) => {
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="flex items-center"
+              className="flex justify-center"
             >
               <img
                 src={sidebarlogo}
@@ -117,7 +117,7 @@ const Sidebar = ({ onLogout }) => {
 
   const sidebarVariants = {
     expanded: { width: "320px" },
-    collapsed: { width: "80px" },
+    collapsed: { width: "100px" },
   };
 
   return (
@@ -144,7 +144,7 @@ const Sidebar = ({ onLogout }) => {
 
       {/* Menu Groups */}
       <div
-        className="overflow-y-auto px-3 py-8 scrollable-view "
+        className="overflow-y-auto px-3 py-8 scrollable-view flex-1"
         style={{
           scrollbarWidth: "thin",
           scrollbarColor: "#EEEBE7 #262525",
@@ -188,6 +188,7 @@ const Sidebar = ({ onLogout }) => {
                     initial={false}
                     animate={{ opacity: 1 }}
                     className="ml-4 text-lg font-medium"
+                    
                   >
                     {item.name}
                   </motion.span>
@@ -209,16 +210,24 @@ const Sidebar = ({ onLogout }) => {
 
       {/* Add custom scrollbar styles */}
       <style jsx global>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
+        .scrollable-view::-webkit-scrollbar {
+          width: 6px;
         }
 
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+        .scrollable-view::-webkit-scrollbar-track {
+          background: #262525;
+          border-radius: 4px;
+        }
+
+        .scrollable-view::-webkit-scrollbar-thumb {
+          background: #eeebe7;
+          border-radius: 4px;
+        }
+
+        .scrollable-view::-webkit-scrollbar-thumb:hover {
+          background: #d6d3cf;
         }
       `}</style>
-
       {/* Logout Section */}
 
       <div className="mt-auto px-3 py-4 border-t border-slate-700">
