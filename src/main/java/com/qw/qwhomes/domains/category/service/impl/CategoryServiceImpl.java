@@ -4,10 +4,10 @@ import com.qw.qwhomes.common.exceptions.ResourceNotFoundException;
 import com.qw.qwhomes.config.QWContext;
 import com.qw.qwhomes.domains.category.data.entity.Category;
 import com.qw.qwhomes.domains.category.data.repository.CategoryRepository;
+import com.qw.qwhomes.domains.category.service.CategoryService;
 import com.qw.qwhomes.domains.category.service.dto.CategoryCreateDTO;
 import com.qw.qwhomes.domains.category.service.dto.CategoryDTO;
 import com.qw.qwhomes.domains.category.service.dto.CategoryUpdateDTO;
-import com.qw.qwhomes.domains.category.service.CategoryService;
 import com.qw.qwhomes.domains.category.service.mapper.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -74,5 +76,10 @@ public class CategoryServiceImpl implements CategoryService {
             throw new ResourceNotFoundException(messageSource.getMessage("category.not.found", new Object[]{id}, LocaleContextHolder.getLocale()));
         }
         categoryRepository.deleteById(id);
+    }
+
+    @Override
+    public List<CategoryDTO> getCategoriesByType(Category.CategoryType type) {
+        return categoryRepository.getCategoriesByType(type).stream().map(categoryMapper::toDTO).toList();
     }
 }
