@@ -1,4 +1,4 @@
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Users,
@@ -11,6 +11,7 @@ import {
   Gem,
   ChevronRight,
   Home,
+  ChevronLeft,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import sidebarlogo from "../../images/sidebar_logo.png";
@@ -22,22 +23,21 @@ const LogoHeader = ({ isCollapsed = false }) => {
         animate={{ scale: isCollapsed ? 0.8 : 1 }}
         className="flex items-center"
       >
-        {!isCollapsed && (
-          <>
-            <motion.div
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="flex justify-center"
-            >
-              <img
-                src={sidebarlogo}
-                alt="logo"
-                className="w-full h-auto max-w-[140px]"
-              />
-            </motion.div>
-          </>
-        )}
+        {/* Show logo in both collapsed and expanded states */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="flex justify-center"
+        >
+          <img
+            src={sidebarlogo}
+            alt="logo"
+            className={`h-auto ${
+              isCollapsed ? "max-w-[80px] mt-4" : "max-w-[140px]"
+            }`}
+          />
+        </motion.div>
       </motion.div>
     </div>
   );
@@ -94,21 +94,21 @@ const Sidebar = ({ onLogout }) => {
       items: [{ name: "Proposals", icon: Gem, to: "/proposal" }],
     },
   ];
- useEffect(() => {
-   const handleResize = () => {
-     if (!userToggled) {
-       setIsCollapsed(window.innerWidth < 1024);
-     }
-   };
+  useEffect(() => {
+    const handleResize = () => {
+      if (!userToggled) {
+        setIsCollapsed(window.innerWidth < 1024);
+      }
+    };
 
-   window.addEventListener("resize", handleResize);
-   return () => window.removeEventListener("resize", handleResize);
- }, [userToggled]);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [userToggled]);
 
- const handleToggle = () => {
-   setIsCollapsed(!isCollapsed);
-   setUserToggled(true);
- };
+  const handleToggle = () => {
+    setIsCollapsed(!isCollapsed);
+    setUserToggled(true);
+  };
 
   const handleLogout = () => {
     onLogout();
@@ -117,7 +117,7 @@ const Sidebar = ({ onLogout }) => {
 
   const sidebarVariants = {
     expanded: { width: "320px" },
-    collapsed: { width: "100px" },
+    collapsed: { width: "80px" },
   };
 
   return (
@@ -129,14 +129,18 @@ const Sidebar = ({ onLogout }) => {
       className="bg-sidebar text-white relative flex flex-col h-screen"
     >
       <button
-        onClick={handleToggle} // Changed from direct setIsCollapsed
-        className="absolute -right-3 top-8 bg-white p-1.5 mr-3 rounded-full shadow-lg z-50"
+        onClick={handleToggle}
+        className="absolute -right-3 top-8 bg-white p-1 mr-2 rounded-full shadow-lg z-50"
       >
         <motion.div
-          animate={{ rotate: isCollapsed ? 180 : 0 }}
+         // animate={{ rotate: isCollapsed ? 180 : 0 }}
           transition={{ duration: 0.3 }}
         >
-          <ChevronRight className="w-4 h-4 text-black font-extrabold " />
+          {isCollapsed ? (
+            <ChevronRight className="w-4 h-4 text-black font-extrabold" />
+          ) : (
+            <ChevronLeft className="w-4 h-4 text-black font-extrabold" />
+          )}
         </motion.div>
       </button>
 
@@ -144,9 +148,11 @@ const Sidebar = ({ onLogout }) => {
 
       {/* Menu Groups */}
       <div
-        className="overflow-y-auto px-3 py-8 scrollable-view flex-1"
+        className={`overflow-y-auto px-3 py-8 flex-1 ${
+          isCollapsed ? "overflow-hidden" : "scrollable-view"
+        }`}
         style={{
-          scrollbarWidth: "thin",
+          scrollbarWidth: !isCollapsed ? "thin" : "none",
           scrollbarColor: "#EEEBE7 #262525",
           borderRight: "1px solid rgba(255, 255, 255, 0.1)",
         }}
@@ -165,7 +171,7 @@ const Sidebar = ({ onLogout }) => {
                 className={`relative flex items-center px-2.5 py-3 mb-1.5 rounded-xl transition-all duration-200
                   ${
                     location.pathname === item.to
-                      ? "bg-white/30  text-white font-bold "
+                      ? "bg-white/30 text-white font-bold"
                       : "text-white hover:bg-white/20"
                   }`}
                 onMouseEnter={() => setActiveGroup(groupIndex)}
@@ -188,7 +194,6 @@ const Sidebar = ({ onLogout }) => {
                     initial={false}
                     animate={{ opacity: 1 }}
                     className="ml-4 text-lg font-medium"
-                    
                   >
                     {item.name}
                   </motion.span>
@@ -208,7 +213,7 @@ const Sidebar = ({ onLogout }) => {
         ))}
       </div>
 
-      {/* Add custom scrollbar styles */}
+      {/* Add custom scrollbar styles - only applied when the scrollable-view class is present */}
       <style jsx global>{`
         .scrollable-view::-webkit-scrollbar {
           width: 6px;
