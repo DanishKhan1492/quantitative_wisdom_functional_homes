@@ -235,7 +235,7 @@ const handleSubmit = async (e) => {
                               <option
                                 key={cat.id}
                                 value={cat.id}
-                                className="text-white bg-black"
+                                className="text-black bg-white"
                               >
                                 {cat.name}
                               </option>

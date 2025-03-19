@@ -34,9 +34,9 @@ const API_BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 export const getAllMaterials = async (
   page = 0,
   size = 10,
-  searchTerm = "",
-  filterTerm = "",
-  sort = []
+  searchTerm,
+  filterTerm ,
+
 ) => {
   try {
     const token = ls.get("authToken");
@@ -49,7 +49,7 @@ export const getAllMaterials = async (
       page,
       size,
       sort: "createdAt,desc",
-      ...(searchTerm && { search: searchTerm }), // Only add if truthy
+      ...(searchTerm && { name: searchTerm }), // changed key from search to name
       ...(filterTerm && { filter: filterTerm }),
     };
 

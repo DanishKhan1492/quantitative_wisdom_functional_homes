@@ -236,7 +236,7 @@ const handleSubmit = async (e) => {
               </div>
             </div>
 
-            {/* Contact Information Section */}
+      
             <div>
               <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
                 Contact Information
@@ -459,7 +459,7 @@ const handleSubmit = async (e) => {
               </div>
             </div>
 
-            {/* Payment Information Section */}
+       
             <div>
               <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
                 Payment Information
@@ -528,7 +528,7 @@ const handleSubmit = async (e) => {
               </div>
             </div>
 
-            {/* Other Information Section */}
+         
             <div>
               <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
                 Other Information

@@ -170,7 +170,7 @@ const AddApartmentModal = ({
                         <option
                           key={option.id}
                           value={option.id}
-                          className="bg-black text-white"
+                          className="bg-white text-black"
                         >
                           {option.name}
                         </option>

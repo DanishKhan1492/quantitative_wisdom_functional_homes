@@ -31,7 +31,8 @@ const FurnitureList = () => {
   const [editingFamily, setEditingFamily] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [filterTerm, setFilterTerm] = useState("");
+  const [filteredFurnitureList, setFilteredFurnitureList] = useState([]);
   const [pageNumber, setPageNumber] = useState(0);
   const [size,setSize] = useState(10);
   const [totalElements, setTotalElements] = useState(0);
@@ -67,6 +68,30 @@ const FurnitureList = () => {
   useEffect(() => {
     getAllFurniture();
   }, [pageNumber, size, searchTerm]);
+
+  useEffect(() => {
+  if (filterTerm) {
+    const lowerCaseFilter = filterTerm.toLowerCase();
+    const filtered = furnitureList.filter(
+      (furniture) =>
+        furniture.categoryName &&
+        furniture.categoryName.toLowerCase().includes(lowerCaseFilter)
+    );
+    setFilteredFurnitureList(filtered);
+  } else if(searchTerm){
+    const lowerCaseFilter = searchTerm.toLowerCase();
+    const filtered = furnitureList.filter(
+      (furniture) =>
+        furniture.name &&
+        furniture.name.toLowerCase().includes(lowerCaseFilter)
+    );
+    setFilteredFurnitureList(filtered);
+  }
+  else {
+    setFilteredFurnitureList(furnitureList);
+  }
+}, [filterTerm, furnitureList]);
+
 
   const handleDeleteClick = (furniture) => {
     setFurnitureToDelete(furniture);
@@ -217,7 +242,7 @@ const FurnitureList = () => {
 
   return (
     <div
-      className="bg-background p-6 h-screen" 
+      className="bg-background p-6 h-screen"
       style={{
         overflowY: "auto",
       }}
@@ -244,7 +269,22 @@ const FurnitureList = () => {
                 size={20}
               />
             </motion.div>
-
+            <motion.div
+              className="relative flex-1"
+              whileHover={{ scale: 1.02 }}
+            >
+              <input
+                type="text"
+                placeholder="Filter by category..."
+                value={filterTerm}
+                onChange={(e) => setFilterTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
+              />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black"
+                size={20}
+              />
+            </motion.div>
             {/* Action Buttons */}
             <div className="flex gap-4">
               <motion.button
@@ -303,8 +343,8 @@ const FurnitureList = () => {
                     </div>
                   </td>
                 </tr>
-              ) : furnitureList && furnitureList.length > 0 ? (
-                furnitureList.map((furniture) => (
+              ) : filteredFurnitureList && filteredFurnitureList.length > 0 ? (
+                filteredFurnitureList.map((furniture) => (
                   <tr
                     key={furniture.familyId}
                     className="border-b border-slate-700 hover:bg-black/10 transition-colors"
@@ -391,7 +431,7 @@ const FurnitureList = () => {
                 setSize(Number(e.target.value));
                 setPageNumber(0); // reset to first page on page size change
               }}
-              className="appearance-none pl-4 pr-10 py-2 bg-black text-white border-2 border-blue-500 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"                
+              className="appearance-none pl-4 pr-10 py-2 bg-black text-white border-2 border-blue-500 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-900 transition-all duration-300 hover:bg-slate-700"
             >
               {[5, 10, 15, 20, 50, 100].map((option) => (
                 <option

@@ -51,23 +51,40 @@ const ColoursList = () => {
     fetchColours();
   }, [pageNumber, size, searchTerm]);
 
-  useEffect(() => {
-    if (filterTerm) {
-      const filtered = colours.filter(
-        (colour) =>
-          colour.description &&
-          colour.description.toLowerCase().includes(filterTerm.toLowerCase())
-      );
-      setDisplayedColours(filtered);
-    } else {
-      setDisplayedColours(colours);
-    }
-  }, [filterTerm, colours]);
+useEffect(() => {
+  if (filterTerm) {
+    const lowerCaseFilter = filterTerm.toLowerCase();
+    const filtered = colours.filter(
+      (colour) =>
+        (colour.description &&
+          colour.description.toLowerCase().includes(lowerCaseFilter)) ||
+        (colour.code && colour.code.toLowerCase().includes(lowerCaseFilter))
+    );
+    setDisplayedColours(filtered);
+  } else if (searchTerm){
+    const lowerCaseFilter = searchTerm.toLowerCase();
+    const filtered = colours.filter(
+      (colour) =>
+        (colour.name &&
+          colour.name.toLowerCase().includes(lowerCaseFilter)) 
+        
+    );
+    setDisplayedColours(filtered);
+    
+
+    }else{
+    setDisplayedColours(colours);
+  }
+}, [filterTerm, colours]);
+
+
 
   const fetchColours = async () => {
     setLoading(true);
     try {
       const res = await getAllColours(pageNumber, size, searchTerm, "");
+
+
       console.log("Fetched Colours:", res);
       const fetchedColours = res.data || [];
       setColours(fetchedColours);
@@ -458,7 +475,7 @@ const ColoursList = () => {
             Previous
           </button>
 
-          {/* Page Numbers */}
+          
           <div className="flex gap-2">{renderPageNumbers()}</div>
 
           <button

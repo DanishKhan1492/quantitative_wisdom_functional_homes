@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
-  
+  Search,
+  Filter,
   Eye,
   Edit,
   Trash2,
@@ -34,15 +35,20 @@ const FurnitureSubFamilyList = () => {
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
  const [isLoading, setIsLoading] = useState(true);
-  // Fetch sub-families on mount and whenever page or size changes
+
+  const [filteredSubFamilyList, setFilteredSubFamilyList] = useState([]); 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterTerm, setFilterTerm] = useState("");
+
+
   useEffect(() => {
     fetchSubFamilies();
-  }, [page, size]);
+  }, [page, size,searchTerm]);
 
   const fetchSubFamilies = async () => {
     setIsLoading(true)
     try {
-      const response = await getAllSubFamilies(page, size);
+      const response = await getAllSubFamilies(page, size, searchTerm);
       
       setSubFamilyList(response.data);
       setTotalElements(response.totalElements);
@@ -54,6 +60,33 @@ const FurnitureSubFamilyList = () => {
       setIsLoading(false)
     }
   };
+
+   useEffect(() => {
+    let filtered = subFamilyList
+     if (filterTerm) {
+       const lowerCaseFilter = filterTerm.toLowerCase();
+        filtered = subFamilyList.filter(
+         (subFamily) =>
+           (subFamily.type &&
+             subFamily.type.toLowerCase().includes(lowerCaseFilter)) ||
+           (subFamily.description &&
+             subFamily.description.toLowerCase().includes(lowerCaseFilter))
+       );
+       
+     } 
+     if (searchTerm) {
+      console.log("search term here:", searchTerm)
+      const lowerCaseFilter = searchTerm.toLowerCase();
+       filtered = subFamilyList.filter(
+          (subFamily) =>
+            subFamily.name &&
+            subFamily.name.toLowerCase().includes(lowerCaseFilter)
+        ) ||
+        (subFamily.familyName && subFamily.familyName.toLowerCase().includes(lowerCaseFilter));
+       
+     }
+     setFilteredSubFamilyList(filtered)
+   }, [filterTerm, subFamilyList]);
 
   const handleCreateSubFamily = async (familyId, newSubFamilies) => {
 
@@ -95,16 +128,6 @@ const FurnitureSubFamilyList = () => {
     }
   };
 
-  const handleViewSubFamily = async (id) => {
-    try {
-      const response = await getSubFamilyById(id);
-      setSelectedSubFamily(response);
-      setViewMode(true);
-      setIsSubFamilyModalOpen(true);
-    } catch (error) {
-      console.error("Error fetching sub-family details:", error);
-    }
-  };
 
   const handleEditSubFamily = async (id) => {
     try {
@@ -215,18 +238,55 @@ const FurnitureSubFamilyList = () => {
             <FolderTree className="mr-2 text-black" size={24} />
             Furniture Sub-Family
           </h1>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
-            onClick={() => {
-              setSelectedSubFamily(null);
-              setIsSubFamilyModalOpen(true);
-            }}
-          >
-            <Plus size={20} />
-            <span>Add Sub Family</span>
-          </motion.button>
+          <div className="flex flex-col md:flex-row gap-4 w-full lg:w-auto">
+            {/* Search by Name */}
+            <motion.div
+              className="relative flex-1"
+              whileHover={{ scale: 1.02 }}
+            >
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
+              />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black"
+                size={20}
+              />
+            </motion.div>
+
+            {/* Filter by Type and Category */}
+            <motion.div
+              className="relative flex-1"
+              whileHover={{ scale: 1.02 }}
+            >
+              <input
+                type="text"
+                placeholder="Filter by type or category..."
+                value={filterTerm}
+                onChange={(e) => setFilterTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-white border border-[#D6D3CF] rounded-xl text-[#262525] placeholder-[#262525]/50 focus:outline-none focus:ring-2 focus:ring-[#262525]/30"
+              />
+              <Filter
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black"
+                size={20}
+              />
+            </motion.div>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
+              onClick={() => {
+                setSelectedSubFamily(null);
+                setIsSubFamilyModalOpen(true);
+              }}
+            >
+              <Plus size={20} />
+              <span>Add Sub Family</span>
+            </motion.button>
+          </div>
         </div>
       </div>
 
@@ -261,8 +321,8 @@ const FurnitureSubFamilyList = () => {
                     </div>
                   </td>
                 </tr>
-              ) : subFamilyList && subFamilyList.length > 0 ? (
-                subFamilyList.map((subFamily) => (
+              ) : filteredSubFamilyList.length > 0 ? (
+                filteredSubFamilyList.map((subFamily) => (
                   <tr
                     key={subFamily.subFamilyId}
                     className="border-b border-slate-700 hover:bg-black/10 transition-colors"

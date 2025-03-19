@@ -137,7 +137,7 @@ const AddColourModal = ({
                       name="code"
                       value={formData.code}
                       onChange={handleChange}
-                      required
+                     
                       placeholder="e.g., #1E90FF"
                       className="w-full px-4 py-3 text-xl  border border-black rounded-xl text-black placeholder-black 
                    transition-all duration-300 ease-in-out
