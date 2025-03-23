@@ -20,4 +20,5 @@ public interface ProductService {
     ProductDTO updateProductImages(Long productId, List<MultipartFile> images);
     void updateProductStatus(Long productId, ProductStatus status);
     ProductDashboardDTO getProductsMetadata();
+    List<ProductDTO> getAllProductsByFamilyAndSubFamily(Long familyId, Long subFamilyId);
 }

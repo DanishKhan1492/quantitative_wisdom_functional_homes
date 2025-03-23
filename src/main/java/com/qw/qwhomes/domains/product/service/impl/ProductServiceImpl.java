@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -247,6 +248,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDashboardDTO getProductsMetadata() {
         return productRepository.getProductsMetadata();
+    }
+
+    @Override
+    public List<ProductDTO> getAllProductsByFamilyAndSubFamily(Long familyId, Long subFamilyId) {
+        return productRepository.getProductsByFamilyIdAndSubFamilyId(familyId, subFamilyId)
+                .stream().map(productMapper::toResponseDTO).collect(Collectors.toList());
     }
 
     private void setProductRelations(Product product, ProductDTO productDTO) {
