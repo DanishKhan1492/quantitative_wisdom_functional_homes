@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { getAllApartmentTypes } from "../../ApiService/AppartmentType/AppartmentTypeApiService";
 import { getAllFurnitureFamilies } from "../../ApiService/FurnitureFamily/FurnitureFamilyApiServices";
 import { getSubFamilyByFamilyId } from "../../ApiService/SubFamily/SubFamilyApiService";
-import { getAllProducts } from "../../ApiService/ProductCatalog/ProductCatalogApiServices";
+import { getAllProductsByFamilyAndSubFamily } from "../../ApiService/ProductCatalog/ProductCatalogApiServices";
 
 const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
   const [apartmentTypes, setApartmentTypes] = useState([]);
@@ -63,9 +63,11 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
   // Fetch products when subfamily is selected or productSearch changes
   useEffect(() => {
     const fetchProducts = async () => {
+      console.log(selectedFamily, selectedSubFamily,"=======================check family======================================")
       try {
-        const res = await getAllProducts(0, 10, productSearch);
-        setProducts(res.content);
+        const res = await getAllProductsByFamilyAndSubFamily(selectedFamily, selectedSubFamily); 
+        console.log(res,"=======================check products======================================")
+        setProducts(res);
       } catch (error) {
         console.error("Error fetching products:", error);
       }

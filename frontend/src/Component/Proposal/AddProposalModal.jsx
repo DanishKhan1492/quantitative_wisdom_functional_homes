@@ -48,8 +48,14 @@ const AddProposalModal = ({
     quantity: "",
   });
 
-  // For demonstration only
-  const originalPrice = 999;
+const originalPrice = selectedProducts.reduce(
+  (total, product) => total + product.price * product.quantity,
+  0
+);
+
+// Final price with discount
+const discountAmount = (originalPrice * formValues.discount) / 100;
+const finalPrice = originalPrice - discountAmount;
 
   // Fetch clients, families, apartments on mount
   useEffect(() => {
@@ -116,9 +122,7 @@ const AddProposalModal = ({
     }
   }, [isEditMode, proposalData]);
 
-  // Convert discount to final price
-  const discountAmount = (originalPrice * formValues.discount) / 100;
-  const finalPrice = originalPrice - discountAmount;
+
 
   // Input changes
   const handleChange = (e) => {
@@ -628,6 +632,48 @@ const AddProposalModal = ({
             {/* Footer */}
             <div className="mt-6 pt-6 border-t border-slate-700 flex items-center justify-between">
               <div className="flex items-center gap-8 mb-10">
+                {activeTab === "proposal" && originalPrice > 0 && (
+                  <>
+                    {/* Discount Input */}
+                    <div className="group">
+                      <label className="block text-xl font-medium text-black mb-2">
+                        Discount (%)
+                      </label>
+                      <input
+                        type="number"
+                        value={formValues.discount}
+                        onChange={handleDiscountChange}
+                        min="0"
+                        max="100"
+                        className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
+                      />
+                    </div>
+
+                    {/* Price Display */}
+                    <div className="space-y-1">
+                      {formValues.discount > 0 ? (
+                        <>
+                          <div className="text-lg text-black">
+                            Original Price:{" "}
+                            <span className="line-through">
+                              AED {originalPrice.toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="text-xl font-semibold text-black">
+                            Final Price: AED {finalPrice.toFixed(2)}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="text-xl font-semibold text-black">
+                          Total Price: AED {originalPrice.toFixed(2)}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* <div className="flex items-center gap-8 mb-10">
                 {activeTab === "proposal" && (
                   <>
                     <div className="group">
@@ -657,7 +703,7 @@ const AddProposalModal = ({
                     </div>
                   </>
                 )}
-              </div>
+              </div> */}
               <div className="flex items-center gap-4">
                 <motion.button
                   whileHover={{ scale: 1.02 }}

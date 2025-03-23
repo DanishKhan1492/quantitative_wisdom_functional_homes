@@ -93,6 +93,27 @@ export const getAllProducts = async (
     throw error;
   }
 };
+export const getAllProductsByFamilyAndSubFamily = async (
+  familyId,
+  subFamilyId,
+) => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/api/v1/products/family/${familyId}/subfamily/${subFamilyId}`,
+      {
+        headers: getHeaders(),
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      console.error("Unauthorized access:", error);
+    }
+    console.error("Error fetching products:", error);
+    throw error;
+  }
+};
 
 export const getProductById = async (productId) => {
   try {
