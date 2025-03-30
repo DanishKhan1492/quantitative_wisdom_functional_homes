@@ -1,0 +1,118 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-user-and-role-tables
+      author: muhammad danish khan
+      changes:
+        - createSequence:
+            sequenceName: role_id_seq
+            incrementBy: 1
+            startValue: 1
+
+        - createTable:
+            tableName: role
+            columns:
+              - column:
+                  name: role_id
+                  type: bigint
+                  defaultValueSequenceNext: role_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: role_name
+                  type: VARCHAR(50)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+
+        - createSequence:
+            sequenceName: user_id_seq
+            incrementBy: 1
+            startValue: 1
+
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  defaultValueSequenceNext: user_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(50)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: password_hash
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: VARCHAR(50)
+              - column:
+                  name: last_name
+                  type: VARCHAR(50)
+              - column:
+                  name: phone_number
+                  type: VARCHAR(20)
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_login_at
+                  type: TIMESTAMP
+              - column:
+                  name: password_reset_token
+                  type: VARCHAR(255)
+              - column:
+                  name: password_reset_expires
+                  type: TIMESTAMP
+
+        - createTable:
+            tableName: user_role
+            columns:
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: user_role
+            columnNames: user_id, role_id
+            constraintName: pk_user_role
+
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: user_role
+            constraintName: fk_user_role_user
+            referencedColumnNames: user_id
+            referencedTableName: users
+
+        - addForeignKeyConstraint:
+            baseColumnNames: role_id
+            baseTableName: user_role
+            constraintName: fk_user_role_role
+            referencedColumnNames: role_id
+            referencedTableName: role

@@ -1,0 +1,23 @@
+databaseChangeLog:
+- changeSet:
+    id: 1740910568353-1
+    author: muhammad danish khan
+    changes:
+    - dropColumn:
+        columnName: client_info
+        tableName: proposal
+    - addColumn:
+          tableName: proposal
+          columns:
+          - column:
+                name: client_id
+                type: bigint
+                constraints:
+                    nullable: false
+    - addForeignKeyConstraint:
+          baseColumnNames: client_id
+          baseTableName: proposal
+          constraintName: fk_proposal_client_id
+          referencedColumnNames: client_id
+          referencedTableName: client
+

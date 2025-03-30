@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-material-table
+      author: muhammad danish khan
+      changes:
+        - createSequence:
+            sequenceName: material_id_seq
+            incrementBy: 1
+            startValue: 1
+        - createTable:
+            tableName: material
+            columns:
+              - column:
+                  name: material_id
+                  type: BIGINT
+                  defaultValueSequenceNext: material_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(50)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: BIGINT
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: BIGINT
+        - addForeignKeyConstraint:
+            baseColumnNames: created_by
+            baseTableName: material
+            constraintName: fk_material_created_by
+            referencedColumnNames: user_id
+            referencedTableName: "users"
+        - addForeignKeyConstraint:
+            baseColumnNames: updated_by
+            baseTableName: material
+            constraintName: fk_material_updated_by
+            referencedColumnNames: user_id
+            referencedTableName: "users"

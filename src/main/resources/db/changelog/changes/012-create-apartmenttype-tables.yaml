@@ -1,0 +1,126 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-apartmenttype-tables
+      author: muhammad danish khan
+      changes:
+        - createSequence:
+            sequenceName: apartment_type_id_seq
+            incrementBy: 1
+            startValue: 1
+        - createTable:
+            tableName: apartment_type
+            columns:
+              - column:
+                  name: apartment_type_id
+                  type: bigint
+                  defaultValueSequenceNext: apartment_type_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: bigint
+              - column:
+                  name: number_of_bedrooms
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: floor_area_min
+                  type: double(10, 2)
+              - column:
+                  name: floor_area_max
+                  type: double(10, 2)
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: bigint
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: bigint
+
+        - createSequence:
+            sequenceName: apartment_type_requirement_id_seq
+            incrementBy: 1
+            startValue: 1
+        - createTable:
+            tableName: apartment_type_requirement
+            columns:
+              - column:
+                  name: requirement_id
+                  type: bigint
+                  defaultValueSequenceNext: apartment_type_requirement_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: apartment_type_id
+                  type: bigint
+              - column:
+                  name: family_id
+                  type: bigint
+              - column:
+                  name: subfamily_id
+                  type: bigint
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: bigint
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: bigint
+
+        - addForeignKeyConstraint:
+            baseColumnNames: category_id
+            baseTableName: apartment_type
+            constraintName: fk_apartment_type_category
+            referencedColumnNames: category_id
+            referencedTableName: category
+
+        - addForeignKeyConstraint:
+            baseColumnNames: apartment_type_id
+            baseTableName: apartment_type_requirement
+            constraintName: fk_apartment_type_requirement_apartment_type
+            referencedColumnNames: apartment_type_id
+            referencedTableName: apartment_type
+
+        - addForeignKeyConstraint:
+            baseColumnNames: family_id
+            baseTableName: apartment_type_requirement
+            constraintName: fk_apartment_type_requirement_family
+            referencedColumnNames: family_id
+            referencedTableName: furniture_family
+
+        - addForeignKeyConstraint:
+            baseColumnNames: subfamily_id
+            baseTableName: apartment_type_requirement
+            constraintName: fk_apartment_type_requirement_subfamily
+            referencedColumnNames: subfamily_id
+            referencedTableName: furniture_subfamily

@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-colour-table
+      author: muhammad danish khan
+      changes:
+        - createSequence:
+            sequenceName: colour_id_seq
+            incrementBy: 1
+            startValue: 1
+
+        - createTable:
+            tableName: colour
+            columns:
+              - column:
+                  name: colour_id
+                  type: bigint
+                  defaultValueSequenceNext: colour_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: code
+                  type: VARCHAR(20)
+              - column:
+                  name: description
+                  type: text

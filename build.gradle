@@ -1,0 +1,129 @@
+import org.codehaus.groovy.runtime.GStringImpl
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id 'com.github.node-gradle.node' version '3.5.1'
+    id 'org.liquibase.gradle' version '2.2.0'
+}
+
+group = 'com.qw'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    mapstructVersion = "1.5.3.Final"
+    lombokVersion = "1.18.30"
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    implementation 'org.liquibase:liquibase-core'
+    implementation 'org.apache.poi:poi:5.2.3'
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+    implementation 'org.apache.commons:commons-csv:1.9.0'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+    implementation 'com.github.ben-manes.caffeine:caffeine'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'org.apache.pdfbox:pdfbox:2.0.27'
+
+    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+
+    liquibaseRuntime 'org.liquibase:liquibase-core:4.29.2'
+    liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:4.0.0'
+    liquibaseRuntime 'org.postgresql:postgresql'
+    liquibaseRuntime 'org.yaml:snakeyaml:2.3'
+    liquibaseRuntime 'info.picocli:picocli:4.7.6'
+    liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate6:4.29.2'
+    liquibaseRuntime 'org.springframework.boot:spring-boot-starter-data-jpa'
+    liquibaseRuntime (sourceSets.main.output)
+
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'com.h2database:h2'
+}
+
+test{
+    useJUnitPlatform()
+}
+
+if (!project.hasProperty("runList")) {
+    project.ext.runList = "localEnv"
+}
+
+project.ext {
+    // Local Env DB
+    liquibaseLocalEnvUrl = 'jdbc:postgresql://localhost:5432/qw-homes'
+    liquibaseLocalEnvUsername = "postgres"
+    liquibaseLocalEnvPassword = "1234"
+    diffLogLocalEnvChangelogFile = "src/main/resources/db/changelog/changes/${new Date().format('yyyyMMddHHmmss')}-changelog.yaml" as GStringImpl
+    liquibaseLocalEnvDefaultSchemaName = "public"
+    liquibaseLocalEnvDriverName = "org.postgresql.Driver"
+
+}
+
+
+liquibase {
+    activities{
+        localEnv {
+            driver project.ext.liquibaseLocalEnvDriverName
+            url project.ext.liquibaseLocalEnvUrl
+            username project.ext.liquibaseLocalEnvUsername
+            password project.ext.liquibaseLocalEnvPassword
+
+            changelogFile "src/main/resources/db/changelog/db.changelog-master.yaml"
+
+            defaultSchemaName project.ext.liquibaseLocalEnvDefaultSchemaName
+            logLevel "debug"
+            classpath "$projectDir/src/main/resources/config/db/"
+        }
+
+        diffLogLocal {
+            driver project.ext.liquibaseLocalEnvDriverName
+            url project.ext.liquibaseLocalEnvUrl
+            username project.ext.liquibaseLocalEnvUsername
+            password project.ext.liquibaseLocalEnvPassword
+            changelogFile project.ext.diffLogLocalEnvChangelogFile
+            referenceUrl "hibernate:spring:com.qw.qwhomes.domains?hibernate.enhanced_id=true&dialect=org.hibernate.dialect.PostgreSQLDialect"
+            defaultSchemaName project.ext.liquibaseLocalEnvDefaultSchemaName
+            logLevel "debug"
+            classpath "$buildDir/classes/java/main"
+        }
+    }
+    runList = project.ext.runList
+}
+
+diff.dependsOn compileJava
+diffChangelog.dependsOn compileJava
+generateChangelog.dependsOn compileJava
+

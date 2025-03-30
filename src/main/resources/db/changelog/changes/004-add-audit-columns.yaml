@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-add-audit-columns
+      author: muhammad danish khan
+      changes:
+        - addColumn:
+            tableName: colour
+            columns:
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: bigint
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: bigint

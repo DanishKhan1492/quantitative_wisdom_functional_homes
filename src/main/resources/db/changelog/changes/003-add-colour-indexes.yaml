@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-add-colour-indexes
+      author: muhammad danish khan
+      changes:
+        - createIndex:
+            indexName: idx_colour_name
+            tableName: colour
+            columns:
+              - column:
+                  name: name
+        - createIndex:
+            indexName: idx_colour_code
+            tableName: colour
+            columns:
+              - column:
+                  name: code

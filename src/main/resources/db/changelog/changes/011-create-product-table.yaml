@@ -1,0 +1,148 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-product-table
+      author: muhammad danish khan
+      changes:
+        - createSequence:
+              sequenceName: product_id_seq
+              startValue: 1
+              incrementBy: 1
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: product_id
+                  type: bigint
+                  defaultValueSequenceNext: product_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sku
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: family_id
+                  type: bigint
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_product_family
+                    references: furniture_family(family_id)
+              - column:
+                  name: subfamily_id
+                  type: bigint
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_product_subfamily
+                    references: furniture_subfamily(subfamily_id)
+              - column:
+                  name: height
+                  type: double
+              - column:
+                  name: length
+                  type: double
+              - column:
+                  name: width
+                  type: double
+              - column:
+                  name: price
+                  type: double
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discount
+                  type: bigint
+              - column:
+                  name: supplier_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_product_supplier
+                    references: supplier(supplier_id)
+              - column:
+                  name: status
+                  type: varchar(10)
+                  defaultValue: 'Active'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: images
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_product_created_by
+                    references: users(user_id)
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_product_updated_by
+                    references: users(user_id)
+
+        - sql:
+            sql: ALTER TABLE product ADD CONSTRAINT check_product_status CHECK (status IN ('Active', 'Inactive'))
+
+        - createTable:
+            tableName: product_material
+            columns:
+              - column:
+                  name: product_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_product_material_product
+                    references: product(product_id)
+              - column:
+                  name: material_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_product_material_material
+                    references: material(material_id)
+
+        - addPrimaryKey:
+            tableName: product_material
+            columnNames: product_id, material_id
+            constraintName: pk_product_material
+
+        - createTable:
+            tableName: product_colour
+            columns:
+              - column:
+                  name: product_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_product_colour_product
+                    references: product(product_id)
+              - column:
+                  name: colour_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_product_colour_colour
+                    references: colour(colour_id)
+
+        - addPrimaryKey:
+            tableName: product_colour
+            columnNames: product_id, colour_id
+            constraintName: pk_product_colour

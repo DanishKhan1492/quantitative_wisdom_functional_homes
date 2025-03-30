@@ -1,0 +1,200 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20230701-001
+      author: muhammad danish khan
+      changes:
+        - createSequence:
+            sequenceName: proposal_id_seq
+            incrementBy: 1
+            startValue: 1
+        - createTable:
+            tableName: proposal
+            columns:
+              - column:
+                  name: proposal_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueSequenceNext: proposal_id_seq
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: apartment_type_id
+                  type: bigint
+              - column:
+                  name: client_info
+                  type: text
+              - column:
+                  name: total_price
+                  type: double
+              - column:
+                  name: status
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: bigint
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: bigint
+
+        - createSequence:
+            sequenceName: proposal_product_id_seq
+            incrementBy: 1
+            startValue: 1
+        - createTable:
+            tableName: proposal_product
+            columns:
+              - column:
+                  name: proposal_product_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueSequenceNext: proposal_product_id_seq
+              - column:
+                  name: proposal_id
+                  type: bigint
+              - column:
+                  name: product_id
+                  type: bigint
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: double
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_price
+                  type: double
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: bigint
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: bigint
+
+        - createSequence:
+            sequenceName: proposal_file_id_seq
+            incrementBy: 1
+            startValue: 1
+        - createTable:
+            tableName: proposal_file
+            columns:
+              - column:
+                  name: file_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  defaultValueSequenceNext: proposal_file_id_seq
+              - column:
+                  name: proposal_id
+                  type: bigint
+              - column:
+                  name: file_path
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_format
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: bigint
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: bigint
+
+        - addForeignKeyConstraint:
+            baseColumnNames: apartment_type_id
+            baseTableName: proposal
+            constraintName: fk_proposal_apartment_type
+            referencedColumnNames: apartment_type_id
+            referencedTableName: apartment_type
+
+        - addForeignKeyConstraint:
+            baseColumnNames: proposal_id
+            baseTableName: proposal_product
+            constraintName: fk_proposal_product_proposal
+            referencedColumnNames: proposal_id
+            referencedTableName: proposal
+
+        - addForeignKeyConstraint:
+            baseColumnNames: product_id
+            baseTableName: proposal_product
+            constraintName: fk_proposal_product_product
+            referencedColumnNames: product_id
+            referencedTableName: product
+
+        - addForeignKeyConstraint:
+            baseColumnNames: proposal_id
+            baseTableName: proposal_file
+            constraintName: fk_proposal_file_proposal
+            referencedColumnNames: proposal_id
+            referencedTableName: proposal
+
+        - createIndex:
+            indexName: idx_proposal_status
+            tableName: proposal
+            columns:
+              - column:
+                  name: status
+
+        - createIndex:
+            indexName: idx_proposal_apartment_type
+            tableName: proposal
+            columns:
+              - column:
+                  name: apartment_type_id
+
+        - createIndex:
+            indexName: idx_proposal_product_proposal
+            tableName: proposal_product
+            columns:
+              - column:
+                  name: proposal_id
+
+        - createIndex:
+            indexName: idx_proposal_file_proposal
+            tableName: proposal_file
+            columns:
+              - column:
+                  name: proposal_id

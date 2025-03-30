@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-category-table
+      author: muhammad danish khan
+      changes:
+        - createSequence:
+            sequenceName: category_id_seq
+            incrementBy: 1
+            startValue: 1
+        - createTable:
+            tableName: category
+            columns:
+              - column:
+                  name: category_id
+                  type: bigint
+                  defaultValueSequenceNext: category_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: category_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: category_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: bigint
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: bigint
+        - addForeignKeyConstraint:
+            baseColumnNames: created_by
+            baseTableName: category
+            constraintName: fk_category_created_by
+            referencedColumnNames: user_id
+            referencedTableName: "users"
+        - addForeignKeyConstraint:
+            baseColumnNames: updated_by
+            baseTableName: category
+            constraintName: fk_category_updated_by
+            referencedColumnNames: user_id
+            referencedTableName: "users"
+  - changeSet:
+      id: 002-create-category-table
+      author: assistant
+      changes:
+        - sql:
+            sql: ALTER TABLE category ADD CONSTRAINT check_category_type
+              CHECK (category_type IN ('Apartment', 'Furniture', 'Product', 'Other'))

@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-furniture-subfamily-table
+      author: muhammad danish khan
+      changes:
+        - createSequence:
+            sequenceName: subfamily_id_seq
+            incrementBy: 1
+            startValue: 1
+        - createTable:
+            tableName: furniture_subfamily
+            columns:
+              - column:
+                  name: subfamily_id
+                  type: bigint
+                  defaultValueSequenceNext: subfamily_id_seq
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: family_id
+                  type: bigint
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(50)
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: created_by
+                  type: bigint
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_by
+                  type: bigint
+        - addForeignKeyConstraint:
+            baseColumnNames: family_id
+            baseTableName: furniture_subfamily
+            constraintName: fk_furniture_subfamily_family
+            referencedColumnNames: family_id
+            referencedTableName: furniture_family
+        - addForeignKeyConstraint:
+            baseColumnNames: created_by
+            baseTableName: furniture_subfamily
+            constraintName: fk_furniture_subfamily_created_by
+            referencedColumnNames: user_id
+            referencedTableName: "users"
+        - addForeignKeyConstraint:
+            baseColumnNames: updated_by
+            baseTableName: furniture_subfamily
+            constraintName: fk_furniture_subfamily_updated_by
+            referencedColumnNames: user_id
+            referencedTableName: "users"
