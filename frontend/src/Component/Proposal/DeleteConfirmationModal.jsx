@@ -7,10 +7,11 @@ import {
 import { motion } from "framer-motion";
 
 const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, proposalToDelete }) => {
+  console.log(proposalToDelete,"hahah")
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -18,7 +19,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, proposalToDelete 
         transition={{ duration: 0.3 }}
         className="bg-background rounded-xl w-full max-w-lg p-6 relative shadow-2xl mx-4"
       >
-        <div className="absolute inset-0 bg-slate-800/40 rounded-xl backdrop-blur-sm -z-10" />
+        <div className="absolute inset-0 bg-background rounded-xl backdrop-blur-sm -z-10" />
         
         {/* Alert Icon */}
         <div className="flex justify-center mb-6 relative">
@@ -40,11 +41,11 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, proposalToDelete 
 
         {/* Proposal Details (if provided) */}
         {proposalToDelete && (
-          <div className="bg-gradient-to-r from-slate-700 to-slate-700/50 p-6 rounded-xl mb-8 border border-slate-600">
+          <div className="bg-white p-6 rounded-xl mb-8 border border-slate-600">
             <div className="flex items-center gap-4 mb-4">
               <div className="relative">
-                <div className="w-16 h-16 rounded-full bg-slate-600 flex items-center justify-center border-2 border-red-500/20">
-                  <span className="text-2xl font-bold text-slate-300">
+                <div className="w-16 h-16 rounded-full bg-black flex items-center justify-center border-2 border-red-500/20">
+                  <span className="text-2xl font-bold text-white">
                     {proposalToDelete.title?.charAt(0) || 'P'}
                   </span>
                 </div>
@@ -53,10 +54,10 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, proposalToDelete 
                 </div>
               </div>
               <div>
-                <h4 className="font-semibold text-xl text-slate-200">
-                  {proposalToDelete?.title || 'Proposal'}
+                <h4 className="font-semibold text-xl text-black">
+                  {proposalToDelete?.name || 'Proposal'}
                 </h4>
-                <span className="text-sm text-slate-400">
+                <span className="text-sm text-black">
                   ID: {proposalToDelete?.id || 'N/A'}
                 </span>
               </div>
@@ -70,7 +71,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, proposalToDelete 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onClose}
-            className="flex-1 px-6 py-3 border border-slate-600 rounded-lg text-black bg-black/30
+            className="flex-1 px-6 py-3 border border-slate-600 rounded-lg text-white bg-black 
                       transition-all duration-200 font-medium"
           >
             Cancel

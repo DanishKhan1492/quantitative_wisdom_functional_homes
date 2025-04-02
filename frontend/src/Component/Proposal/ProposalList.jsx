@@ -562,6 +562,7 @@ const toggleRowExpand = (proposalId) => {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
+        proposalToDelete = {proposals.find((p) => p.id === proposalToDelete?.id)}
       />
     </div>
   );

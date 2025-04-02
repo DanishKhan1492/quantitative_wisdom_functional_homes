@@ -13,23 +13,24 @@ import {
 import { motion } from "framer-motion";
 
 const DeleteModal = ({ isOpen, onClose, onConfirm, supplierToDelete }) => {
+  console.log(supplierToDelete," supplierToDelete");
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 10 }}
         transition={{ duration: 0.3 }}
-        className="bg-slate-800 rounded-xl w-full max-w-lg p-6 relative shadow-2xl mx-4"
+        className="bg-background rounded-xl w-full max-w-lg p-6 relative shadow-2xl mx-4"
       >
-        <div className="absolute inset-0 bg-slate-800/40 rounded-xl backdrop-blur-sm -z-10" />
-        
+        <div className="absolute inset-0 bg-background rounded-xl backdrop-blur-sm -z-10" />
+
         {/* Alert Icon */}
         <div className="flex justify-center mb-6 relative">
           <div className="bg-red-900/20 p-4 rounded-full relative">
-            <div className="absolute inset-0 bg-red-500/20 rounded-full animate-ping opacity-25" />
+            <div className="absolute inset-0 bg-red-900/20 rounded-full animate-ping opacity-25" />
             <AlertTriangle size={48} className="text-red-500 animate-pulse" />
           </div>
         </div>
@@ -40,13 +41,14 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, supplierToDelete }) => {
             Confirm Deletion
           </h3>
           <p className="text-slate-400 text-lg">
-            Are you sure you want to delete this supplier? This action cannot be undone.
+            Are you sure you want to delete this supplier? This action cannot be
+            undone.
           </p>
         </div>
 
         {/* Supplier Details */}
         {supplierToDelete && (
-          <div className="bg-gradient-to-r from-slate-700 to-slate-700/50 p-6 rounded-xl mb-8 border border-slate-600">
+          <div className="bg-white p-6 rounded-xl mb-8 border border-slate-600">
             <div className="flex items-center gap-4 mb-4 pb-4 border-b border-slate-600">
               <div className="relative">
                 <div className="w-16 h-16 rounded-full bg-slate-600 flex items-center justify-center border-2 border-red-500/20">
@@ -54,41 +56,42 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, supplierToDelete }) => {
                     {supplierToDelete.name.charAt(0)}
                   </span>
                 </div>
-                <div className="absolute -bottom-1 -right-1 bg-red-900/30 p-1.5 rounded-full border-2 border-slate-700">
-                  <UserX size={14} className="text-red-400" />
+                <div className="absolute -bottom-1 -right-1 bg-white p-1.5 rounded-full border-2 border-slate-700">
+                  <UserX size={14} className="text-red-900" />
                 </div>
               </div>
               <div>
-                <h4 className="font-semibold text-xl text-slate-200">
+                <h4 className="font-semibold text-xl text-black">
                   {supplierToDelete.name}
                 </h4>
-                <span className="text-sm text-slate-400">
+                <span className="text-sm text-black">
                   ID: {supplierToDelete.id}
                 </span>
               </div>
             </div>
 
             <div className="space-y-3">
-              <div className="flex items-center gap-3 text-slate-300">
-                <Building2 size={18} className="text-slate-400" />
+              <div className="flex items-center gap-3 text-black">
+                <Building2 size={18} className="text-black" />
                 <span>{supplierToDelete.primaryContactName}</span>
               </div>
-              <div className="flex items-center gap-3 text-slate-300">
-                <Mail size={18} className="text-slate-400" />
+              <div className="flex items-center gap-3 text-black">
+                <Mail size={18} className="text-black" />
                 <span>{supplierToDelete.email}</span>
               </div>
-              <div className="flex items-center gap-3 text-slate-300">
-                <Phone size={18} className="text-slate-400" />
+              <div className="flex items-center gap-3 text-black">
+                <Phone size={18} className="text-black" />
                 <span>{supplierToDelete.phoneNumber}</span>
               </div>
-              <div className="flex items-center gap-3 text-slate-300">
-                <MapPin size={18} className="text-slate-400" />
+              <div className="flex items-center gap-3 text-black">
+                <MapPin size={18} className="text-black" />
                 <span>
-                  {supplierToDelete.city}, {supplierToDelete.state}, {supplierToDelete.country}
+                  {supplierToDelete.city}, {supplierToDelete.state},{" "}
+                  {supplierToDelete.country}
                 </span>
               </div>
-              <div className="flex items-center gap-3 text-slate-300">
-                <Globe size={18} className="text-slate-400" />
+              <div className="flex items-center gap-3 text-black">
+                <Globe size={18} className="text-black" />
                 <span>{supplierToDelete.websiteUrl}</span>
               </div>
             </div>
@@ -101,7 +104,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, supplierToDelete }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onClose}
-            className="flex-1 px-6 py-3 border border-slate-600 rounded-lg text-slate-300 
+            className="flex-1 px-6 py-3 border bg-black border-slate-600 rounded-lg text-slate-300 
                      hover:bg-slate-700 hover:border-slate-500 transition-all duration-200 font-medium"
           >
             Cancel

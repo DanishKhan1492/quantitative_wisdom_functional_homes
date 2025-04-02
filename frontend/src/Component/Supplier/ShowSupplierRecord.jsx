@@ -535,6 +535,7 @@ const ShowSupplierRecord = () => {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
+        supplierToDelete = {suppliers.find(supplier => supplier.id === supplierToDelete?.id)}
       />
     </div>
   );

@@ -584,6 +584,7 @@ const handleNextPage = () => {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
+        productToDelete = {products.find((product) => product.productId === productToDelete?.productId)}
       />
     </div>
   );

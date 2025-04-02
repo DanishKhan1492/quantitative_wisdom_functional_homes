@@ -50,7 +50,7 @@ export const updateProduct = async (productId, formData) => {
         },
       }
     );
-
+    toast.success("Product Updated successfully");
     return response.data;
   } catch (error) {
     console.error("Error updating product:", error);

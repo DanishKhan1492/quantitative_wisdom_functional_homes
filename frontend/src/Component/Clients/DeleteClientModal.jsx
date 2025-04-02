@@ -14,7 +14,7 @@ const DeleteClientModal = ({ isOpen, onClose, onConfirm, clientToDelete }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -96,7 +96,7 @@ const DeleteClientModal = ({ isOpen, onClose, onConfirm, clientToDelete }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onClose}
-            className="flex-1 px-6 py-3 border bg-black/30 border-slate-600 rounded-lg text-black  transition-all duration-200 font-medium"
+            className="flex-1 px-6 py-3 border bg-black border-slate-600 rounded-lg text-white  transition-all duration-200 font-medium"
           >
             Cancel
           </motion.button>
@@ -104,7 +104,7 @@ const DeleteClientModal = ({ isOpen, onClose, onConfirm, clientToDelete }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onConfirm}
-            className="flex-1 px-6 py-3 bg-black text-white rounded-lg hover:from-red-700 hover:to-red-600 transition-all duration-200 font-medium shadow-lg shadow-red-500/10 hover:shadow-red-500/20 flex items-center justify-center gap-2"
+            className="flex-1 px-6 py-3 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg hover:from-red-700 hover:to-red-600 transition-all duration-200 font-medium shadow-lg shadow-red-500/10 hover:shadow-red-500/20 flex items-center justify-center gap-2"
           >
             <Trash2 size={20} />
             Delete Client

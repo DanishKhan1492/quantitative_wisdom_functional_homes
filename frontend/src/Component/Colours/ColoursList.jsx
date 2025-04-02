@@ -475,7 +475,6 @@ useEffect(() => {
             Previous
           </button>
 
-          
           <div className="flex gap-2">{renderPageNumbers()}</div>
 
           <button
@@ -504,6 +503,7 @@ useEffect(() => {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
+        colourToDelete= {colours.find((colour) => colour.colourId === colourToDelete?.colourId)}
       />
     </div>
   );
