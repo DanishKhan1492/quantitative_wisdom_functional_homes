@@ -156,7 +156,7 @@ const handleSubmit = async (e) => {
             <div className="bg-black p-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-white">
-                  {isEditing ? "Update Furniture" : "Add Furniture"}
+                  {isEditing ? "Update Furniture Family" : "Add Furniture Family"}
                 </h2>
                 <div className="flex items-center gap-4">
                   <motion.button
@@ -357,9 +357,9 @@ const handleSubmit = async (e) => {
                       {loading ? (
                         <div className="flex items-center">Loading...</div>
                       ) : isEditing ? (
-                        "Update Furniture"
+                        "Update Furniture Family"
                       ) : (
-                        "Add Furniture"
+                        "Add Furniture Family"
                       )}
                     </span>
                     <ChevronRight size={20} />
