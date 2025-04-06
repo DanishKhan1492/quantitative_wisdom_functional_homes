@@ -15,7 +15,7 @@ import { getAllFurnitureFamilies } from "../../ApiService/FurnitureFamily/Furnit
 import { getSubFamilyByFamilyId } from "../../ApiService/SubFamily/SubFamilyApiService";
 import { getAllApartmentTypes } from "../../ApiService/AppartmentType/AppartmentTypeApiService";
 import { getAllClients } from "../../ApiService/ClientApiService/ClientApiService";
-import { getAllProducts } from "../../ApiService/ProductCatalog/ProductCatalogApiServices";
+
 
 const AddProposalModal = ({
   isOpen,
@@ -184,44 +184,87 @@ const finalPrice = originalPrice - discountAmount;
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (selectedProducts.length === 0) {
-      toast.error(
-        "At least one product is required to create or update a proposal."
-      );
-      return;
-    }
+  if (selectedProducts.length === 0) {
+    toast.error(
+      "At least one product is required to create or update a proposal."
+    );
+    return;
+  }
 
-    const productApartmentTypeId = Number(selectedProducts[0].apartmentTypeId);
-    const apartmentTypeId =
-      productApartmentTypeId ||
-      (isEditMode && proposalData?.apartmentTypeId
-        ? Number(proposalData.apartmentTypeId)
-        : null);
+  const productApartmentTypeId = Number(selectedProducts[0].apartmentTypeId);
+  const apartmentTypeId =
+    productApartmentTypeId ||
+    (isEditMode && proposalData?.apartmentTypeId
+      ? Number(proposalData.apartmentTypeId)
+      : null);
 
-    if (!apartmentTypeId) {
-      toast.error(
-        "A valid Apartment Type is required. Please add a product with a selected Apartment Type."
-      );
-      return;
-    }
+  if (!apartmentTypeId) {
+    toast.error(
+      "A valid Apartment Type is required. Please add a product with a selected Apartment Type."
+    );
+    return;
+  }
 
-    const payload = {
-      name: formValues.name,
-      apartmentTypeId: apartmentTypeId,
-      clientId: Number(formValues.clientInfo),
-      proposalProducts: selectedProducts.map((product) => ({
-        productId: product.productId,
-        quantity: product.quantity,
-        price: product.price,
-        totalPrice: product.totalPrice,
-      })),
-    };
-
-    onSubmit(payload);
-    onClose();
+  const payload = {
+    name: formValues.name,
+    apartmentTypeId: apartmentTypeId,
+    clientId: Number(formValues.clientInfo),
+    discount: formValues.discount,   // Sending discount to the API
+    totalPrice: finalPrice,          // Sending the final price (with discount applied) to the API
+    proposalProducts: selectedProducts.map((product) => ({
+      productId: product.productId,
+      quantity: product.quantity,
+      price: product.price,
+      totalPrice: product.totalPrice,
+    })),
   };
+
+  onSubmit(payload);
+  onClose();
+};
+
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+
+  //   if (selectedProducts.length === 0) {
+  //     toast.error(
+  //       "At least one product is required to create or update a proposal."
+  //     );
+  //     return;
+  //   }
+
+  //   const productApartmentTypeId = Number(selectedProducts[0].apartmentTypeId);
+  //   const apartmentTypeId =
+  //     productApartmentTypeId ||
+  //     (isEditMode && proposalData?.apartmentTypeId
+  //       ? Number(proposalData.apartmentTypeId)
+  //       : null);
+
+  //   if (!apartmentTypeId) {
+  //     toast.error(
+  //       "A valid Apartment Type is required. Please add a product with a selected Apartment Type."
+  //     );
+  //     return;
+  //   }
+
+  //   const payload = {
+  //     name: formValues.name,
+  //     apartmentTypeId: apartmentTypeId,
+  //     clientId: Number(formValues.clientInfo),
+  //     proposalProducts: selectedProducts.map((product) => ({
+  //       productId: product.productId,
+  //       quantity: product.quantity,
+  //       price: product.price,
+  //       totalPrice: product.totalPrice,
+  //     })),
+  //   };
+
+  //   onSubmit(payload);
+  //   onClose();
+  // };
 
   const handleReqChange = (e) => {
     const { name, value } = e.target;
