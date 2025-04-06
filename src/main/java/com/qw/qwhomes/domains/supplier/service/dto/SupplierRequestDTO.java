@@ -57,7 +57,7 @@ public class SupplierRequestDTO {
 
     private Integer deliveryTimeWeeks;
 
-    private Integer taxNumber;
+    private String taxNumber;
 
     private Integer supplierDiscount;
 

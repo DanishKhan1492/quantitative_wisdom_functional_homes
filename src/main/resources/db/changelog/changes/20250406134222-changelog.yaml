@@ -1,0 +1,13 @@
+databaseChangeLog:
+- changeSet:
+      id: 1743928948129-1
+      author: muhammad danish khan (generated)
+      changes:
+          - addColumn:
+                tableName: proposal
+                columns:
+                    - column:
+                          name: discount
+                          type: double
+                          constraints:
+                              nullable: true

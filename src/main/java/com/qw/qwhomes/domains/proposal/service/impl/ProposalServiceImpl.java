@@ -79,6 +79,9 @@ public class ProposalServiceImpl implements ProposalService {
         proposal.setProposalProducts(proposalProducts);
 
         Double totalPrice = calculateTotalPrice(proposalProducts);
+        if (createDTO.getDiscount() != null && createDTO.getDiscount() > 0) {
+            totalPrice = totalPrice - (totalPrice * createDTO.getDiscount() / 100);
+        }
         proposal.setTotalPrice(totalPrice);
 
         Proposal savedProposal = proposalRepository.save(proposal);
@@ -104,6 +107,9 @@ public class ProposalServiceImpl implements ProposalService {
         updateProposalProducts(updateDTO.getProposalProducts(), proposal);
 
         Double totalPrice = calculateTotalPrice(proposal.getProposalProducts());
+        if (updateDTO.getDiscount() != null && updateDTO.getDiscount() > 0 && !updateDTO.getDiscount().equals(proposal.getDiscount())) {
+            totalPrice = totalPrice - (totalPrice * updateDTO.getDiscount() / 100);
+        }
         proposal.setTotalPrice(totalPrice);
 
         Proposal updatedProposal = proposalRepository.save(proposal);
