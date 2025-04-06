@@ -25,9 +25,9 @@ import { LoadingProvider, LoadingContext } from "./contexts/LoadingContext";
 import ClientList from "./Component/Clients/ClientList";
 import LoadingOverlay from "./Component/Loading/LoadingOverlay";
 import ClientDetails from "./Component/Clients/ClientDetails";
-import CacheBuster from "react-cache-buster";
-import { version } from "../package.json";
-import Loading from "./Component/Loading/Lodder";
+// import CacheBuster from "react-cache-buster";
+// import { version } from "../package.json";
+// import Loading from "./Component/Loading/Lodder";
 
 const ls = new SecureLS({ encodingType: "aes" });
 
@@ -62,10 +62,10 @@ function AppContent() {
     return false;
   });
 
-  // Set up axios interceptors
-  useEffect(() => {
-    setupInterceptors({ startLoading, stopLoading, handleLogout });
-  }, [startLoading, stopLoading]);
+  // // Set up axios interceptors
+  // useEffect(() => {
+  //   setupInterceptors({ startLoading, stopLoading, handleLogout });
+  // }, [startLoading, stopLoading]);
 
   const handleLogin = (token, expirationTime) => {
     ls.set("authToken", token);
@@ -121,17 +121,17 @@ function AppContent() {
       </div>
     </div>
   );
-  const isProduction = process.env.NODE_ENV === "production";
+ // const isProduction = process.env.NODE_ENV === "production";
 
   return (
     <>
-      <CacheBuster
+      {/* <CacheBuster
         currentVersion={version}
         isEnabled={isProduction}
         isVerboseMode={false}
         loadingComponent={<Loading />}
         metaFileDirectory={"."}
-      >
+      > */}
         {loading && <LoadingOverlay />}
         <Routes>
           {/* Public Route */}
@@ -204,7 +204,7 @@ function AppContent() {
           )}
         </Routes>
         <ToastContainer />
-      </CacheBuster>
+      {/* </CacheBuster> */}
     </>
   );
 }

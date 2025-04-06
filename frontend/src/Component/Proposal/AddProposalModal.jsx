@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useRef } from "react";
 import { X, Plus, Trash2, Info, FolderX } from "lucide-react";
 import { motion } from "framer-motion";
@@ -16,7 +14,6 @@ import { getSubFamilyByFamilyId } from "../../ApiService/SubFamily/SubFamilyApiS
 import { getAllApartmentTypes } from "../../ApiService/AppartmentType/AppartmentTypeApiService";
 import { getAllClients } from "../../ApiService/ClientApiService/ClientApiService";
 
-
 const AddProposalModal = ({
   isOpen,
   onClose,
@@ -30,6 +27,12 @@ const AddProposalModal = ({
     clientInfo: "",
     discount: 0,
   });
+   const [reqFormValues, setReqFormValues] = useState({
+     apartmentTypeId: "",
+     familyId: "",
+     subFamilyId: "",
+     quantity: "",
+   });
 
   const [selectedProducts, setSelectedProducts] = useState([]);
   const clickHandledRef = useRef(false);
@@ -40,22 +43,28 @@ const AddProposalModal = ({
   const [showProductModal, setShowProductModal] = useState(false);
   const [clientList, setClientList] = useState([]);
 
-  // Requirements code (unchanged)
-  const [reqFormValues, setReqFormValues] = useState({
-    apartmentTypeId: "",
-    familyId: "",
-    subFamilyId: "",
-    quantity: "",
-  });
+  // Calculate original price based on current products
+  const calculateOriginalPrice = (products) => {
+    return products.reduce(
+      (total, product) => total + (product.price || 0) * product.quantity,
+      0
+    );
+  };
 
-const originalPrice = selectedProducts.reduce(
-  (total, product) => total + product.price * product.quantity,
-  0
-);
+  // State to track original price
+  const [originalPrice, setOriginalPrice] = useState(0);
+  // State to track final price
+  const [finalPrice, setFinalPrice] = useState(0);
 
-// Final price with discount
-const discountAmount = (originalPrice * formValues.discount) / 100;
-const finalPrice = originalPrice - discountAmount;
+  // Update prices when products or discount changes
+  useEffect(() => {
+    const calcOriginalPrice = calculateOriginalPrice(selectedProducts);
+    setOriginalPrice(calcOriginalPrice);
+
+    // Calculate final price with discount
+    const discountAmount = (calcOriginalPrice * formValues.discount) / 100;
+    setFinalPrice(calcOriginalPrice - discountAmount);
+  }, [selectedProducts, formValues.discount]);
 
   // Fetch clients, families, apartments on mount
   useEffect(() => {
@@ -65,7 +74,6 @@ const finalPrice = originalPrice - discountAmount;
         setClientList(resClients.data);
 
         const resFamilies = await getAllFurnitureFamilies();
-       
         setFamilies(resFamilies.content);
 
         const resApts = await getAllApartmentTypes();
@@ -80,14 +88,11 @@ const finalPrice = originalPrice - discountAmount;
   useEffect(() => {
     const fetchSubFamilies = async () => {
       console.log(reqFormValues.familyId, "-------reqFormValues.familyId");
-      
+
       if (reqFormValues.familyId) {
         try {
           const res = await getSubFamilyByFamilyId(reqFormValues.familyId);
-          console.log(
-            res,
-            "-------res subfamilies-------"
-          );
+          console.log(res, "-------res subfamilies-------");
           setSubFamilies(res);
         } catch (error) {
           console.error("Error fetching subfamilies:", error);
@@ -104,13 +109,30 @@ const finalPrice = originalPrice - discountAmount;
   // If editing, populate fields
   useEffect(() => {
     if (isEditMode && proposalData) {
+      // Set form values including discount from API response
       setFormValues({
-        name: proposalData.name,
+        name: proposalData.name || "",
         clientInfo: proposalData.clientId || "",
         discount: proposalData.discount || 0,
-        apartmentTypeId: proposalData.apartmentTypeId || "", // prepopulate apartment type
+        apartmentTypeId: proposalData.apartmentTypeId || "",
       });
-      setSelectedProducts(proposalData.proposalProducts || []);
+
+      // Make sure products have the price property for calculations
+      const productsWithPrice = (proposalData.proposalProducts || []).map(
+        (product) => {
+          // Calculate individual price from totalPrice and quantity
+          const price =
+            product.quantity > 0 ? product.totalPrice / product.quantity : 0;
+          return {
+            ...product,
+            productId: product.productId,
+            price: price,
+            quantity: product.quantity || 1,
+          };
+        }
+      );
+
+      setSelectedProducts(productsWithPrice);
     } else {
       setFormValues({
         name: "",
@@ -121,8 +143,6 @@ const finalPrice = originalPrice - discountAmount;
       setSelectedProducts([]);
     }
   }, [isEditMode, proposalData]);
-
-
 
   // Input changes
   const handleChange = (e) => {
@@ -161,6 +181,7 @@ const finalPrice = originalPrice - discountAmount;
       clickHandledRef.current = false;
     }, 0);
   };
+
   // Update product quantity from the list
   const updateProductQuantity = (productId, newQuantity) => {
     setSelectedProducts((prev) =>
@@ -184,87 +205,49 @@ const finalPrice = originalPrice - discountAmount;
   };
 
   const handleSubmit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (selectedProducts.length === 0) {
-    toast.error(
-      "At least one product is required to create or update a proposal."
-    );
-    return;
-  }
+    if (selectedProducts.length === 0) {
+      toast.error(
+        "At least one product is required to create or update a proposal."
+      );
+      return;
+    }
 
-  const productApartmentTypeId = Number(selectedProducts[0].apartmentTypeId);
-  const apartmentTypeId =
-    productApartmentTypeId ||
-    (isEditMode && proposalData?.apartmentTypeId
-      ? Number(proposalData.apartmentTypeId)
-      : null);
+    const productApartmentTypeId = Number(selectedProducts[0].apartmentTypeId);
+    const apartmentTypeId =
+      productApartmentTypeId ||
+      (isEditMode && proposalData?.apartmentTypeId
+        ? Number(proposalData.apartmentTypeId)
+        : null);
 
-  if (!apartmentTypeId) {
-    toast.error(
-      "A valid Apartment Type is required. Please add a product with a selected Apartment Type."
-    );
-    return;
-  }
+    if (!apartmentTypeId) {
+      toast.error(
+        "A valid Apartment Type is required. Please add a product with a selected Apartment Type."
+      );
+      return;
+    }
 
-  const payload = {
-    name: formValues.name,
-    apartmentTypeId: apartmentTypeId,
-    clientId: Number(formValues.clientInfo),
-    discount: formValues.discount,   // Sending discount to the API
-    totalPrice: finalPrice,          // Sending the final price (with discount applied) to the API
-    proposalProducts: selectedProducts.map((product) => ({
-      productId: product.productId,
-      quantity: product.quantity,
-      price: product.price,
-      totalPrice: product.totalPrice,
-    })),
+    const payload = {
+      name: formValues.name,
+      apartmentTypeId: apartmentTypeId,
+      clientId: Number(formValues.clientInfo),
+      discount: formValues.discount, // Sending discount to the API
+     finalPrice: finalPrice,
+      proposalProducts: selectedProducts.map((product) => ({
+        productId: product.productId,
+        quantity: product.quantity,
+        price: product.price,
+        totalPrice: product.totalPrice,
+      })),
+    };
+
+    onSubmit(payload);
+    onClose();
   };
 
-  onSubmit(payload);
-  onClose();
-};
-
-
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-
-  //   if (selectedProducts.length === 0) {
-  //     toast.error(
-  //       "At least one product is required to create or update a proposal."
-  //     );
-  //     return;
-  //   }
-
-  //   const productApartmentTypeId = Number(selectedProducts[0].apartmentTypeId);
-  //   const apartmentTypeId =
-  //     productApartmentTypeId ||
-  //     (isEditMode && proposalData?.apartmentTypeId
-  //       ? Number(proposalData.apartmentTypeId)
-  //       : null);
-
-  //   if (!apartmentTypeId) {
-  //     toast.error(
-  //       "A valid Apartment Type is required. Please add a product with a selected Apartment Type."
-  //     );
-  //     return;
-  //   }
-
-  //   const payload = {
-  //     name: formValues.name,
-  //     apartmentTypeId: apartmentTypeId,
-  //     clientId: Number(formValues.clientInfo),
-  //     proposalProducts: selectedProducts.map((product) => ({
-  //       productId: product.productId,
-  //       quantity: product.quantity,
-  //       price: product.price,
-  //       totalPrice: product.totalPrice,
-  //     })),
-  //   };
-
-  //   onSubmit(payload);
-  //   onClose();
-  // };
+  // Requirement management
+ 
 
   const handleReqChange = (e) => {
     const { name, value } = e.target;
@@ -449,7 +432,10 @@ const finalPrice = originalPrice - discountAmount;
                             </p>
                           </div>
                           <div className="flex items-center gap-6">
-                            <span>AED {product.totalPrice.toFixed(2)}</span>
+                            <span>
+                              AED{" "}
+                              {(product.price * product.quantity).toFixed(2)}
+                            </span>
                             <div className="flex items-center gap-2">
                               <input
                                 type="number"
@@ -657,7 +643,7 @@ const finalPrice = originalPrice - discountAmount;
                           ))}
                           {requirements.length === 0 && (
                             <tr>
-                              <td colSpan="4" className="py-12 text-center">
+                              <td colSpan="5" className="py-12 text-center">
                                 <div className="flex flex-col items-center justify-center text-slate-500">
                                   <FolderX className="w-12 h-12 mb-4" />
                                   No requirements found
@@ -675,7 +661,7 @@ const finalPrice = originalPrice - discountAmount;
             {/* Footer */}
             <div className="mt-6 pt-6 border-t border-slate-700 flex items-center justify-between">
               <div className="flex items-center gap-8 mb-10">
-                {activeTab === "proposal" && originalPrice > 0 && (
+                {activeTab === "proposal" && selectedProducts.length > 0 && (
                   <>
                     {/* Discount Input */}
                     <div className="group">
@@ -716,37 +702,6 @@ const finalPrice = originalPrice - discountAmount;
                 )}
               </div>
 
-              {/* <div className="flex items-center gap-8 mb-10">
-                {activeTab === "proposal" && (
-                  <>
-                    <div className="group">
-                      <label className="block text-xl font-medium text-black mb-2">
-                        Discount (%)
-                      </label>
-                      <input
-                        type="number"
-                        value={formValues.discount}
-                        onChange={handleDiscountChange}
-                        min="0"
-                        max="100"
-                        className="w-full px-4 py-3 text-xl border border-black rounded-xl text-black placeholder-black transition-all duration-300 ease-in-out focus:border-blue-500 hover:border-blue-400"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <div className="text-lg text-black">
-                        Original Price:{" "}
-                        <span className="line-through">
-                          AED {originalPrice}
-                        </span>
-                      </div>
-                      <div className="text-xl font-semibold text-black">
-                        Final Price:{" "}
-                        <span className="text-black">AED {finalPrice}</span>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div> */}
               <div className="flex items-center gap-4">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -764,7 +719,7 @@ const finalPrice = originalPrice - discountAmount;
                     type="submit"
                     className="px-6 py-2 bg-black text-xl text-white rounded-xl hover:bg-slate-600 transition-colors"
                   >
-                    Generate Proposal
+                    {isEditMode ? "Update Proposal" : "Generate Proposal"}
                   </motion.button>
                 )}
               </div>
