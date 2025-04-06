@@ -15,6 +15,7 @@ public class ProposalResponseDTO {
     private Long clientId;
     private String clientName;
     private Double totalPrice;
+    private Double discount;
     private Proposal.ProposalStatus status;
     private List<ProposalProductDTO> proposalProducts;
     private List<ProposalFileDTO> proposalFiles;
