@@ -53,6 +53,8 @@ public class Proposal extends BaseEntity {
     @Column(name = "status", nullable = false)
     private ProposalStatus status;
 
+    private Double discount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;

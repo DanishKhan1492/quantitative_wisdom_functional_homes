@@ -20,6 +20,8 @@ public class ProposalDTO {
     @NotNull(message = "proposal.client.required")
     private Long clientId;
 
+    private Double discount;
+
     @NotEmpty(message = "proposal.products.required")
     @NotNull(message = "proposal.products.required")
     @Size(min = 1, message = "proposal.products.min")

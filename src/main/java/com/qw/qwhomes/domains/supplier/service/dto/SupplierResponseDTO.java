@@ -26,7 +26,7 @@ public class SupplierResponseDTO {
     private String paymentTerms;
     private String assemblyServices;
     private Integer deliveryTimeWeeks;
-    private Integer taxNumber;
+    private String taxNumber;
     private Integer supplierDiscount;
     private boolean status;
 
