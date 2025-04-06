@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "npm run generate-meta-tag && react-scripts build",
+    "build": "npm run generate-meta-tag &&vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "generate-meta-tag": "node ./node_modules/react-cache-buster/dist/generate-meta-tag.js"
