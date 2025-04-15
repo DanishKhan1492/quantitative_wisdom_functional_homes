@@ -26,10 +26,10 @@ import { LoadingProvider, LoadingContext } from "./contexts/LoadingContext"; // 
 import ClientList from "./Component/Clients/ClientList";
 import LoadingOverlay from "./Component/Loading/LoadingOverlay";
 import ClientDetails from "./Component/Clients/ClientDetails";
+import Protected from "./Component/Protected/Protected";
+import jwtDecode from "jwt-decode";
 const ls = new SecureLS({ encodingType: "aes" });
-import CacheBuster from "react-cache-buster";
-import { version } from "../package.json";
-import Loading from "./Component/Loading/Lodder";
+
 function App() {
   return (
     <LoadingProvider>
@@ -47,7 +47,12 @@ function AppContent() {
 
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     const token = ls.get("authToken");
-    const expirationTime = ls.get("tokenExpiration");
+    console.log("Token from local storage:", token);
+    if (!token) {
+      return false; // No token means not authenticated
+    }
+    const decodedToken = jwtDecode(token);
+    const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds  
 
     if (token && expirationTime) {
       const currentTime = Date.now();
@@ -56,23 +61,20 @@ function AppContent() {
       } else {
         // Token is expired, remove it
         ls.remove("authToken");
-        ls.remove("tokenExpiration");
+       
         return false;
       }
     }
     return false;
   });
 
-  const handleLogin = (token, expirationTime) => {
-    ls.set("authToken", token);
-    ls.set("tokenExpiration", expirationTime);
-
+  const handleLogin = (token) => {
+    ls.set("authToken", token); 
     setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
     ls.remove("authToken");
-    ls.remove("tokenExpiration");
     setIsAuthenticated(false);
   };
 
@@ -89,13 +91,7 @@ function AppContent() {
 
   return (
     <>
-       <CacheBuster
-        currentVersion={version}
-        isEnabled={isProduction}
-        isVerboseMode={false}
-        loadingComponent={<Loading />}
-        metaFileDirectory={"."}
-      >
+      
       {loading && <LoadingOverlay />}
       <Routes>
         {/* Public Route */}
@@ -117,42 +113,42 @@ function AppContent() {
             element={
               <AuthenticatedLayout>
                 <Routes>
-                  <Route path="/supplier" element={<ShowSupplierRecord />} />
+                  <Route path="/supplier" element={<Protected logout={handleLogout}><ShowSupplierRecord /></Protected>} />
                   <Route
                     path="/supplier-details/:supplierId"
                     element={<SupplierDetails />}
                   />
-                  <Route path="/client" element={<ClientList />} />
-                  <Route path="/clients/:id" element={<ClientDetails />} />
-                  <Route path="/apartment" element={<AppartmentList />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/client" element={<Protected logout={handleLogout}><ClientList /></Protected>} />
+                  <Route path="/clients/:id" element={<Protected logout={handleLogout}><ClientDetails /></Protected>} />
+                  <Route path="/apartment" element={<Protected logout={handleLogout}><AppartmentList /></Protected>} />
+                  <Route path="/dashboard" element={<Protected logout={handleLogout}><Dashboard /></Protected>} />
 
                   <Route
                     path="/apartment-details/:id"
-                    element={<ApartmentDetailsPage />}
+                    element={<Protected logout={handleLogout}><ApartmentDetailsPage /></Protected>}
                   />
                   <Route
                     path="/furniture-management"
-                    element={<FurnitureList />}
+                    element={<Protected logout={handleLogout}><FurnitureList /></Protected>}
                   />
                   <Route
                     path="/furniture-sub-families"
-                    element={<SubFamiliesList />}
+                    element={<Protected logout={handleLogout}><SubFamiliesList /></Protected>}
                   />
                   <Route
                     path="/product-catalogue"
-                    element={<ProductCatalogueList />}
+                    element={<Protected logout={handleLogout}><ProductCatalogueList /></Protected>}
                   />
                   <Route
                     path="/product-details/:id"
-                    element={<ProductDetails />}
+                    element={<Protected logout={handleLogout}><ProductDetails /></Protected>}
                   />
-                  <Route path="/colours" element={<ColoursList />} />
-                  <Route path="/material" element={<MaterialsList />} />
-                  <Route path="/proposal" element={<ProposalList />} />
+                  <Route path="/colours" element={<Protected logout={handleLogout}><ColoursList /></Protected>} />
+                  <Route path="/material" element={<Protected logout={handleLogout}><MaterialsList /></Protected>} />
+                  <Route path="/proposal" element={<Protected logout={handleLogout}><ProposalList /></Protected>} />
                   <Route
                     path="/proposal-details/:id"
-                    element={<ProposalDetails />}
+                    element={<Protected logout={handleLogout}><ProposalDetails /></Protected>}
                   />
                   {/* Redirect any unknown routes to /supplier */}
                   <Route
@@ -168,7 +164,7 @@ function AppContent() {
         )}
       </Routes>
       <ToastContainer />
-      </CacheBuster>
+     
     </>
   );
 }

@@ -342,7 +342,7 @@ const AddProductModal = ({
                       <option
                         key={f.familyId}
                         value={f.familyId}
-                        className="text-white bg-black"
+                        className="text-black bg-white"
                       >
                         {f.name}
                       </option>

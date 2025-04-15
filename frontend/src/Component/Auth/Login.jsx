@@ -20,9 +20,7 @@ const Login = ({ onLogin }) => {
     try {
       const response = await login({ username, password });
       const token = response.accessToken;
-      const expiresInSeconds = response.expiresIn;
-      const expirationTime = Date.now() + expiresInSeconds * 1000;
-      onLogin(token, expirationTime);
+      onLogin(token);
       toast.success("Login successful!");
     } catch (error) {
       toast.error("Login failed. Please check your credentials.");
