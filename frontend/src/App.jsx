@@ -46,26 +46,26 @@ function AppContent() {
   }, [startLoading, stopLoading]);
 
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    // const token = ls.get("authToken");
-    // console.log("Token from local storage:", token);
-    // if (!token) {
-    //   return false; // No token means not authenticated
-    // }
-    // const decodedToken = jwtDecode(token);
-    // const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds  
+    const token = ls.get("authToken");
+    console.log("Token from local storage:", token);
+    if (!token) {
+      return false; // No token means not authenticated
+    }
+    const decodedToken = jwtDecode(token);
+    const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
 
-    // if (token && expirationTime) {
-    //   const currentTime = Date.now();
-    //   if (currentTime < expirationTime) {
-    //     return true;
-    //   } else {
-    //     // Token is expired, remove it
-    //     ls.remove("authToken");
+    if (token && expirationTime) {
+      const currentTime = Date.now();
+      if (currentTime < expirationTime) {
+        return true;
+      } else {
+        // Token is expired, remove it
+        ls.remove("authToken");
        
-    //     return false;
-    //   }
-    // }
-    // return false;
+        return false;
+      }
+    }
+    return false;
   });
 
   const handleLogin = (token) => {
