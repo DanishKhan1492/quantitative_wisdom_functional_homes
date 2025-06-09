@@ -12,7 +12,7 @@ import {
 import { getAllFurnitureFamilies } from "../../ApiService/FurnitureFamily/FurnitureFamilyApiServices";
 import { getSubFamilyByFamilyId } from "../../ApiService/SubFamily/SubFamilyApiService";
 import { getAllApartmentTypes } from "../../ApiService/AppartmentType/AppartmentTypeApiService";
-import { getAllClients } from "../../ApiService/ClientApiService/ClientApiService";
+import { getAllActiveClients } from "../../ApiService/ClientApiService/ClientApiService";
 
 const AddProposalModal = ({
   isOpen,
@@ -70,8 +70,9 @@ const AddProposalModal = ({
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const resClients = await getAllClients();
-        setClientList(resClients.data);
+        const resClients = await getAllActiveClients();
+        
+        setClientList(resClients);
 
         const resFamilies = await getAllFurnitureFamilies();
         setFamilies(resFamilies.content);

@@ -186,3 +186,45 @@ export const updateClientStatus = async (clientId, status) => {
     throw error;
   }
 };
+
+
+
+export const getAllActiveClients = async (
+  pageNumber = 0,
+  size = 10,
+  sort = ["createdAt,desc"]
+) => {
+  try {
+    const token = ls.get("authToken");
+
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+
+    const params = {
+      page: pageNumber,
+      size: size,
+      sort: sort.join(","),
+    };
+
+    const response = await axios.get(`${API_BASE_URL}/api/v1/clients/active`, {
+      params,
+      headers,
+    });
+
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      console.error("Unauthorized access:", error);
+      // Optionally, handle token refresh or redirect to login
+    }
+    console.error("Error fetching clients:", error);
+    throw error;
+  }
+};

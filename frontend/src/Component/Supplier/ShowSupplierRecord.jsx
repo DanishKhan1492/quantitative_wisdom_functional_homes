@@ -27,6 +27,7 @@ import {
   updateSupplier,
   deleteSupplier,
   downloadSuppliersExcel,
+  patchSupplier,
 } from "../../ApiService/SupplierService/SupplierApiService";
 import Loading from "../../Component/Loading/Lodder"
 const ShowSupplierRecord = () => {
@@ -255,6 +256,34 @@ const ShowSupplierRecord = () => {
   // Pagination calculations (using 1-indexed pageNumber)
   const startItem = (pageNumber - 1) * size + 1;
   const endItem = Math.min(pageNumber * size, totalElements);
+
+
+
+
+
+  const handleStatusToggle = async (supplierId) => {
+
+    console.log(supplierId,"==============supplier id checking=============")
+    try {
+      // Find supplier by id (not productId)
+      const supplierStatus = suppliers.find(
+        (supplier) => supplier.id === supplierId
+      );
+      if (supplierStatus) {
+        // Toggle boolean status directly
+        const newStatus = !supplierStatus.status;
+
+        // Pass boolean status to API
+        await patchSupplier(supplierId, newStatus);
+
+        toast.success("Supplier status updated");
+        fetchSuppliers();
+      }
+    } catch (error) {
+      console.error("Error updating supplier status:", error);
+      toast.error("Error updating supplier status");
+    }
+  };
 
   return (
     <div className="bg-background p-6 h-screen ">

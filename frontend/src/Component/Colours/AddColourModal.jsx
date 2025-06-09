@@ -126,7 +126,36 @@ const AddColourModal = ({
                   </div>
                 </div>
 
+                {/* =============== */}
                 <div className="group w-full">
+                  <label className="block text-sm font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
+                    Colour Code<span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      id="code"
+                      name="code"
+                      value={formData.code}
+                      onChange={handleChange}
+                      placeholder="e.g., #1E90FF"
+                      className="w-full px-4 py-3 pr-16 text-xl border border-black rounded-xl text-black placeholder-black 
+         transition-all duration-300 ease-in-out
+         focus:border-blue-500 
+         hover:border-blue-400"
+                    />
+                    {/* Color Preview Square */}
+                    <div
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 w-24 h-12 rounded border-2 border-gray-300 shadow-sm"
+                      style={{
+                        backgroundColor: formData.code || "#ffffff",
+                        display: formData.code ? "block" : "none",
+                      }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* <div className="group w-full">
                   <label className="block text-sm font-medium text-black mb-2 group-hover:text-blue-400 transition-colors duration-200">
                     Colour Code<span className="text-red-500">*</span>
                   </label>
@@ -145,7 +174,7 @@ const AddColourModal = ({
                    hover:border-blue-400"
                     />
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 

@@ -6,6 +6,16 @@ import axiosInstance from "../axiosConfig";
 const ls = new SecureLS({ encodingType: "aes" });
 const API_BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
+const getHeaders = () => {
+  const token = ls.get("authToken");
+  if (!token) {
+    throw new Error("Authentication token not found");
+  }
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+};
+
 export const createSupplier = async (supplierData) => {
   const url = `${API_BASE_URL}/api/v1/suppliers`;
   
@@ -189,6 +199,26 @@ export const downloadSuppliersExcel = async () => {
     return response.data; // Return the binary data (Excel)
   } catch (error) {
     console.error("Error fetching Excel file:", error);
+    throw error;
+  }
+};
+
+export const patchSupplier = async (supplierId, status) => {
+  try {
+    const response = await axios.patch(
+      `${API_BASE_URL}/api/v1/suppliers/${supplierId}?status=${status}`,
+      {}, // Empty body since status is passed as query parameter
+      {
+        headers: getHeaders(),
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 401) {
+      console.error("Unauthorized access:", error);
+    }
+    console.error("Error partially updating supplier:", error);
     throw error;
   }
 };

@@ -174,11 +174,11 @@ export const updateProductImages = async (productId, images) => {
   }
 };
 
-export const patchProduct = async (productId, productData) => {
+export const patchProduct = async (productId, status) => {
   try {
     const response = await axios.patch(
-      `${API_BASE_URL}/api/v1/products/${productId}`,
-      productData,
+      `${API_BASE_URL}/api/v1/products/${productId}?status=${status}`,
+      {}, // Empty body since status is passed as query parameter
       {
         headers: getHeaders(),
       }

@@ -352,7 +352,7 @@ const MaterialsList = () => {
                         <motion.button
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-green-400"
+                          className="text-green-800"
                           onClick={() => handleEditClick(material.materialId)}
                         >
                           <Edit size={28} />
@@ -360,7 +360,7 @@ const MaterialsList = () => {
                         <motion.button
                           whileHover={{ scale: 1.2 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-red-400"
+                          className="text-red-800"
                           onClick={() => handleDeleteClick(material)}
                         >
                           <Trash2 size={28} />

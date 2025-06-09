@@ -140,7 +140,6 @@ const Dashboard = () => {
           iconColor: "text-red-400",
           textColor: "text-red-400",
         },
-       
       ],
     },
     {
@@ -150,21 +149,21 @@ const Dashboard = () => {
       details: [
         {
           label: "Draft",
-          value: "0",
+          value: proposalMeta?.totalDraftProposals,
           icon: FileClock,
           iconColor: "text-slate-400",
           textColor: "text-slate-400",
         },
         {
           label: "Finalized",
-          value: "0",
+          value: proposalMeta?.totalFinalizedProposals,
           icon: FileCheck,
           iconColor: "text-blue-400",
           textColor: "text-blue-400",
         },
         {
           label: "Approved",
-          value: "0",
+          value: proposalMeta?.totalApprovedProposals,
           icon: FileOutput,
           iconColor: "text-green-400",
           textColor: "text-green-400",
@@ -216,6 +215,10 @@ const Dashboard = () => {
         setProductMeta(productData);
         
         const proposalData = await getProposalMetadata();
+        console.log(
+          proposalData,
+          "-----------check proposal data----Dashboard----------"
+        );
         setProposalMeta(proposalData);
         
         const appartmentData = await getAppartmentMetadata();

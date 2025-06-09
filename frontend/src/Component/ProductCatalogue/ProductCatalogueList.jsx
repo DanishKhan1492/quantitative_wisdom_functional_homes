@@ -24,6 +24,7 @@ import {
   getProductById,
   deleteProduct,
   updateProduct,
+  patchProduct,
 } from "../../ApiService/ProductCatalog/ProductCatalogApiServices";
 import AddProductModal from "./AddProductModal";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
@@ -281,6 +282,29 @@ const handleNextPage = () => {
     return pageButtons;
   };
 
+
+
+  const handleStatusToggle = async (productId) => {
+    try {
+      const productstatus = products.find((pro) => pro.productId === productId);
+      if (productstatus) {
+        // Convert string status to boolean, toggle it, then convert back to string
+        const currentStatus = productstatus.status === "Active";
+        const newStatus = !currentStatus;
+        const statusString = newStatus ? "Active" : "Inactive";
+
+        // Pass status as parameter for query string
+        await patchProduct(productId, statusString);
+
+        toast.success("Product status updated");
+        fetchProducts(); // You might want to rename this to fetchProducts for clarity
+      }
+    } catch (error) {
+      console.error("Error updating product status:", error);
+      toast.error("Error updating product status");
+    }
+  };
+
   return (
     <div className="p-4 md:p-6 bg-background min-h-screen">
       {/* Header & Controls */}
@@ -445,10 +469,12 @@ const handleNextPage = () => {
                         AED {parseFloat(product.price).toFixed(2)}
                       </div>
                     </td>
+
                     <td className="p-4">
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
+                        onClick={() => handleStatusToggle(product.productId)}
                         className={`px-3 py-1 rounded-full flex items-center gap-2 ${
                           product.status === "Active"
                             ? "bg-blue-500/20 text-black"
@@ -468,6 +494,30 @@ const handleNextPage = () => {
                         )}
                       </motion.button>
                     </td>
+                    {/* <td className="p-4">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => handleStatusToggle(product.productId)}
+                        className={`px-3 py-1 rounded-full flex items-center gap-2 ${
+                          product.status === "Active"
+                            ? "bg-blue-500/20 text-black"
+                            : "bg-slate-600/20 text-black"
+                        }`}
+                      >
+                        {product.status === "Active" ? (
+                          <>
+                            <Unlock size={24} />
+                            <span>Active</span>
+                          </>
+                        ) : (
+                          <>
+                            <Lock size={24} />
+                            <span>Inactive</span>
+                          </>
+                        )}
+                      </motion.button>
+                    </td> */}
 
                     <td className="p-4">
                       <div className="flex items-center space-x-3">
@@ -584,7 +634,9 @@ const handleNextPage = () => {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        productToDelete = {products.find((product) => product.productId === productToDelete?.productId)}
+        productToDelete={products.find(
+          (product) => product.productId === productToDelete?.productId
+        )}
       />
     </div>
   );
