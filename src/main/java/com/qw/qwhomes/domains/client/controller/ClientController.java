@@ -1,6 +1,7 @@
 package com.qw.qwhomes.domains.client.controller;
 
 import com.qw.qwhomes.common.dto.PageableResponse;
+import com.qw.qwhomes.domains.client.data.entity.Client;
 import com.qw.qwhomes.domains.client.service.ClientService;
 import com.qw.qwhomes.domains.client.service.dto.ClientDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/clients")
@@ -80,5 +83,12 @@ public class ClientController {
     public ResponseEntity<Void> updateClientStatus(@PathVariable Long id, @PathVariable boolean status) {
         clientService.updateClientStatus(id, status);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/active")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @Operation(summary = "Get all active clients")
+    public ResponseEntity<List<ClientDTO>> getAllActiveClients() {
+        return ResponseEntity.ok(clientService.getAllActiveClients());
     }
 }

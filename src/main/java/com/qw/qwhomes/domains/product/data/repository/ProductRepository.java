@@ -17,6 +17,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     @Query("SELECT new com.qw.qwhomes.domains.product.service.dto.ProductDashboardDTO(COUNT(p)) FROM Product p")
     ProductDashboardDTO getProductsMetadata();
 
-    @Query("SELECT p FROM Product p WHERE p.family.familyId = :familyId AND p.subFamily.subFamilyId = :subFamilyId")
+    @Query("SELECT p FROM Product p WHERE p.status = com.qw.qwhomes.domains.product.data.entity.ProductStatus.Active and p.family.familyId = :familyId AND p.subFamily.subFamilyId = :subFamilyId")
     List<Product> getProductsByFamilyIdAndSubFamilyId(Long familyId, Long subFamilyId);
 }

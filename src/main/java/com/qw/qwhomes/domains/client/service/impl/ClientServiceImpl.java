@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -107,5 +108,10 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public void updateClientStatus(Long id, boolean status) {
         clientRepository.updateClientStatus(id, status);
+    }
+
+    @Override
+    public List<ClientDTO> getAllActiveClients() {
+        return clientRepository.getAllActiveClients().stream().map(clientMapper::toDto).toList();
     }
 }

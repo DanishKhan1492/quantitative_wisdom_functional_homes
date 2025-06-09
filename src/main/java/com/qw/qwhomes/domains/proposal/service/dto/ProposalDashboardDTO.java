@@ -9,4 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProposalDashboardDTO {
     private Long totalProposals;
+    private Long totalDraftProposals;
+    private Long totalFinalizedProposals;
+    private Long totalApprovedProposals;
 }
