@@ -278,7 +278,7 @@ public class ProposalServiceImpl implements ProposalService {
                         contentStream.newLineAtOffset(0, -20);
                         contentStream.showText("Status: " + proposal.getStatus());
                         contentStream.newLineAtOffset(0, -20);
-                        contentStream.showText("Total Price: $" + proposal.getTotalPrice());
+                        contentStream.showText("Total Price: AED" + proposal.getTotalPrice());
                         contentStream.endText();
 
                         // Table header
@@ -310,9 +310,9 @@ public class ProposalServiceImpl implements ProposalService {
                         contentStream.newLineAtOffset(200, 0);
                         contentStream.showText(String.valueOf(product.getQuantity()));
                         contentStream.newLineAtOffset(100, 0);
-                        contentStream.showText("$" + product.getPrice());
+                        contentStream.showText("AED " + product.getPrice());
                         contentStream.newLineAtOffset(100, 0);
-                        contentStream.showText("$" + product.getTotalPrice());
+                        contentStream.showText("AED " + product.getTotalPrice());
                         contentStream.endText();
 
                         yPosition -= rowHeight;
@@ -359,7 +359,7 @@ public class ProposalServiceImpl implements ProposalService {
             detailsRow2.createCell(0).setCellValue("Status: " + proposal.getStatus());
 
             Row detailsRow3 = sheet.createRow(3);
-            detailsRow3.createCell(0).setCellValue("Total Price: $" + proposal.getTotalPrice());
+            detailsRow3.createCell(0).setCellValue("Total Price: AED " + proposal.getTotalPrice());
 
             // Product table header
             Row headerRow = sheet.createRow(5);
