@@ -4,12 +4,14 @@ import com.qw.qwhomes.common.dto.PageableResponse;
 import com.qw.qwhomes.domains.client.data.entity.Client;
 import com.qw.qwhomes.domains.client.service.ClientService;
 import com.qw.qwhomes.domains.client.service.dto.ClientDTO;
+import com.qw.qwhomes.domains.client.service.impl.ClientExportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -34,7 +39,7 @@ public class ClientController {
 
     private final ClientService clientService;
     private final MessageSource messageSource;
-
+    private final ClientExportService clientExportService;
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Operation(summary = "Create a new Client")
@@ -90,5 +95,20 @@ public class ClientController {
     @Operation(summary = "Get all active clients")
     public ResponseEntity<List<ClientDTO>> getAllActiveClients() {
         return ResponseEntity.ok(clientService.getAllActiveClients());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @GetMapping("/export/excel")
+    @Operation(summary = "Export clients to Excel")
+    public ResponseEntity<InputStreamResource> exportToExcel() throws IOException {
+        ByteArrayInputStream in = clientExportService.exportToExcel();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=clients.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(new InputStreamResource(in));
     }
 }
