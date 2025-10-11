@@ -32,14 +32,12 @@ public class SupplierExportService {
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Suppliers");
 
-            // Header
             Row headerRow = sheet.createRow(0);
             for (int col = 0; col < HEADERS.length; col++) {
                 Cell cell = headerRow.createCell(col);
                 cell.setCellValue(HEADERS[col]);
             }
 
-            // Data
             int rowIdx = 1;
             for (Supplier supplier : suppliers) {
                 Row row = sheet.createRow(rowIdx++);

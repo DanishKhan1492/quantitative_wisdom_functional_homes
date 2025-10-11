@@ -5,6 +5,7 @@ import com.qw.qwhomes.domains.client.service.dto.ClientDashboardDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 public interface ClientService {

@@ -1,9 +1,10 @@
 package com.qw.qwhomes.domains.apartmenttype.controller;
-
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import com.qw.qwhomes.domains.apartmenttype.service.dto.ApartmentTypeDTO;
 import com.qw.qwhomes.domains.apartmenttype.service.ApartmentTypeService;
 import com.qw.qwhomes.domains.apartmenttype.service.dto.ApartmentTypeDashboardDTO;
-import com.qw.qwhomes.domains.colour.service.dto.ColourDashboardDTO;
+import com.qw.qwhomes.domains.apartmenttype.service.impl.ApartmentTypeExportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -22,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/api/v1/apartment-types")
@@ -30,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApartmentTypeController {
 
     private final ApartmentTypeService apartmentTypeService;
+    private final ApartmentTypeExportService apartmentTypeExportService;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -82,4 +87,22 @@ public class ApartmentTypeController {
     public ResponseEntity<ApartmentTypeDashboardDTO> getApartmentTypeMetadata() {
         return ResponseEntity.ok(apartmentTypeService.getApartmentTypeMetadata());
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @GetMapping("/export/excel")
+    @Operation(summary = "Export apartment types to Excel")
+    public ResponseEntity<InputStreamResource> exportToExcel() throws IOException {
+        ByteArrayInputStream in = apartmentTypeExportService.exportToExcel();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=apartment-types.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(new InputStreamResource(in));
+    }
+
+
+
 }
