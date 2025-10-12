@@ -1,11 +1,13 @@
 package com.qw.qwhomes.domains.supplier.controller;
 
 import com.qw.qwhomes.common.dto.PageableResponse;
+import com.qw.qwhomes.common.service.impl.ExcelExportService;
+import com.qw.qwhomes.domains.supplier.data.entity.Supplier;
+import com.qw.qwhomes.domains.supplier.data.repository.SupplierRepository;
 import com.qw.qwhomes.domains.supplier.service.SupplierService;
 import com.qw.qwhomes.domains.supplier.service.dto.SupplierDashboardDTO;
 import com.qw.qwhomes.domains.supplier.service.dto.SupplierRequestDTO;
 import com.qw.qwhomes.domains.supplier.service.dto.SupplierResponseDTO;
-import com.qw.qwhomes.domains.supplier.service.impl.SupplierExportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -41,8 +44,13 @@ import java.util.Map;
 public class SupplierController {
 
     private final SupplierService supplierService;
-    private final SupplierExportService supplierExportService;
+    private final ExcelExportService excelExportService;
+    private final SupplierRepository supplierRepository;
     private final MessageSource messageSource;
+
+    private static final String[] SUPPLIER_HEADERS = {
+            "ID", "Name", "Business Registration Number", "Primary Contact Name", "Phone Number", "Email"
+    };
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
@@ -104,11 +112,26 @@ public class SupplierController {
         return ResponseEntity.ok(supplierService.getSuppliersMetaData());
     }
 
-
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/export/excel")
+    @Operation(summary = "Export suppliers to Excel")
     public ResponseEntity<InputStreamResource> exportToExcel() throws IOException {
-        ByteArrayInputStream in = supplierExportService.exportToExcel();
+        List<Supplier> suppliers = supplierRepository.findAll();
+
+        ByteArrayInputStream in = excelExportService.exportToExcel(
+                suppliers,
+                SUPPLIER_HEADERS,
+                "Suppliers",
+                supplier -> new Object[]{
+                        supplier.getId(),
+                        supplier.getName(),
+                        supplier.getBusinessRegistrationNumber(),
+                        supplier.getPrimaryContactName(),
+                        supplier.getPhoneNumber(),
+                        supplier.getEmail()
+                }
+        );
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=suppliers.xlsx");
 
@@ -116,20 +139,6 @@ public class SupplierController {
                 .ok()
                 .headers(headers)
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                .body(new InputStreamResource(in));
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @GetMapping("/export/csv")
-    public ResponseEntity<InputStreamResource> exportToCsv() throws IOException {
-        ByteArrayInputStream in = supplierExportService.exportToCsv();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=suppliers.csv");
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentType(MediaType.parseMediaType("text/csv"))
                 .body(new InputStreamResource(in));
     }
 }

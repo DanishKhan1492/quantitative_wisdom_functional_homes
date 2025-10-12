@@ -1,10 +1,11 @@
 package com.qw.qwhomes.domains.client.controller;
 
 import com.qw.qwhomes.common.dto.PageableResponse;
+import com.qw.qwhomes.common.service.impl.ExcelExportService;
 import com.qw.qwhomes.domains.client.data.entity.Client;
+import com.qw.qwhomes.domains.client.data.repository.ClientRepository;
 import com.qw.qwhomes.domains.client.service.ClientService;
 import com.qw.qwhomes.domains.client.service.dto.ClientDTO;
-import com.qw.qwhomes.domains.client.service.impl.ClientExportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -39,7 +40,13 @@ public class ClientController {
 
     private final ClientService clientService;
     private final MessageSource messageSource;
-    private final ClientExportService clientExportService;
+    private final ExcelExportService excelExportService;
+    private final ClientRepository clientRepository;
+
+    private static final String[] CLIENT_HEADERS = {
+            "ID", "Name", "Email", "Secondary Email", "Phone", "Secondary Phone", "Address", "Status"
+    };
+
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @Operation(summary = "Create a new Client")
@@ -101,7 +108,24 @@ public class ClientController {
     @GetMapping("/export/excel")
     @Operation(summary = "Export clients to Excel")
     public ResponseEntity<InputStreamResource> exportToExcel() throws IOException {
-        ByteArrayInputStream in = clientExportService.exportToExcel();
+        List<Client> clients = clientRepository.findAll();
+
+        ByteArrayInputStream in = excelExportService.exportToExcel(
+                clients,
+                CLIENT_HEADERS,
+                "Clients",
+                client -> new Object[]{
+                        client.getClientId(),
+                        client.getName(),
+                        client.getEmail(),
+                        client.getSecondaryEmail(),
+                        client.getPhone(),
+                        client.getSecondaryPhone(),
+                        client.getAddress(),
+                        client.isStatus() ? "Active" : "Inactive"
+                }
+        );
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=clients.xlsx");
 
