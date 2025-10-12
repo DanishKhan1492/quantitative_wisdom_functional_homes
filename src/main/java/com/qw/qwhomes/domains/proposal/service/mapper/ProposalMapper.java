@@ -34,7 +34,7 @@ public interface ProposalMapper {
     @Mapping(target = "name", source = "product.name")
     @Mapping(target = "sku", source = "product.sku")
     @Mapping(target = "productId", source = "product.productId")
-    @Mapping(target = "supplierDiscount", source = "product.supplier.supplierDiscount")
+    @Mapping(target = "productDiscount", source = "product.discount")
     ProposalProductDTO toDto(ProposalProduct entity);
 
 
