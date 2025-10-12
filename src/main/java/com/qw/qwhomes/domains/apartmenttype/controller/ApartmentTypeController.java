@@ -1,10 +1,15 @@
 package com.qw.qwhomes.domains.apartmenttype.controller;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
+
+import com.qw.qwhomes.common.service.impl.ExcelExportService;
+import com.qw.qwhomes.domains.apartmenttype.data.entity.ApartmentType;
+import com.qw.qwhomes.domains.apartmenttype.data.repository.ApartmentTypeRepository;
 import com.qw.qwhomes.domains.apartmenttype.service.dto.ApartmentTypeDTO;
 import com.qw.qwhomes.domains.apartmenttype.service.ApartmentTypeService;
 import com.qw.qwhomes.domains.apartmenttype.service.dto.ApartmentTypeDashboardDTO;
-import com.qw.qwhomes.domains.apartmenttype.service.impl.ApartmentTypeExportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,7 +39,13 @@ import org.springframework.http.MediaType;
 public class ApartmentTypeController {
 
     private final ApartmentTypeService apartmentTypeService;
-    private final ApartmentTypeExportService apartmentTypeExportService;
+    private final ExcelExportService excelExportService;
+    private final ApartmentTypeRepository apartmentTypeRepository;
+
+    private static final String[] APARTMENT_TYPE_HEADERS = {
+            "ID", "Name", "Category", "Number of Bedrooms", "Description",
+            "Floor Area Min", "Floor Area Max"
+    };
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -92,7 +103,23 @@ public class ApartmentTypeController {
     @GetMapping("/export/excel")
     @Operation(summary = "Export apartment types to Excel")
     public ResponseEntity<InputStreamResource> exportToExcel() throws IOException {
-        ByteArrayInputStream in = apartmentTypeExportService.exportToExcel();
+        List<ApartmentType> apartmentTypes = apartmentTypeRepository.findAll();
+
+        ByteArrayInputStream in = excelExportService.exportToExcel(
+                apartmentTypes,
+                APARTMENT_TYPE_HEADERS,
+                "Apartment Types",
+                apartmentType -> new Object[]{
+                        apartmentType.getApartmentId(),
+                        apartmentType.getName(),
+                        apartmentType.getCategory() != null ? apartmentType.getCategory().getName() : "",
+                        apartmentType.getNumberOfBedrooms(),
+                        apartmentType.getDescription(),
+                        apartmentType.getFloorAreaMin() != null ? apartmentType.getFloorAreaMin() : 0.0,
+                        apartmentType.getFloorAreaMax() != null ? apartmentType.getFloorAreaMax() : 0.0
+                }
+        );
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=apartment-types.xlsx");
 
@@ -102,7 +129,4 @@ public class ApartmentTypeController {
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(new InputStreamResource(in));
     }
-
-
-
 }
