@@ -26,4 +26,6 @@ public class ProposalProductDTO {
     private String sku;
 
     private Double supplierDiscount;
+
+    private Double price;
 }
