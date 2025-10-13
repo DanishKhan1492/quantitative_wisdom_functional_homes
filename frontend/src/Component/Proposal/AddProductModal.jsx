@@ -85,6 +85,7 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
        name: product.name,
        sku: product.sku,
        price: product.price,
+       discount: product.discount,
        quantity: 1,
        totalPrice: product.price,
        apartmentTypeId: selectedApartmentType, // This should now be valid.

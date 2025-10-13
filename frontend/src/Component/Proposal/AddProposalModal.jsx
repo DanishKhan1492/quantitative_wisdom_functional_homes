@@ -35,6 +35,7 @@ const AddProposalModal = ({
    });
 
   const [selectedProducts, setSelectedProducts] = useState([]);
+  console.log(selectedProducts,"--------selectedProducts======233=====");
   const clickHandledRef = useRef(false);
   const [requirements, setRequirements] = useState([]);
   const [apartmenttype, setApartmentType] = useState([]);
@@ -43,14 +44,14 @@ const AddProposalModal = ({
   const [showProductModal, setShowProductModal] = useState(false);
   const [clientList, setClientList] = useState([]);
 
-  // Calculate original price based on current products
+  
+  
   const calculateOriginalPrice = (products) => {
-    return products.reduce(
-      (total, product) => total + (product.price || 0) * product.quantity,
-      0
-    );
+    return products.reduce((total, product) => {
+      const priceAfterProductDiscount = product.price - (product.price * (product.discount || 0) / 100);
+      return total + (priceAfterProductDiscount * product.quantity);
+    }, 0);
   };
-
   // State to track original price
   const [originalPrice, setOriginalPrice] = useState(0);
   // State to track final price
@@ -108,42 +109,45 @@ const AddProposalModal = ({
   }, [reqFormValues.familyId]);
 
   // If editing, populate fields
-  useEffect(() => {
-    if (isEditMode && proposalData) {
-      // Set form values including discount from API response
-      setFormValues({
-        name: proposalData.name || "",
-        clientInfo: proposalData.clientId || "",
-        discount: proposalData.discount || 0,
-        apartmentTypeId: proposalData.apartmentTypeId || "",
-      });
+// If editing, populate fields
+useEffect(() => {
+  if (isEditMode && proposalData) {
+    console.log(proposalData, "-------proposalData---112----");
+    // Set form values including discount from API response
+    setFormValues({
+      name: proposalData.name || "",
+      clientInfo: proposalData.clientId || "",
+      discount: proposalData.discount || 0,
+      apartmentTypeId: proposalData.apartmentTypeId || "",
+    });
 
-      // Make sure products have the price property for calculations
-      const productsWithPrice = (proposalData.proposalProducts || []).map(
-        (product) => {
-          // Calculate individual price from totalPrice and quantity
-          const price =
-            product.quantity > 0 ? product.totalPrice / product.quantity : 0;
-          return {
-            ...product,
-            productId: product.productId,
-            price: price,
-            quantity: product.quantity || 1,
-          };
-        }
-      );
+    // Make sure products have the price property for calculations
+    const productsWithPrice = (proposalData.proposalProducts || []).map(
+      (product) => {
+        // Calculate individual price from totalPrice and quantity
+        const price =
+          product.quantity > 0 ? product.totalPrice / product.quantity : 0;
+        return {
+          ...product,
+          productId: product.productId,
+          price: price,
+          quantity: product.quantity || 1,
+          discount: product.productDiscount, // Map productDiscount to discount for consistency
+        };
+      }
+    );
 
-      setSelectedProducts(productsWithPrice);
-    } else {
-      setFormValues({
-        name: "",
-        clientInfo: "",
-        discount: 0,
-        apartmentTypeId: "",
-      });
-      setSelectedProducts([]);
-    }
-  }, [isEditMode, proposalData]);
+    setSelectedProducts(productsWithPrice);
+  } else {
+    setFormValues({
+      name: "",
+      clientInfo: "",
+      discount: 0,
+      apartmentTypeId: "",
+    });
+    setSelectedProducts([]);
+  }
+}, [isEditMode, proposalData]);
 
   // Input changes
   const handleChange = (e) => {
@@ -159,8 +163,9 @@ const AddProposalModal = ({
   };
 
   // Key modification: If the product already exists, increment quantity
+  
   const handleAddProduct = (newProduct) => {
-    if (clickHandledRef.current) return; // Prevent multiple calls
+    if (clickHandledRef.current) return;
     clickHandledRef.current = true;
     setSelectedProducts((prevProducts) => {
       const existingIndex = prevProducts.findIndex(
@@ -169,34 +174,44 @@ const AddProposalModal = ({
       if (existingIndex >= 0) {
         const updatedProducts = [...prevProducts];
         updatedProducts[existingIndex].quantity += 1;
+        const priceAfterProductDiscount = updatedProducts[existingIndex].price - 
+          (updatedProducts[existingIndex].price * (updatedProducts[existingIndex].discount || 0) / 100);
         updatedProducts[existingIndex].totalPrice =
-          updatedProducts[existingIndex].quantity *
-          updatedProducts[existingIndex].price;
+          updatedProducts[existingIndex].quantity * priceAfterProductDiscount;
         return updatedProducts;
       } else {
-        return [...prevProducts, newProduct];
+        const priceAfterProductDiscount = newProduct.price - 
+          (newProduct.price * (newProduct.discount || 0) / 100);
+        return [...prevProducts, {
+          ...newProduct,
+          totalPrice: newProduct.quantity * priceAfterProductDiscount
+        }];
       }
     });
-    // Reset the flag on next tick
     setTimeout(() => {
       clickHandledRef.current = false;
     }, 0);
   };
+  
 
   // Update product quantity from the list
+
   const updateProductQuantity = (productId, newQuantity) => {
     setSelectedProducts((prev) =>
-      prev.map((p) =>
-        p.productId === productId
-          ? {
-              ...p,
-              quantity: newQuantity,
-              totalPrice: newQuantity * p.price,
-            }
-          : p
-      )
+      prev.map((p) => {
+        if (p.productId === productId) {
+          const priceAfterProductDiscount = p.price - (p.price * (p.discount || 0) / 100);
+          return {
+            ...p,
+            quantity: newQuantity,
+            totalPrice: newQuantity * priceAfterProductDiscount,
+          };
+        }
+        return p;
+      })
     );
   };
+  
 
   // Remove product
   const handleRemoveProduct = (productId) => {
@@ -205,50 +220,94 @@ const AddProposalModal = ({
     );
   };
 
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+
+  //   if (selectedProducts.length === 0) {
+  //     toast.error(
+  //       "At least one product is required to create or update a proposal."
+  //     );
+  //     return;
+  //   }
+
+  //   const productApartmentTypeId = Number(selectedProducts[0].apartmentTypeId);
+  //   const apartmentTypeId =
+  //     productApartmentTypeId ||
+  //     (isEditMode && proposalData?.apartmentTypeId
+  //       ? Number(proposalData.apartmentTypeId)
+  //       : null);
+
+  //   if (!apartmentTypeId) {
+  //     toast.error(
+  //       "A valid Apartment Type is required. Please add a product with a selected Apartment Type."
+  //     );
+  //     return;
+  //   }
+
+  //   const payload = {
+  //     name: formValues.name,
+  //     apartmentTypeId: apartmentTypeId,
+  //     clientId: Number(formValues.clientInfo),
+  //     discount: formValues.discount, // Sending discount to the API
+  //    finalPrice: finalPrice,
+  //     proposalProducts: selectedProducts.map((product) => ({
+  //       productId: product.productId,
+  //       quantity: product.quantity,
+  //       price: product.price,
+  //       totalPrice: product.totalPrice,
+  //     })),
+  //   };
+
+  //   onSubmit(payload);
+  //   onClose();
+  // };
+
+  // Requirement management
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
     if (selectedProducts.length === 0) {
       toast.error(
         "At least one product is required to create or update a proposal."
       );
       return;
     }
-
+  
     const productApartmentTypeId = Number(selectedProducts[0].apartmentTypeId);
     const apartmentTypeId =
       productApartmentTypeId ||
       (isEditMode && proposalData?.apartmentTypeId
         ? Number(proposalData.apartmentTypeId)
         : null);
-
+  
     if (!apartmentTypeId) {
       toast.error(
         "A valid Apartment Type is required. Please add a product with a selected Apartment Type."
       );
       return;
     }
-
+  
     const payload = {
       name: formValues.name,
       apartmentTypeId: apartmentTypeId,
       clientId: Number(formValues.clientInfo),
-      discount: formValues.discount, // Sending discount to the API
-     finalPrice: finalPrice,
-      proposalProducts: selectedProducts.map((product) => ({
-        productId: product.productId,
-        quantity: product.quantity,
-        price: product.price,
-        totalPrice: product.totalPrice,
-      })),
+      discount: formValues.discount,
+      finalPrice: finalPrice,
+      proposalProducts: selectedProducts.map((product) => {
+        const priceAfterProductDiscount = product.price - (product.price * (product.discount || 0) / 100);
+        return {
+          productId: product.productId,
+          quantity: product.quantity,
+          price: priceAfterProductDiscount, // Send price after supplier discount
+          totalPrice: product.quantity * priceAfterProductDiscount,
+          productDiscount: product.discount || 0 // Send as productDiscount to API
+        };
+      }),
     };
-
+  
     onSubmit(payload);
     onClose();
   };
-
-  // Requirement management
- 
 
   const handleReqChange = (e) => {
     const { name, value } = e.target;
@@ -421,47 +480,82 @@ const AddProposalModal = ({
                       Selected Products
                     </h3>
                     <div className="space-y-4">
-                      {selectedProducts.map((product) => (
-                        <div
-                          key={product.productId}
-                          className="flex items-center justify-between p-4 bg-white rounded-xl"
-                        >
-                          <div>
-                            <h4 className="font-medium">{product.name}</h4>
-                            <p>
+                    
+
+{selectedProducts.map((product) => {
+  console.log(product,"--------product======123=====");
+  // Calculate price after supplier discount
+  const priceAfterDiscount = product.price - (product.price * (product.discount || 0) / 100);
+  const totalAfterDiscount = priceAfterDiscount * product.quantity;
+  
+  return (
+    <div
+      key={product.productId}
+      className="flex items-center justify-between p-6 bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200"
+    >
+      <div className="flex-1">
+        <h4 className="font-semibold text-lg text-gray-800">{product.name}</h4>
+        <p>
                               SKU: {product.sku} • Qty: {product.quantity}
                             </p>
-                          </div>
-                          <div className="flex items-center gap-6">
-                            <span>
-                              AED{" "}
-                              {(product.price * product.quantity).toFixed(2)}
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="number"
-                                min="1"
-                                value={product.quantity}
-                                onChange={(e) =>
-                                  updateProductQuantity(
-                                    product.productId,
-                                    parseInt(e.target.value)
-                                  )
-                                }
-                                className="w-20 px-2 py-1 border rounded"
-                              />
-                              <button
-                                onClick={() =>
-                                  handleRemoveProduct(product.productId)
-                                }
-                                className="text-red-500 hover:text-red-700"
-                              >
-                                <Trash2 size={20} />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+      </div>
+      
+      <div className="flex items-center gap-8">
+        {/* Original Price */}
+        <div className="text-center">
+          <p className="text-xs text-gray-500 uppercase tracking-wide">Original Price</p>
+          <span className="text-sm font-medium text-gray-700">
+            AED {product.price?.toFixed(2)}
+          </span>
+        </div>
+        
+        {/* Supplier Discount */}
+        <div className="text-center">
+          <p className="text-xs text-gray-500 uppercase tracking-wide">Product Discount</p>
+          <span className="text-sm font-semibold text-orange-600">
+            {(product.discount)}%
+          </span>
+        </div>
+        
+      
+        
+        {/* Quantity Input */}
+        <div className="text-center">
+          <p className="text-xs text-gray-500 uppercase tracking-wide">Quantity</p>
+          <input
+            type="number"
+            min="1"
+            value={product.quantity}
+            onChange={(e) =>
+              updateProductQuantity(
+                product.productId,
+                parseInt(e.target.value) || 1
+              )
+            }
+            className="w-16 px-2 py-1 text-center border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        
+        {/* Total Price */}
+        <div className="text-center">
+          <p className="text-xs text-gray-500 uppercase tracking-wide">Total</p>
+          <span className="text-sm ">
+            AED {totalAfterDiscount.toFixed(2)}
+          </span>
+        </div>
+        
+        {/* Remove Button */}
+        <button
+          onClick={() => handleRemoveProduct(product.productId)}
+          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors duration-200"
+          title="Remove Product"
+        >
+          <Trash2 size={20} />
+        </button>
+      </div>
+    </div>
+  );
+})}
                     </div>
                   </div>
                 </div>
@@ -680,25 +774,33 @@ const AddProposalModal = ({
                     </div>
 
                     {/* Price Display */}
+                  
                     <div className="space-y-1">
-                      {formValues.discount > 0 ? (
-                        <>
-                          <div className="text-lg text-black">
-                            Original Price:{" "}
-                            <span className="line-through">
-                              AED {originalPrice.toFixed(2)}
-                            </span>
-                          </div>
-                          <div className="text-xl font-semibold text-black">
-                            Final Price: AED {finalPrice.toFixed(2)}
-                          </div>
-                        </>
-                      ) : (
-                        <div className="text-xl font-semibold text-black">
-                          Total Price: AED {originalPrice.toFixed(2)}
-                        </div>
-                      )}
-                    </div>
+  {formValues.discount > 0 ? (
+    <>
+      <div className="text-lg text-black">
+        Subtotal:{" "}
+        <span className="line-through">
+          AED {originalPrice.toFixed(2)}
+        </span>
+      </div>
+      <div className="text-lg text-black">
+        Additional Discount ({formValues.discount}%):{" "}
+        <span className="text-red-600">
+          -AED {((originalPrice * formValues.discount) / 100).toFixed(2)}
+        </span>
+      </div>
+      <div className="text-xl font-semibold text-green-600">
+        Final Price: AED {finalPrice.toFixed(2)}
+      </div>
+    </>
+  ) : (
+    <div className="text-xl font-semibold text-black">
+      Total Price: AED {originalPrice.toFixed(2)}
+    </div>
+  )}
+</div>
+                    
                   </>
                 )}
               </div>

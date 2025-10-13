@@ -6,6 +6,7 @@ import {
   Edit,
   Trash2,
   Plus,
+  Download,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -20,6 +21,7 @@ import {
   getApartmentTypeById,
   updateApartmentType,
   deleteApartmentType,
+  downloadApartmentTypesExcel
 } from "../../ApiService/AppartmentType/AppartmentTypeApiService";
 import { toast } from "react-toastify";
 import LoadingScreen from "../Loading/Lodder";
@@ -232,6 +234,23 @@ const AppartmentList = () => {
     return pageButtons;
   };
 
+
+  
+const handleExcelDownload = async () => {
+    try {
+      const excelData = await downloadApartmentTypesExcel();
+      const url = URL.createObjectURL(excelData);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Apartment.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading the Excel file:", error);
+    }
+  };
+  
   return (
     <div className="h-screen bg-background p-6">
       {/* Header Section */}
@@ -274,6 +293,16 @@ const AppartmentList = () => {
                 />
               </motion.div>
             </div>
+
+            <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center px-6 py-2 bg-black text-white rounded-xl hover:bg-slate-600 transition-colors"
+                onClick={handleExcelDownload}
+              >
+                <Download className="w-5 h-5 mr-2" />
+                Export
+              </motion.button>
             {/* Add Apartment Button */}
             <motion.button
               whileHover={{ scale: 1.05 }}

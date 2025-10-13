@@ -27,6 +27,8 @@ import {
 } from "../../ApiService/ProposalServices/PorposalApiSurvice";
 import { toast } from "react-toastify";
 import ProposalStatusCell from "./ProposalStatusCell";
+import { PDFDownloadLink, Document, Page, Text, View, StyleSheet, pdf,Image } from '@react-pdf/renderer';
+import sidebarlogo from "../../images/sidebar_logo.png";
 
 const ProposalList = () => {
   const navigate = useNavigate();
@@ -130,22 +132,22 @@ const ProposalList = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleExportPdf = async (e, proposalId) => {
-    e.stopPropagation();
-    try {
-      const data = await exportProposalPdf(proposalId);
-      const fileURL = window.URL.createObjectURL(new Blob([data]));
-      const fileLink = document.createElement("a");
-      fileLink.href = fileURL;
-      fileLink.setAttribute("download", `proposal_${proposalId}.pdf`);
-      document.body.appendChild(fileLink);
-      fileLink.click();
-      fileLink.remove();
-    } catch (error) {
-      toast.error("Error exporting PDF");
-      console.error("PDF export error:", error);
-    }
-  };
+  // const handleExportPdf = async (e, proposalId) => {
+  //   e.stopPropagation();
+  //   try {
+  //     const data = await exportProposalPdf(proposalId);
+  //     const fileURL = window.URL.createObjectURL(new Blob([data]));
+  //     const fileLink = document.createElement("a");
+  //     fileLink.href = fileURL;
+  //     fileLink.setAttribute("download", `proposal_${proposalId}.pdf`);
+  //     document.body.appendChild(fileLink);
+  //     fileLink.click();
+  //     fileLink.remove();
+  //   } catch (error) {
+  //     toast.error("Error exporting PDF");
+  //     console.error("PDF export error:", error);
+  //   }
+  // };
 
   // Dummy async function to simulate fetching related products for a proposal
   const fetchRelatedProducts = async (proposalId) => {
@@ -246,6 +248,763 @@ const toggleRowExpand = (proposalId) => {
       )
     );
   };
+
+
+  const ProposalReceiptPDF = ({ proposalData }) => {
+    const styles = StyleSheet.create({
+    page: {
+      flexDirection: 'column',
+      backgroundColor: '#FFFFFF',
+      padding: 30,
+    },
+    headerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 20,
+      borderBottom: 2,
+      borderBottomColor: '#333',
+      paddingBottom: 15,
+    },
+    logo: {
+      width: 80,
+      height: 40,
+      backgroundColor: '#000',
+    },
+    headerTitleContainer: {
+      flex: 1,
+      alignItems: 'center',
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#333',
+    },
+    headerSubtitle: {
+      fontSize: 10,
+      color: '#666',
+      marginTop: 4,
+    },
+    companyInfo: {
+      fontSize: 10,
+      textAlign: 'right',
+      marginBottom: 20,
+      color: '#666',
+    },
+    section: {
+      marginBottom: 20,
+      padding: 15,
+      backgroundColor: '#f9f9f9',
+      borderRadius: 4,
+    },
+    sectionTitle: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      marginBottom: 12,
+      color: '#333',
+      borderBottom: 1,
+      borderBottomColor: '#ddd',
+      paddingBottom: 5,
+    },
+    row: {
+      flexDirection: 'row',
+      marginBottom: 8,
+    },
+    label: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      width: 120,
+      color: '#555',
+    },
+    value: {
+      fontSize: 10,
+      flex: 1,
+      color: '#333',
+    },
+    table: {
+      display: 'table',
+      width: 'auto',
+      borderStyle: 'solid',
+      borderWidth: 1,
+      borderColor: '#ddd',
+      borderRightWidth: 0,
+      borderBottomWidth: 0,
+      marginTop: 10,
+    },
+    tableRow: {
+      flexDirection: 'row',
+    },
+    tableColHeader: {
+      width: '25%',
+      borderStyle: 'solid',
+      borderWidth: 1,
+      borderColor: '#ddd',
+      borderLeftWidth: 0,
+      borderTopWidth: 0,
+      backgroundColor: '#262525',
+      padding: 8,
+    },
+    tableCol: {
+      width: '25%',
+      borderStyle: 'solid',
+      borderWidth: 1,
+      borderColor: '#ddd',
+      borderLeftWidth: 0,
+      borderTopWidth: 0,
+      padding: 8,
+    },
+    tableCellHeader: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      color: '#fff',
+      textAlign: 'center',
+    },
+    tableCell: {
+      fontSize: 9,
+      color: '#333',
+      textAlign: 'center',
+    },
+    totalContainer: {
+      marginTop: 20,
+      padding: 15,
+      backgroundColor: '#4a4a4a',
+      borderRadius: 4,
+    },
+    totalText: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      color: '#fff',
+      textAlign: 'right',
+    },
+    summaryContainer: {
+      marginTop: 20,
+      paddingTop: 15,
+      borderTop: 1,
+      borderTopColor: '#ddd',
+    },
+    summaryRow: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      marginBottom: 8,
+      paddingHorizontal: 10,
+    },
+    summaryLabel: {
+      fontSize: 11,
+      color: '#555',
+      marginRight: 40,
+    },
+    summaryValue: {
+      fontSize: 11,
+      color: '#333',
+      fontWeight: 'bold',
+      minWidth: 100,
+      textAlign: 'right',
+    },
+    summaryRowTotal: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      marginTop: 10,
+      paddingTop: 12,
+      paddingHorizontal: 10,
+      borderTop: 2,
+      borderTopColor: '#333',
+      backgroundColor: '#f5f5f5',
+      padding: 12,
+    },
+    totalLabel: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      color: '#333',
+      marginRight: 40,
+    },
+    totalValue: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      color: '#333',
+      minWidth: 100,
+      textAlign: 'right',
+    },
+    footer: {
+      marginTop: 30,
+      paddingTop: 15,
+      borderTop: 1,
+      borderTopColor: '#ddd',
+      textAlign: 'center',
+    },
+    footerText: {
+      fontSize: 9,
+      color: '#999',
+    },
+  });
+  
+    return (
+      <Document>
+        <Page size="A4" style={styles.page}>
+          {/* Header with Logo and Title */}
+          <View style={styles.headerContainer}>
+            <Image style={styles.logo} src={sidebarlogo} />
+            <View style={styles.headerTitleContainer}>
+              <Text style={styles.headerTitle}>PROPOSAL</Text>
+              {/* <Text style={styles.headerSubtitle}>Official Document</Text> */}
+            </View>
+          </View>
+  
+          {/* Company Info and Date */}
+          <View style={styles.companyInfo}>
+           
+            <Text>Date: {new Date().toLocaleDateString()}</Text>
+          </View>
+  
+          {/* Proposal Details Section */}
+          <View style={styles.section}>
+
+            <View style={styles.row}>
+              <Text style={styles.label}>Proposal Name:</Text>
+              <Text style={styles.value}>{proposalData.name}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Client:</Text>
+              <Text style={styles.value}>{proposalData.clientName || 'N/A'}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Apartment:</Text>
+              <Text style={styles.value}>{proposalData.apartmentName || 'N/A'}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Status:</Text>
+              <Text style={styles.value}>{proposalData.status}</Text>
+            </View>
+          </View>
+  
+          {/* Products Table */}
+          <View style={styles.table}>
+            <View style={styles.tableRow}>
+              <View style={styles.tableColHeader}>
+                <Text style={styles.tableCellHeader}>Product Name</Text>
+              </View>
+              <View style={styles.tableColHeader}>
+                <Text style={styles.tableCellHeader}>Quantity</Text>
+              </View>
+              <View style={styles.tableColHeader}>
+                <Text style={styles.tableCellHeader}>Price</Text>
+              </View>
+              <View style={styles.tableColHeader}>
+                <Text style={styles.tableCellHeader}>Supplier Discount</Text>
+              </View>
+              <View style={styles.tableColHeader}>
+                <Text style={styles.tableCellHeader}>Total</Text>
+              </View>
+            </View>
+           
+
+{proposalData.proposalProducts?.map((product, index) => {
+  // Calculate price after supplier discount
+  const priceAfterSupplierDiscount = product.totalPrice - (product.totalPrice * (product.supplierDiscount || 0) / 100);
+  
+  return (
+    <View style={styles.tableRow} key={index}>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>{product.name || 'N/A'}</Text>
+      </View>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>{product.quantity}</Text>
+      </View>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>AED {product.totalPrice?.toFixed(2)}</Text>
+      </View>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>{product.supplierDiscount?.toFixed(1)}%</Text>
+      </View>
+      <View style={styles.tableCol}>
+        <Text style={styles.tableCell}>AED {priceAfterSupplierDiscount?.toFixed(2)}</Text>
+      </View>
+    </View>
+  );
+})}
+</View>
+
+<View style={styles.summaryContainer}>
+  {(() => {
+    // Calculate subtotal after all supplier discounts
+    const subtotal = proposalData.proposalProducts?.reduce((sum, product) => {
+      const priceAfterSupplierDiscount = product.totalPrice - (product.totalPrice * (product.supplierDiscount || 0) / 100);
+      return sum + priceAfterSupplierDiscount;
+    }, 0) || 0;
+    
+    // Calculate discount amount from subtotal
+    const discountAmount = (subtotal * (proposalData.discount || 0)) / 100;
+    
+    // Calculate final total
+    const totalAmount = subtotal - discountAmount;
+    
+    return (
+      <>
+        <View style={styles.summaryRow}>
+          <Text style={styles.summaryLabel}>Subtotal:</Text>
+          <Text style={styles.summaryValue}>AED {subtotal?.toFixed(2)}</Text>
+        </View>
+        <View style={styles.summaryRow}>
+          <Text style={styles.summaryLabel}>Discount ({proposalData.discount?.toFixed(1) || 0}%):</Text>
+          <Text style={styles.summaryValue}>AED {discountAmount?.toFixed(2)}</Text>
+        </View>
+        <View style={styles.summaryRowTotal}>
+          <Text style={styles.totalLabel}>Total Amount:</Text>
+          <Text style={styles.totalValue}>AED {totalAmount?.toFixed(2)}</Text>
+        </View>
+      </>
+    );
+  })()}
+</View>
+        
+  
+         
+        </Page>
+      </Document>
+    );
+  };
+  
+  const handleExportPdf = async (e, proposalId) => {
+    e.stopPropagation();
+    try {
+      // Get full proposal data
+      const proposalData = await getProposalById(proposalId);
+      
+      // Generate PDF blob
+      const blob = await pdf(<ProposalReceiptPDF proposalData={proposalData} />).toBlob();
+      
+      // Create download link
+      const fileURL = window.URL.createObjectURL(blob);
+      const fileLink = document.createElement("a");
+      fileLink.href = fileURL;
+      fileLink.setAttribute("download", `proposalDocument.pdf`);
+      document.body.appendChild(fileLink);
+      fileLink.click();
+      fileLink.remove();
+      window.URL.revokeObjectURL(fileURL);
+      
+      toast.success("PDF downloaded successfully");
+    } catch (error) {
+      toast.error("Error generating PDF");
+      console.error("PDF generation error:", error);
+    }
+  };
+
+
+//   const handleExportExcel = async (e, proposalId) => {
+//     e.stopPropagation();
+//     try {
+//       // Import ExcelJS
+//       const ExcelJS = (await import('exceljs')).default;
+      
+//       // Get full proposal data - same as PDF
+//       const proposalData = await getProposalById(proposalId);
+      
+//       // Create a new workbook
+//       const workbook = new ExcelJS.Workbook();
+//       const worksheet = workbook.addWorksheet('Proposal');
+      
+//       // Set column widths
+//       worksheet.columns = [
+//         { width: 25 },
+//         { width: 15 },
+//         { width: 15 },
+//         { width: 20 },
+//         { width: 15 }
+//       ];
+      
+//       // Header styling
+//       const headerStyle = {
+//         font: { bold: true, size: 16, color: { argb: 'FFFFFF' } },
+//         fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '#262525' } },
+//         alignment: { horizontal: 'center', vertical: 'middle' }
+//       };
+      
+//       const sectionStyle = {
+//         font: { bold: true, size: 12 },
+//         fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F9F9F9' } },
+//         alignment: { horizontal: 'left', vertical: 'middle' }
+//       };
+      
+     
+
+//       worksheet.mergeCells('A1:E1');
+// const titleCell = worksheet.getCell('A1');
+// titleCell.value = 'PROPOSAL';
+// titleCell.style = headerStyle;
+// worksheet.getRow(1).height = 25; 
+
+// // Add logo to Excel
+// try {
+//   // Import the logo image
+//   const logoResponse = await fetch(sidebarlogo);
+//   const logoBlob = await logoResponse.blob();
+//   const logoArrayBuffer = await logoBlob.arrayBuffer();
+  
+//   // Add image to workbook
+//   const logoId = workbook.addImage({
+//     buffer: logoArrayBuffer,
+//     extension: 'png',
+//   });
+  
+//   // Add logo to worksheet (positioned in top-left area)
+//   worksheet.addImage(logoId, {
+//     tl: { col: 0, row: 0 }, // top-left position
+//     ext: { width: 80, height: 40 } // logo dimensions
+//   });
+// } catch (logoError) {
+//   console.warn('Could not add logo to Excel:', logoError);
+// }
+      
+//       // Date
+//       worksheet.mergeCells('A2:E2');
+//       const dateCell = worksheet.getCell('A2');
+//       dateCell.value = `Date: ${new Date().toLocaleDateString()}`;
+//       dateCell.style = { alignment: { horizontal: 'right' }, font: { size: 10 } };
+      
+//       // Proposal Details Section
+//       let currentRow = 4;
+//       worksheet.mergeCells(`A${currentRow}:E${currentRow}`);
+//       const proposalInfoHeader = worksheet.getCell(`A${currentRow}`);
+     
+//       proposalInfoHeader.style = sectionStyle;
+      
+//       currentRow++;
+//       worksheet.getCell(`A${currentRow}`).value = 'Proposal Name:';
+//       worksheet.getCell(`B${currentRow}`).value = proposalData.name || 'N/A';
+      
+//       currentRow++;
+//       worksheet.getCell(`A${currentRow}`).value = 'Client:';
+//       worksheet.getCell(`B${currentRow}`).value = proposalData.clientName || 'N/A';
+      
+//       currentRow++;
+//       worksheet.getCell(`A${currentRow}`).value = 'Apartment:';
+//       worksheet.getCell(`B${currentRow}`).value = proposalData.apartmentName || 'N/A';
+      
+//       currentRow++;
+//       worksheet.getCell(`A${currentRow}`).value = 'Status:';
+//       worksheet.getCell(`B${currentRow}`).value = proposalData.status || 'N/A';
+      
+//       // Products Table
+//       currentRow += 2;
+//       worksheet.mergeCells(`A${currentRow}:E${currentRow}`);
+//       const productsHeader = worksheet.getCell(`A${currentRow}`);
+     
+//       productsHeader.style = sectionStyle;
+      
+//       // Table headers
+//       currentRow++;
+//       const tableHeaders = ['Product Name', 'Quantity', 'Price', 'Supplier Discount', 'Total'];
+//       tableHeaders.forEach((header, index) => {
+//         const cell = worksheet.getCell(currentRow, index + 1);
+//         cell.value = header;
+//         cell.style = {
+//           font: { bold: true, color: { argb: 'FFFFFF' } },
+//           fill: { type: 'pattern', pattern: 'solid', textAlignment: { horizontal: 'center' }, fgColor: { argb: '#262525' } },
+//           border: {
+//             top: { style: 'thin' },
+//             left: { style: 'thin' },
+//             bottom: { style: 'thin' },
+//             right: { style: 'thin' }
+//           }
+//         };
+//       });
+      
+//       // Product data
+//       proposalData.proposalProducts?.forEach((product) => {
+//         currentRow++;
+//         worksheet.getCell(currentRow, 1).value = product.name || 'N/A';
+//         worksheet.getCell(currentRow, 2).value = product.quantity;
+//         worksheet.getCell(currentRow, 3).value = `AED ${product.totalPrice?.toFixed(2)}`;
+//         worksheet.getCell(currentRow, 4).value = 'AED 0%';
+//         worksheet.getCell(currentRow, 5).value = `AED ${product.totalPrice?.toFixed(2)}`;
+        
+//         // Add borders to data cells
+//         for (let col = 1; col <= 5; col++) {
+//           worksheet.getCell(currentRow, col).border = {
+//             top: { style: 'thin' },
+//             left: { style: 'thin' },
+//             bottom: { style: 'thin' },
+//             right: { style: 'thin' }
+//           };
+//         }
+//       });
+      
+//       // Summary Section - matching PDF design
+//       currentRow += 2;
+//       worksheet.mergeCells(`A${currentRow}:E${currentRow}`);
+//       const summaryHeader = worksheet.getCell(`A${currentRow}`);
+     
+//       summaryHeader.style = sectionStyle;
+      
+//       // Subtotal
+//       currentRow++;
+//       worksheet.getCell(currentRow, 4).value = 'Subtotal:';
+//       worksheet.getCell(currentRow, 5).value = `AED ${proposalData.totalPrice?.toFixed(2) || '0.00'}`;
+      
+//       // Discount
+//       currentRow++;
+//       worksheet.getCell(currentRow, 4).value = `Discount (${proposalData.discount || 0}%):`;
+//       worksheet.getCell(currentRow, 5).value = `AED ${((proposalData.totalPrice * (proposalData.discount || 0)) / 100)?.toFixed(2) || '0.00'}`;
+      
+//       // Total Amount
+//       currentRow++;
+//       worksheet.getCell(currentRow, 4).value = 'Total Amount:';
+//       worksheet.getCell(currentRow, 4).style = { 
+//         font: { bold: true },
+//         fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '4A4A4A' } },
+//         font: { bold: true, color: { argb: 'FFFFFF' } }
+//       };
+//       worksheet.getCell(currentRow, 5).value = `AED ${(proposalData.totalPrice - (proposalData.totalPrice * (proposalData.discount || 0)) / 100)?.toFixed(2) || '0.00'}`;
+//       worksheet.getCell(currentRow, 5).style = { 
+//         font: { bold: true },
+//         fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '4A4A4A' } },
+//         font: { bold: true, color: { argb: 'FFFFFF' } }
+//       };
+      
+//       // Generate Excel file
+//       const buffer = await workbook.xlsx.writeBuffer();
+//       const blob = new Blob([buffer], { 
+//         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+//       });
+      
+//       // Create download link
+//       const fileURL = window.URL.createObjectURL(blob);
+//       const fileLink = document.createElement("a");
+//       fileLink.href = fileURL;
+//       fileLink.setAttribute("download", `proposalDocument.xlsx`);
+//       document.body.appendChild(fileLink);
+//       fileLink.click();
+//       fileLink.remove();
+//       window.URL.revokeObjectURL(fileURL);
+      
+//       toast.success("Excel downloaded successfully");
+//     } catch (error) {
+//       toast.error("Error generating Excel");
+//       console.error("Excel generation error:", error);
+//     }
+//   };
+
+const handleExportExcel = async (e, proposalId) => {
+  e.stopPropagation();
+  try {
+    // Import ExcelJS
+    const ExcelJS = (await import('exceljs')).default;
+    
+    // Get full proposal data - same as PDF
+    const proposalData = await getProposalById(proposalId);
+    
+    // Create a new workbook
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Proposal');
+    
+    // Set column widths
+    worksheet.columns = [
+      { width: 25 },
+      { width: 15 },
+      { width: 15 },
+      { width: 20 },
+      { width: 15 }
+    ];
+    
+    // Header styling
+    const headerStyle = {
+      font: { bold: true, size: 16, color: { argb: 'FFFFFF' } },
+      fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '#262525' } },
+      alignment: { horizontal: 'center', vertical: 'middle' }
+    };
+    
+    const sectionStyle = {
+      font: { bold: true, size: 12 },
+      fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F9F9F9' } },
+      alignment: { horizontal: 'left', vertical: 'middle' }
+    };
+    
+    worksheet.mergeCells('A1:E1');
+    const titleCell = worksheet.getCell('A1');
+    titleCell.value = 'PROPOSAL';
+    titleCell.style = headerStyle;
+    worksheet.getRow(1).height = 25; 
+
+    // Add logo to Excel
+    try {
+      // Import the logo image
+      const logoResponse = await fetch(sidebarlogo);
+      const logoBlob = await logoResponse.blob();
+      const logoArrayBuffer = await logoBlob.arrayBuffer();
+      
+      // Add image to workbook
+      const logoId = workbook.addImage({
+        buffer: logoArrayBuffer,
+        extension: 'png',
+      });
+      
+      // Add logo to worksheet (positioned in top-left area)
+      worksheet.addImage(logoId, {
+        tl: { col: 0, row: 0 }, // top-left position
+        ext: { width: 80, height: 40 } // logo dimensions
+      });
+    } catch (logoError) {
+      console.warn('Could not add logo to Excel:', logoError);
+    }
+    
+    // Date
+    worksheet.mergeCells('A2:E2');
+    const dateCell = worksheet.getCell('A2');
+    dateCell.value = `Date: ${new Date().toLocaleDateString()}`;
+    dateCell.style = { alignment: { horizontal: 'right' }, font: { size: 10 } };
+    
+    // Proposal Details Section
+    let currentRow = 4;
+    worksheet.mergeCells(`A${currentRow}:E${currentRow}`);
+    
+    
+    currentRow++;
+    worksheet.getCell(`A${currentRow}`).value = 'Proposal Name:';
+    worksheet.getCell(`B${currentRow}`).value = proposalData.name || 'N/A';
+    
+    currentRow++;
+    worksheet.getCell(`A${currentRow}`).value = 'Client:';
+    worksheet.getCell(`B${currentRow}`).value = proposalData.clientName || 'N/A';
+    
+    currentRow++;
+    worksheet.getCell(`A${currentRow}`).value = 'Apartment:';
+    worksheet.getCell(`B${currentRow}`).value = proposalData.apartmentName || 'N/A';
+    
+    currentRow++;
+    worksheet.getCell(`A${currentRow}`).value = 'Status:';
+    worksheet.getCell(`B${currentRow}`).value = proposalData.status || 'N/A';
+    
+    // Products Table
+    currentRow += 2;
+    worksheet.mergeCells(`A${currentRow}:E${currentRow}`);
+  
+    
+    // Table headers
+    currentRow++;
+    const tableHeaders = ['Product Name', 'Quantity', 'Price', 'Supplier Discount', 'Total'];
+    tableHeaders.forEach((header, index) => {
+      const cell = worksheet.getCell(currentRow, index + 1);
+      cell.value = header;
+      cell.style = {
+        font: { bold: true, color: { argb: 'FFFFFF' } },
+        fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '#262525' } },
+        alignment: { horizontal: 'center', vertical: 'middle' },
+        border: {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        }
+      };
+    });
+    
+    // Calculate subtotal with supplier discounts
+    let subtotalAfterSupplierDiscount = 0;
+    
+    // Product data
+    proposalData.proposalProducts?.forEach((product) => {
+      currentRow++;
+      
+      // Calculate price after supplier discount
+      const supplierDiscount = product.supplierDiscount || 0;
+      const priceAfterSupplierDiscount = product.totalPrice - (product.totalPrice * supplierDiscount / 100);
+      subtotalAfterSupplierDiscount += priceAfterSupplierDiscount;
+      
+      worksheet.getCell(currentRow, 1).value = product.name || 'N/A';
+      worksheet.getCell(currentRow, 2).value = product.quantity;
+      worksheet.getCell(currentRow, 3).value = `AED ${product.totalPrice?.toFixed(2)}`;
+      worksheet.getCell(currentRow, 4).value = `${supplierDiscount.toFixed(1)}%`;
+      worksheet.getCell(currentRow, 5).value = `AED ${priceAfterSupplierDiscount?.toFixed(2)}`;
+      
+      // Add borders to data cells
+      for (let col = 1; col <= 5; col++) {
+        worksheet.getCell(currentRow, col).border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+        worksheet.getCell(currentRow, col).alignment = { 
+          horizontal: 'center', 
+          vertical: 'middle' 
+        };
+      }
+    });
+    
+    // Calculate discount amount from subtotal
+    const apiDiscount = proposalData.discount || 0;
+    const discountAmount = (subtotalAfterSupplierDiscount * apiDiscount) / 100;
+    const totalAmount = subtotalAfterSupplierDiscount - discountAmount;
+    
+    // Summary Section
+    currentRow += 2;
+    worksheet.mergeCells(`A${currentRow}:E${currentRow}`);
+    
+    
+    
+    // Subtotal
+    currentRow++;
+    worksheet.getCell(currentRow, 4).value = 'Subtotal:';
+    worksheet.getCell(currentRow, 4).style = { 
+      font: { bold: true },
+      alignment: { horizontal: 'right', vertical: 'middle' }
+    };
+    worksheet.getCell(currentRow, 5).value = `AED ${subtotalAfterSupplierDiscount.toFixed(2)}`;
+    worksheet.getCell(currentRow, 5).style = { 
+      alignment: { horizontal: 'center', vertical: 'middle' }
+    };
+    
+    // Discount
+    currentRow++;
+    worksheet.getCell(currentRow, 4).value = `Discount (${apiDiscount.toFixed(1)}%):`;
+    worksheet.getCell(currentRow, 4).style = { 
+      font: { bold: true },
+      alignment: { horizontal: 'right', vertical: 'middle' }
+    };
+    worksheet.getCell(currentRow, 5).value = `AED ${discountAmount.toFixed(2)}`;
+    worksheet.getCell(currentRow, 5).style = { 
+      alignment: { horizontal: 'center', vertical: 'middle' }
+    };
+    
+    // Total Amount
+    currentRow++;
+    worksheet.getCell(currentRow, 4).value = 'Total Amount:';
+    worksheet.getCell(currentRow, 4).style = { 
+      font: { bold: true, color: { argb: 'FFFFFF' } },
+      fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '#262525' } },
+      alignment: { horizontal: 'right', vertical: 'middle' }
+    };
+    worksheet.getCell(currentRow, 5).value = `AED ${totalAmount.toFixed(2)}`;
+    worksheet.getCell(currentRow, 5).style = { 
+      font: { bold: true, color: { argb: 'FFFFFF' } },
+      fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: '#262525' } },
+      alignment: { horizontal: 'center', vertical: 'middle' }
+    };
+    
+    // Generate Excel file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { 
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+    });
+    
+    // Create download link
+    const fileURL = window.URL.createObjectURL(blob);
+    const fileLink = document.createElement("a");
+    fileLink.href = fileURL;
+    fileLink.setAttribute("download", `proposalDocument.xlsx`);
+    document.body.appendChild(fileLink);
+    fileLink.click();
+    fileLink.remove();
+    window.URL.revokeObjectURL(fileURL);
+    
+    toast.success("Excel downloaded successfully");
+  } catch (error) {
+    toast.error("Error generating Excel");
+    console.error("Excel generation error:", error);
+  }
+};
+
 
   return (
     <div className="h-screen bg-background p-6">
@@ -396,8 +1155,8 @@ const toggleRowExpand = (proposalId) => {
                         <motion.button
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          disabled
-                          onClick={(e) => e.stopPropagation()}
+                          
+                          onClick={(e) => handleExportExcel(e, proposal.id)}
                           className="flex items-center gap-2 px-3 py-2 bg-green-100 text-green-600 rounded-xl cursor-not-allowed"
                         >
                           <FileText size={16} />
@@ -445,7 +1204,7 @@ const toggleRowExpand = (proposalId) => {
                     </td>
                   </tr>
                   {/* Expanded row for related products */}
-                  {expandedRows.includes(proposal.id) && (
+                  {/* {expandedRows.includes(proposal.id) && (
                     <tr className="bg-gray-50">
                       <td colSpan="8" className="p-4">
                         <div className="text-lg font-semibold mb-3">
@@ -465,6 +1224,12 @@ const toggleRowExpand = (proposalId) => {
                                   Quantity
                                 </th>
                                 <th className="p-3 text-left text-sm font-semibold">
+                                  Price
+                                </th>
+                                <th className="p-3 text-left text-sm font-semibold">
+                                  Supplier Discount
+                                </th>
+                                <th className="p-3 text-left text-sm font-semibold">
                                   Total Price
                                 </th>
                               </tr>
@@ -479,6 +1244,13 @@ const toggleRowExpand = (proposalId) => {
                                   <td className="p-3">{product.sku}</td>
                                   <td className="p-3">{product.quantity}</td>
                                   <td className="p-3">
+                                    AED {product.totalPrice}
+                                  </td>
+                                  <td className="p-3">
+                                    {product.supplierDiscount}%
+                                  </td>
+                                  
+                                  <td className="p-3">
                                     AED {product.totalPrice.toFixed(1)}
                                   </td>
                                 </tr>
@@ -488,7 +1260,68 @@ const toggleRowExpand = (proposalId) => {
                         </div>
                       </td>
                     </tr>
-                  )}
+                  )} */}
+                  {expandedRows.includes(proposal.id) && (
+  <tr className="bg-gray-50">
+    <td colSpan="8" className="p-4">
+      <div className="text-lg font-semibold mb-3">
+        Related Products
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[600px]">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="p-3 text-left text-sm font-semibold">
+                Product Name
+              </th>
+              <th className="p-3 text-left text-sm font-semibold">
+                SKU
+              </th>
+              <th className="p-3 text-left text-sm font-semibold">
+                Quantity
+              </th>
+              <th className="p-3 text-left text-sm font-semibold">
+                Price
+              </th>
+              <th className="p-3 text-left text-sm font-semibold">
+                Product Discount
+              </th>
+              <th className="p-3 text-left text-sm font-semibold">
+                Total Price
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {proposal.proposalProducts.map((product) => {
+              // Calculate total price with supplier discount applied
+              const discountedTotal = product.totalPrice - (product.totalPrice * product.productDiscount / 100);
+              
+              return (
+                <tr
+                  key={product.id}
+                  className="border-b border-gray-200"
+                >
+                  <td className="p-3">{product.name}</td>
+                  <td className="p-3">{product.sku}</td>
+                  <td className="p-3">{product.quantity}</td>
+                  <td className="p-3">
+                    AED {product.price.toFixed(2)}
+                  </td>
+                  <td className="p-3">
+                    {product.productDiscount}%
+                  </td>
+                  <td className="p-3 font-semibold">
+                    AED {discountedTotal.toFixed(2)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </td>
+  </tr>
+)}
                 </React.Fragment>
               ))}
             </tbody>

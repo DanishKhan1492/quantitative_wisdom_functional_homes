@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import {
   Search,
@@ -176,6 +174,8 @@ const ShowSupplierRecord = () => {
       console.error("Error downloading the Excel file:", error);
     }
   };
+
+ 
 
 
   const renderPageNumbers = () => {

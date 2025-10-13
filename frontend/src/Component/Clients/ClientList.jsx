@@ -23,7 +23,8 @@ import {
   updateClient,
   deleteClient,
   updateClientStatus,
-  getClientById
+  getClientById,
+  downloadClientsExcel,
 } from "../../ApiService/ClientApiService/ClientApiService";
 import { useNavigate } from "react-router-dom";
 const ShowClientRecord = () => {
@@ -239,6 +240,22 @@ const ShowClientRecord = () => {
   const startItem = (pageNumber - 1) * size + 1;
   const endItem = Math.min(pageNumber * size, totalElements);
 
+
+     const handleExcelDownload = async () => {
+        try {
+          const excelData = await downloadClientsExcel();
+          const url = URL.createObjectURL(excelData);
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", "clients.xlsx");
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } catch (error) {
+          console.error("Error downloading the Excel file:", error);
+        }
+      };
+
   return (
     <div className="bg-background p-6 min-h-screen">
       {/* Header & Controls */}
@@ -283,15 +300,15 @@ const ShowClientRecord = () => {
             </div>
             {/* Action Buttons */}
             <div className="flex gap-4">
-              {/* <motion.button
+              <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="flex items-center px-6 py-2 bg-black text-white rounded-xl hover:bg-slate-600 transition-colors"
-                onClick={() => toast.info("Export not available in dummy data")}
+                onClick={handleExcelDownload}
               >
                 <Download className="w-5 h-5 mr-2" />
                 Export
-              </motion.button> */}
+              </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

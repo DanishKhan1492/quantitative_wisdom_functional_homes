@@ -228,3 +228,30 @@ export const getAllActiveClients = async (
     throw error;
   }
 };
+
+
+export const downloadClientsExcel = async () => {
+  try {
+    const token = ls.get("authToken");
+
+    if (!token) {
+      throw new Error("Authentication token not found");
+    }
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // Excel MIME type
+    };
+
+    // Make the API request to fetch the Excel file
+    const response = await axios.get(`${API_BASE_URL}/api/v1/clients/export/excel`, {
+      headers,
+      responseType: 'blob', // Ensure the response is in binary form (Blob)
+    });
+
+    return response.data; // Return the binary data (Excel)
+  } catch (error) {
+    console.error("Error fetching Excel file:", error);
+    throw error;
+  }
+};
