@@ -409,14 +409,22 @@ public class ProposalServiceImpl implements ProposalService {
                 proposalProduct.setProposal(proposal);
                 proposalProduct.setProduct(product);
                 proposalProduct.setPrice(product.getPrice());
-                proposalProduct.setTotalPrice(product.getPrice() * proProduct.getQuantity());
+                var totalPrice = product.getPrice() * proposalProduct.getQuantity();
+                if(product.getDiscount() != null && product.getDiscount() > 0) {
+                    totalPrice = totalPrice - (totalPrice * product.getDiscount() / 100);
+                }
+                proposalProduct.setTotalPrice(totalPrice);
 
                 proposal.getProposalProducts().add(proposalProduct);
             } else {
                 ProposalProduct proposalProduct = proposal.getProposalProducts().stream().filter(pp -> proProduct.getProductId().equals(pp.getProduct().getProductId())).findFirst().get();
                 if (!proProduct.getQuantity().equals(proposalProduct.getQuantity())) {
                     proposalProduct.setQuantity(proProduct.getQuantity());
-                    proposalProduct.setTotalPrice(proProduct.getQuantity() * proposalProduct.getPrice());
+                    var totalPrice = proposalProduct.getPrice() * proProduct.getQuantity();
+                    if(proposalProduct.getProduct().getDiscount() != null && proposalProduct.getProduct().getDiscount() > 0) {
+                        totalPrice = totalPrice - (totalPrice * proposalProduct.getProduct().getDiscount() / 100);
+                    }
+                    proposalProduct.setTotalPrice(totalPrice);
 
                     // now remove the same product from list and add updated one
                     proposal.getProposalProducts().removeIf(pp -> proProduct.getProductId().equals(pp.getProduct().getProductId()));
