@@ -125,12 +125,11 @@ useEffect(() => {
     const productsWithPrice = (proposalData.proposalProducts || []).map(
       (product) => {
         // Calculate individual price from totalPrice and quantity
-        const price =
-          product.quantity > 0 ? product.totalPrice / product.quantity : 0;
+        
         return {
           ...product,
           productId: product.productId,
-          price: price,
+          price: product.price,
           quantity: product.quantity || 1,
           discount: product.productDiscount, // Map productDiscount to discount for consistency
         };

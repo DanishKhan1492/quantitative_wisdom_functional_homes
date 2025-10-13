@@ -1294,7 +1294,8 @@ const handleExportExcel = async (e, proposalId) => {
           <tbody>
             {proposal.proposalProducts.map((product) => {
               // Calculate total price with supplier discount applied
-              const discountedTotal = product.totalPrice - (product.totalPrice * product.productDiscount / 100);
+              const priceAfterDiscount = product.price - (product.price * (product.productDiscount || 0) / 100);
+              const totalPriceWithDiscount = product.quantity * priceAfterDiscount;
               
               return (
                 <tr
@@ -1311,7 +1312,7 @@ const handleExportExcel = async (e, proposalId) => {
                     {product.productDiscount}%
                   </td>
                   <td className="p-3 font-semibold">
-                    AED {discountedTotal.toFixed(2)}
+                    AED {totalPriceWithDiscount.toFixed(2)}
                   </td>
                 </tr>
               );

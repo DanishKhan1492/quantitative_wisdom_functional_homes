@@ -12,6 +12,8 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
   const [families, setFamilies] = useState([]);
   const [subFamilies, setSubFamilies] = useState([]);
   const [products, setProducts] = useState([]);
+
+  console.log(products,"check products in state")
   const [selectedApartmentType, setSelectedApartmentType] = useState("");
   const [selectedFamily, setSelectedFamily] = useState("");
   const [selectedSubFamily, setSelectedSubFamily] = useState("");
@@ -79,7 +81,7 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
 
   // When adding a product, include the selected apartmentTypeId in the product object
   const handleAddProductClick = (product) => {
-    console.log(product,"--------product===========")
+    console.log(product,"--------product===222========")
      const productToAdd = {
        productId: product.productId || product.id,
        name: product.name,
@@ -87,7 +89,7 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct }) => {
        price: product.price,
        discount: product.discount,
        quantity: 1,
-       totalPrice: product.price,
+       totalPrice: product.totalPrice,
        apartmentTypeId: selectedApartmentType, // This should now be valid.
      };
     onAddProduct(productToAdd);
