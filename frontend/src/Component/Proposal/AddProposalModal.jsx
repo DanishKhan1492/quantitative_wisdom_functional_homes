@@ -297,7 +297,7 @@ useEffect(() => {
         return {
           productId: product.productId,
           quantity: product.quantity,
-          price: priceAfterProductDiscount, // Send price after supplier discount
+          price: product.price, // Send price after supplier discount
           totalPrice: product.quantity * priceAfterProductDiscount,
           productDiscount: product.discount || 0 // Send as productDiscount to API
         };
