@@ -235,8 +235,11 @@ public class ProposalServiceImpl implements ProposalService {
             proposalProduct.setProposal(proposal);
             proposalProduct.setProduct(product);
             proposalProduct.setPrice(product.getPrice());
-            proposalProduct.setTotalPrice(product.getPrice() * dto.getQuantity());
-
+            var totalPrice = product.getPrice() * dto.getQuantity();
+            if(product.getDiscount() != null && product.getDiscount() > 0) {
+                totalPrice = totalPrice - (totalPrice * product.getDiscount() / 100);
+            }
+            proposalProduct.setTotalPrice(totalPrice);
             return proposalProduct;
         }).collect(Collectors.toList());
     }
