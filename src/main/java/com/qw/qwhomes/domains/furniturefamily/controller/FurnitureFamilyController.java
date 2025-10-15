@@ -1,6 +1,7 @@
 package com.qw.qwhomes.domains.furniturefamily.controller;
 
 import com.qw.qwhomes.common.dto.PageableResponse;
+import com.qw.qwhomes.domains.furniturefamily.data.entity.FurnitureFamily;
 import com.qw.qwhomes.domains.furniturefamily.service.dto.FurnitureFamilyAndSubFamilyDashboardDTO;
 import com.qw.qwhomes.domains.furniturefamily.service.dto.FurnitureFamilyDTO;
 import com.qw.qwhomes.domains.furniturefamily.service.dto.FurnitureSubFamilyResponseDTO;
@@ -12,7 +13,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import com.qw.qwhomes.common.service.impl.ExcelExportService;
+import com.qw.qwhomes.domains.furniturefamily.data.repository.FurnitureFamilyRepository;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,8 +28,20 @@ public class FurnitureFamilyController {
 
     private final FurnitureFamilyService furnitureFamilyService;
 
-    public FurnitureFamilyController(FurnitureFamilyService furnitureFamilyService) {
+    private final ExcelExportService excelExportService;
+    private final FurnitureFamilyRepository furnitureFamilyRepository;
+
+    private static final String[] FURNITURE_FAMILY_HEADERS = {
+            "ID", "Name", "Category", "Description"
+    };
+
+    public FurnitureFamilyController(
+            FurnitureFamilyService furnitureFamilyService,
+            ExcelExportService excelExportService,
+            FurnitureFamilyRepository furnitureFamilyRepository) {
         this.furnitureFamilyService = furnitureFamilyService;
+        this.excelExportService = excelExportService;
+        this.furnitureFamilyRepository = furnitureFamilyRepository;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
@@ -117,5 +136,33 @@ public class FurnitureFamilyController {
     @Operation(summary = "Get furniture family and sub family metadata for Dashboard")
     public ResponseEntity<FurnitureFamilyAndSubFamilyDashboardDTO> getFurnitureFamilyAndSubFamilyMetaData() {
         return ResponseEntity.ok(furnitureFamilyService.getFurnitureFamilyAndSubFamilyMetaData());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @GetMapping("/export/excel")
+    @Operation(summary = "Export furniture families to Excel")
+    public ResponseEntity<InputStreamResource> exportToExcel() throws IOException {
+        List<FurnitureFamily> furnitureFamilies = furnitureFamilyRepository.findAll();
+
+        ByteArrayInputStream in = excelExportService.exportToExcel(
+                furnitureFamilies,
+                FURNITURE_FAMILY_HEADERS,
+                "Furniture Families",
+                family -> new Object[]{
+                        family.getFamilyId(),
+                        family.getName(),
+                        family.getCategory() != null ? family.getCategory().getName() : "N/A",
+                        family.getDescription()
+                }
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=furniture_families.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(new InputStreamResource(in));
     }
 }

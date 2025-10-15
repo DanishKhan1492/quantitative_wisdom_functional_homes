@@ -27,5 +27,6 @@ public class ProposalProductDTO {
 
     private Double productDiscount;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Double price;
 }

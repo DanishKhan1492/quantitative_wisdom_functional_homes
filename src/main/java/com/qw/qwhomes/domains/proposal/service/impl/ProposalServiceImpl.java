@@ -94,6 +94,7 @@ public class ProposalServiceImpl implements ProposalService {
         Proposal proposal = proposalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(messageSource.getMessage("proposal.notFound", new Object[]{id}, Locale.getDefault())));
 
+        Double oldDiscount = proposal.getDiscount() != null ? proposal.getDiscount() : 0;
         if (proposal.getStatus() != Proposal.ProposalStatus.DRAFT) {
             throw new BusinessException("Only draft proposals can be updated");
         }
@@ -107,7 +108,7 @@ public class ProposalServiceImpl implements ProposalService {
         updateProposalProducts(updateDTO.getProposalProducts(), proposal);
 
         Double totalPrice = calculateTotalPrice(proposal.getProposalProducts());
-        if (updateDTO.getDiscount() != null && updateDTO.getDiscount() > 0 && !updateDTO.getDiscount().equals(proposal.getDiscount())) {
+        if (updateDTO.getDiscount() != null && updateDTO.getDiscount() > 0 && !updateDTO.getDiscount().equals(oldDiscount)) {
             totalPrice = totalPrice - (totalPrice * updateDTO.getDiscount() / 100);
         }
         proposal.setTotalPrice(totalPrice);

@@ -1,5 +1,8 @@
 package com.qw.qwhomes.domains.product.controller;
 
+import com.qw.qwhomes.domains.colour.data.entity.Colour;
+import com.qw.qwhomes.domains.material.data.entity.Material;
+import com.qw.qwhomes.domains.product.data.entity.Product;
 import com.qw.qwhomes.domains.product.data.entity.ProductStatus;
 import com.qw.qwhomes.domains.product.service.ProductService;
 import com.qw.qwhomes.domains.product.service.dto.ProductDTO;
@@ -31,7 +34,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
+import com.qw.qwhomes.common.service.impl.ExcelExportService;
+import com.qw.qwhomes.domains.product.data.repository.ProductRepository;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.stream.Collectors;
 import java.util.List;
 
 @RestController
@@ -41,6 +50,15 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final ExcelExportService excelExportService;
+    private final ProductRepository productRepository;
+
+    private static final String[] PRODUCT_HEADERS = {
+            "ID", "Name", "SKU", "Price", "Discount", "Status", "Height", "Length", "Width",
+            "Supplier", "Family", "Sub Family", "Colours", "Materials",
+    };
+
+
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -139,5 +157,51 @@ public class ProductController {
     @Operation(summary = "Get all products by family and subfamily")
     public ResponseEntity<List<ProductDTO>> getAllProductsByFamilyAndSubFamily(@PathVariable("familyId") Long familyId, @PathVariable("subFamilyId") Long subFamilyId) {
         return ResponseEntity.ok(productService.getAllProductsByFamilyAndSubFamily(familyId, subFamilyId));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @GetMapping("/export/excel")
+    @Operation(summary = "Export products to Excel")
+    public ResponseEntity<InputStreamResource> exportToExcel() throws IOException {
+        List<Product> products = productRepository.findAll();
+
+        ByteArrayInputStream in = excelExportService.exportToExcel(
+                products,
+                PRODUCT_HEADERS,
+                "Products",
+                product -> new Object[]{
+                        product.getProductId(),
+                        product.getName(),
+                        product.getSku(),
+                        product.getPrice(),
+                        product.getDiscount() != null ? product.getDiscount() : 0,
+                        product.getStatus() != null ? product.getStatus().name() : "N/A",
+                        product.getHeight(),
+                        product.getLength(),
+                        product.getWidth(),
+                        product.getSupplier() != null ? product.getSupplier().getName() : "N/A",
+                        product.getFamily() != null ? product.getFamily().getName() : "N/A",
+                        product.getSubFamily() != null ? product.getSubFamily().getName() : "N/A",
+                        product.getColours() != null && !product.getColours().isEmpty()
+                                ? product.getColours().stream()
+                                .map(Colour::getName)
+                                .collect(Collectors.joining(", "))
+                                : "N/A",
+                        product.getMaterials() != null && !product.getMaterials().isEmpty()
+                                ? product.getMaterials().stream()
+                                .map(Material::getName)
+                                .collect(Collectors.joining(", "))
+                                : "N/A",
+                }
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=products.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(new InputStreamResource(in));
     }
 }

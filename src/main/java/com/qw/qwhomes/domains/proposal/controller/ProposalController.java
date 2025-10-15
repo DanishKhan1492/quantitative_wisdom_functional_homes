@@ -1,5 +1,7 @@
 package com.qw.qwhomes.domains.proposal.controller;
 
+import com.qw.qwhomes.domains.proposal.data.entity.Proposal;
+import com.qw.qwhomes.domains.proposal.data.entity.ProposalProduct;
 import com.qw.qwhomes.domains.proposal.service.dto.ProposalDTO;
 import com.qw.qwhomes.domains.proposal.service.dto.ProposalDashboardDTO;
 import com.qw.qwhomes.domains.proposal.service.dto.ProposalResponseDTO;
@@ -25,7 +27,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.qw.qwhomes.common.service.impl.ExcelExportService;
+import com.qw.qwhomes.domains.proposal.data.repository.ProposalRepository;
+import org.springframework.core.io.InputStreamResource;
+import java.io.ByteArrayInputStream;
+import java.util.List;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,6 +43,12 @@ import java.nio.file.Paths;
 public class ProposalController {
 
     private final ProposalService proposalService;
+    private final ExcelExportService excelExportService;
+    private final ProposalRepository proposalRepository;
+
+    private static final String[] PROPOSAL_HEADERS = {
+            "ID", "Name", "Client", "Apartment Type", "Status", "Total Price", "Discount",  "Created Date"
+    };
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -128,5 +140,37 @@ public class ProposalController {
     @Operation(summary = "Get Proposals metadata")
     public ResponseEntity<ProposalDashboardDTO> getProposalMetadata() {
         return ResponseEntity.ok(proposalService.getProposalMetadata());
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
+    @GetMapping("/export/excel")
+    @Operation(summary = "Export all proposals to Excel")
+    public ResponseEntity<InputStreamResource> exportAllProposalsToExcel() throws IOException {
+        List<Proposal> proposals = proposalRepository.findAll();
+
+        ByteArrayInputStream in = excelExportService.exportToExcel(
+                proposals,
+                PROPOSAL_HEADERS,
+                "Proposals",
+                proposal -> new Object[]{
+                        proposal.getId(),
+                        proposal.getName(),
+                        proposal.getClient() != null ? proposal.getClient().getName() : "N/A",
+                        proposal.getApartmentType() != null ? proposal.getApartmentType().getName() : "N/A",
+                        proposal.getStatus() != null ? proposal.getStatus().name() : "N/A",
+                        proposal.getTotalPrice(),
+                        proposal.getDiscount(),
+                        proposal.getCreatedAt() != null ? proposal.getCreatedAt().toString() : "N/A"
+                }
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=proposals.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .body(new InputStreamResource(in));
     }
 }
