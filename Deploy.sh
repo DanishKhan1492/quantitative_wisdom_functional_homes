@@ -386,25 +386,30 @@ fi
 log "Importing category dump into database ${DB_NAME}..."
 
 CATEGORY_DUMP_PATH="$(pwd)/category_dump.sql"
+TEMP_DUMP_PATH="/tmp/category_dump.sql"
 
 if [[ -f "$CATEGORY_DUMP_PATH" ]]; then
   log "Found dump file at: $CATEGORY_DUMP_PATH"
 
-  # Ensure PostgreSQL is running
+  log "Copying dump file to /tmp for import..."
+  $SUDO cp "$CATEGORY_DUMP_PATH" "$TEMP_DUMP_PATH"
+  $SUDO chmod 644 "$TEMP_DUMP_PATH"
+  $SUDO chown postgres:postgres "$TEMP_DUMP_PATH"
+
   if $SUDO systemctl is-active --quiet postgresql; then
     log "PostgreSQL service active — importing data..."
 
-    # Run the import
-    if sudo -u postgres psql -d "$DB_NAME" -f "$CATEGORY_DUMP_PATH" > /tmp/category_import.log 2>&1; then
+    if sudo -u postgres psql -d "$DB_NAME" -f "$TEMP_DUMP_PATH" > /tmp/category_import.log 2>&1; then
       ok "✅ Category dump imported successfully into ${DB_NAME}"
     else
       warn "⚠️ Category import encountered errors. Check log: /tmp/category_import.log"
       tail -n 20 /tmp/category_import.log || true
     fi
-
   else
     warn "PostgreSQL is not running — skipping category import."
   fi
+
+  $SUDO rm -f "$TEMP_DUMP_PATH"
 else
   warn "No category_dump.sql found in project root — skipping Step 15."
 fi
