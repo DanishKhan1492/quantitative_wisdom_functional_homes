@@ -357,12 +357,12 @@ else
     --location "http://localhost:${SERVER_PORT}/api/v1/users" \
     --header "Content-Type: application/json" \
     --data-raw '{
-      "username": "abuzar",
-      "email": "abuzarkhan1242@gmail.com",
-      "password": "abuzar12",
-      "firstName": "abuzar",
-      "lastName": "khan",
-      "phoneNumber": "03249090438",
+      "username": "admin",
+      "email": "admin@gmail.com",
+      "password": "admin1234",
+      "firstName": "admin",
+      "lastName": "admin",
+      "phoneNumber": "1234567891",
       "roles": [{"id": 1}]
     }')
 
