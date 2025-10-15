@@ -21,6 +21,7 @@ import {
   createFurnitureFamily,
   updateFurnitureFamily,
   deleteFurnitureFamily,
+  downloadFurnitureFamiliesExcel
 } from "../../ApiService/FurnitureFamily/FurnitureFamilyApiServices";
 import Loading from "../Loading/Lodder";
 const FurnitureList = () => {
@@ -123,10 +124,7 @@ const FurnitureList = () => {
     }
   };
 
-  const handleExcelDownload = () => {
-    console.log("Downloading excel...");
-  };
-
+ 
   const handleCreateOrUpdateFurnitureFamily = async (furnitureFamilyData) => {
     if (editingFamily) {
       try {
@@ -239,6 +237,23 @@ const FurnitureList = () => {
   // Calculate start and end item numbers for display
  const startItem = (pageNumber - 1) * size + 1;
  const endItem = Math.min(pageNumber * size, totalElements);
+
+
+  const handleExcelDownload = async () => {
+     try {
+       const excelData = await downloadFurnitureFamiliesExcel();
+       const url = URL.createObjectURL(excelData);
+       const link = document.createElement("a");
+       link.href = url;
+       link.setAttribute("download", "Furniture List.xlsx");
+       document.body.appendChild(link);
+       link.click();
+       document.body.removeChild(link);
+     } catch (error) {
+       console.error("Error downloading the Excel file:", error);
+     }
+   };
+ 
 
 
   return (

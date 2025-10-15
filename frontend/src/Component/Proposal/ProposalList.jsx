@@ -23,7 +23,7 @@ import {
   updateProposal,
   deleteProposal,
   getProposalById,
-  exportProposalPdf,
+  downloadProposalsExcel,
 } from "../../ApiService/ProposalServices/PorposalApiSurvice";
 import { toast } from "react-toastify";
 import ProposalStatusCell from "./ProposalStatusCell";
@@ -1005,6 +1005,21 @@ const handleExportExcel = async (e, proposalId) => {
   }
 };
 
+ const handleExcelDownload = async () => {
+       try {
+         const excelData = await downloadProposalsExcel();
+         const url = URL.createObjectURL(excelData);
+         const link = document.createElement("a");
+         link.href = url;
+         link.setAttribute("download", "proposals.xlsx");
+         document.body.appendChild(link);
+         link.click();
+         document.body.removeChild(link);
+       } catch (error) {
+         console.error("Error downloading the Excel file:", error);
+       }
+     };
+
 
   return (
     <div className="h-screen bg-background p-6">
@@ -1048,14 +1063,14 @@ const handleExportExcel = async (e, proposalId) => {
             </div>
             <div className="flex gap-4">
               <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
-                onClick={() => console.log("Export clicked")}
-              >
-                <Download className="w-5 h-5 mr-2" />
-                Export
-              </motion.button>
+                                         whileHover={{ scale: 1.05 }}
+                                         whileTap={{ scale: 0.95 }}
+                                         className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
+                                         onClick={handleExcelDownload}
+                                       >
+                                         <Download className="w-5 h-5 mr-2" />
+                                         Export
+                                       </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

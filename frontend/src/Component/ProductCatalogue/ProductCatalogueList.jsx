@@ -25,6 +25,7 @@ import {
   deleteProduct,
   updateProduct,
   patchProduct,
+  downloadProductsExcel
 } from "../../ApiService/ProductCatalog/ProductCatalogApiServices";
 import AddProductModal from "./AddProductModal";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
@@ -147,47 +148,9 @@ const ProductCatalogueList = () => {
     }
   };
 
-  const handleExcelDownload = () => {
-    setIsDownloadDropdownOpen(false);
-    alert("Excel download functionality not implemented.");
-  };
 
-  const handleCSVDownload = () => {
-    setIsDownloadDropdownOpen(false);
-    const csvContent = [
-      [
-        "Date",
-        "Name",
-        "SKU",
-        "Family",
-        "Sub Family",
-        "Price",
-        "Supplier",
-        "Status",
-      ],
-      ...products.map((product) => [
-        product.date,
-        product.name,
-        product.sku,
-        product.familyName,
-        product.subFamilyName,
-        product.price,
-        product.supplierName,
-        product.status,
-      ]),
-    ]
-      .map((row) => row.join(","))
-      .join("\n");
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "products.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+
 
   // Pagination calculations
   const startItem = pageNumber * size + 1;
@@ -305,6 +268,22 @@ const handleNextPage = () => {
     }
   };
 
+
+    const handleExcelDownload = async () => {
+       try {
+         const excelData = await downloadProductsExcel();
+         const url = URL.createObjectURL(excelData);
+         const link = document.createElement("a");
+         link.href = url;
+         link.setAttribute("download", "products.xlsx");
+         document.body.appendChild(link);
+         link.click();
+         document.body.removeChild(link);
+       } catch (error) {
+         console.error("Error downloading the Excel file:", error);
+       }
+     };
+
   return (
     <div className="p-4 md:p-6 bg-background min-h-screen">
       {/* Header & Controls */}
@@ -344,45 +323,15 @@ const handleNextPage = () => {
               />
             </div>
             {/* Download Dropdown */}
-            <div className="relative">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() =>
-                  setIsDownloadDropdownOpen(!isDownloadDropdownOpen)
-                }
-                className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
-              >
-                <Download size={20} />
-                <span>Download</span>
-                <ChevronDown size={16} />
-              </motion.button>
-              <AnimatePresence>
-                {isDownloadDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-48 rounded-xl shadow-lg bg-black ring-1 ring-slate-700 z-50"
-                  >
-                    <div className="py-1">
-                      <button
-                        onClick={handleExcelDownload}
-                        className="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 w-full text-left transition-colors duration-150"
-                      >
-                        Download Excel
-                      </button>
-                      <button
-                        onClick={handleCSVDownload}
-                        className="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 w-full text-left transition-colors duration-150"
-                      >
-                        Download CSV
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+           <motion.button
+                           whileHover={{ scale: 1.05 }}
+                           whileTap={{ scale: 0.95 }}
+                           className="flex items-center px-4 py-2 bg-black text-white rounded-xl hover:bg-emerald-500 hover:text-black transition-colors"
+                           onClick={handleExcelDownload}
+                         >
+                           <Download className="w-5 h-5 mr-2" />
+                           Export
+                         </motion.button>
             {/* Add Product Button */}
             <motion.button
               whileHover={{ scale: 1.02 }}
