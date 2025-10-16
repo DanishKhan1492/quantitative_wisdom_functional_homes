@@ -15,16 +15,35 @@ The following tools are required for deployment:
 
 Before deploying the application, you need to configure the frontend environment:
 
-1. Navigate to the `frontend` folder
-2. Open the `.env` file
-3. Update the IP address field with your server's IP address or domain name
+1. Navigate to the `frontend` folder:
+   ```bash
+   cd frontend
+   ```
 
-```bash
-cd frontend
-# Edit .env file and update the IP address
-```
+2. Create a `.env` file if it doesn't exist:
+   ```bash
+   touch .env
+   ```
+
+3. Open the `.env` file and add the following configuration:
+   ```env
+   VITE_APP_BASE_URL=http://localhost:8080
+   ```
+
+4. Replace `localhost:8080` with your server's IP address or domain name:
+   ```env
+   # Example with IP address
+   VITE_APP_BASE_URL=http://192.168.1.100:8080
+   
+   # Example with domain
+   VITE_APP_BASE_URL=http://yourdomain.com:8080
+   ```
 
 ## Deployment Process
+
+### Automated Deployment
+
+QW-Homes includes an automated deployment script that simplifies the entire deployment process.
 
 **To deploy the application:**
 
@@ -49,6 +68,7 @@ The `Deploy.sh` script automatically performs the following tasks:
 3. ✅ Sets up Nginx as a reverse proxy
 4. ✅ Deploys the application to your server
 5. ✅ Starts all necessary services
+6. ✅ It will print credentials.
 
 ## Post-Deployment
 
@@ -65,3 +85,4 @@ After successful deployment, open your web browser and navigate to:
 ```
 http://your-ip-address-or-domain
 ```
+

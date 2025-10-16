@@ -353,13 +353,18 @@ else
   ########################################
   log "All services active — attempting initial user creation POST to backend (localhost)..."
 
+  # Define credentials
+  ADMIN_USERNAME="admin"
+  ADMIN_PASSWORD="admin1234"
+  ADMIN_EMAIL="admin@gmail.com"
+
   HTTP_STATUS=$(curl -s -o /tmp/response.txt -w "%{http_code}" \
     --location "http://localhost:${SERVER_PORT}/api/v1/users" \
     --header "Content-Type: application/json" \
     --data-raw '{
-      "username": "admin",
-      "email": "admin@gmail.com",
-      "password": "admin1234",
+      "username": "'"${ADMIN_USERNAME}"'",
+      "email": "'"${ADMIN_EMAIL}"'",
+      "password": "'"${ADMIN_PASSWORD}"'",
       "firstName": "admin",
       "lastName": "admin",
       "phoneNumber": "1234567891",
@@ -376,9 +381,20 @@ else
     warn "Initial user creation request returned HTTP $HTTP_STATUS. If 401/403, you may need to register via /api/v1/auth/register or create an admin user manually."
     echo "Check application logs: sudo journalctl -u ${SERVICE_NAME} -n 200 --no-pager"
   else
-    ok "✅ User 'abuzar' successfully created!"
+    ok "✅ User '${ADMIN_USERNAME}' successfully created!"
+    echo
+    printf '\e[1;32m═══════════════════════════════════════════════════════════\e[0m\n'
+    printf '\e[1;32m                 ADMIN CREDENTIALS                        \e[0m\n'
+    printf '\e[1;32m═══════════════════════════════════════════════════════════\e[0m\n'
+    printf '\e[1;36m  Username:\e[0m %s\n' "${ADMIN_USERNAME}"
+    printf '\e[1;36m  Password:\e[0m %s\n' "${ADMIN_PASSWORD}"
+    printf '\e[1;36m  Email:   \e[0m %s\n' "${ADMIN_EMAIL}"
+    printf '\e[1;32m═══════════════════════════════════════════════════════════\e[0m\n'
+    echo
+    warn "⚠️  IMPORTANT: Please change this password after first login!"
+    echo
+    fi
   fi
-fi
 
 ########################################
 # Step 15: Import Category Dump into Database
