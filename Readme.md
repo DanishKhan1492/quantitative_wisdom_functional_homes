@@ -27,16 +27,11 @@ Before deploying the application, you need to configure the frontend environment
 
 3. Open the `.env` file and add the following configuration:
    ```env
-   VITE_APP_BASE_URL=http://localhost:8080
-   ```
-
-4. Replace `localhost:8080` with your server's IP address or domain name:
-   ```env
    # Example with IP address
-   VITE_APP_BASE_URL=http://192.168.1.100:8080
-   
+   VITE_APP_BASE_URL=http://192.168.1.100  (Add your server's public IP address here))
+
    # Example with domain
-   VITE_APP_BASE_URL=http://yourdomain.com:8080
+   VITE_APP_BASE_URL=http://yourdomain.com
    ```
 
 ## Deployment Process
